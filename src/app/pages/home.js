@@ -168,7 +168,11 @@ export default function HomePage() {
 
       {/* Best Sellers Slider */}
       <ProductSlider
-        title="Best Sellers"
+        title={
+          <>
+            Best <span className="text-primary">Sellers</span>
+          </>
+        }
         products={bestSellers}
         link="/shop/best-sellers"
       />
@@ -208,7 +212,11 @@ export default function HomePage() {
 
       {/* New Arrivals Slider */}
       <ProductSlider
-        title="New Arrivals"
+        title={
+          <>
+            New <span className="text-primary">Arrivals</span>
+          </>
+        }
         products={newArrivals}
         link="/shop/new-arrivals"
       />
