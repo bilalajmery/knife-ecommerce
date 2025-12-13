@@ -165,58 +165,97 @@ export default function HomePage() {
 
       <HeroSlider />
 
-      {/* Categories Section */}
+      {/* Collections Section */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4">
-            Choose Your <span className="text-primary">Weapon</span>
-          </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Select from our premium categories designed for specific needs.
-          </p>
+        <div className="flex justify-between items-end mb-12">
+          <div className="text-left">
+            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4">
+              Choose Your <span className="text-primary">Weapon</span>
+            </h2>
+            <p className="text-gray-400 max-w-2xl">
+              Select from our premium categories designed for specific needs.
+            </p>
+          </div>
+          <Link
+            href="/collections"
+            className="hidden md:block text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors mb-2"
+          >
+            See All &rarr;
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { title: "Hunting", img: "/hero-knife.png", desc: "For the wild" },
             {
-              title: "Kitchen",
-              img: "/hero-kitchen.png",
-              desc: "For the chef",
+              id: 1,
+              title: "Hunting Series",
+              description:
+                "Built for the wild. Rugged, durable, and razor-sharp.",
+              image: "/hero-knife.png",
+              link: "/collections/hunting",
+              count: 24,
             },
             {
-              title: "Tactical",
-              img: "/hero-tactical.png",
-              desc: "For the mission",
+              id: 2,
+              title: "Kitchen Master",
+              description:
+                "Elevate your culinary skills with professional-grade blades.",
+              image: "/hero-kitchen.png",
+              link: "/collections/kitchen",
+              count: 18,
             },
-          ].map((cat, idx) => (
-            <div
-              key={idx}
-              className="group relative h-[500px] overflow-hidden cursor-pointer border border-gray-800 hover:border-primary transition-colors duration-500"
+            {
+              id: 3,
+              title: "Tactical Ops",
+              description:
+                "Precision engineered for mission-critical performance.",
+              image: "/hero-tactical.png",
+              link: "/collections/tactical",
+              count: 32,
+            },
+          ].map((collection) => (
+            <Link
+              key={collection.id}
+              href={collection.link}
+              className="group relative h-[500px] overflow-hidden rounded-lg border border-gray-800 hover:border-primary transition-all duration-500"
             >
               <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
                 <Image
-                  src={cat.img}
-                  alt={cat.title}
+                  src={collection.image}
+                  alt={collection.title}
                   fill
                   className="object-cover opacity-60 group-hover:opacity-40 transition-opacity"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-90" />
               </div>
 
               <div className="absolute bottom-0 left-0 w-full p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                <h3 className="text-4xl font-black uppercase tracking-tighter mb-2 text-white group-hover:text-primary transition-colors">
-                  {cat.title}
+                <div className="mb-2">
+                  <span className="text-primary font-bold uppercase tracking-widest text-xs">
+                    {collection.count} Products
+                  </span>
+                </div>
+                <h3 className="text-3xl font-black uppercase tracking-tighter mb-3 text-white group-hover:text-primary transition-colors">
+                  {collection.title}
                 </h3>
-                <p className="text-gray-300 mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                  {cat.desc}
+                <p className="text-gray-300 mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 line-clamp-2">
+                  {collection.description}
                 </p>
-                <span className="inline-block border-b-2 border-primary text-white font-bold uppercase tracking-widest text-sm pb-1">
-                  Explore Collection
+                <span className="inline-flex items-center text-white font-bold uppercase tracking-widest text-sm group-hover:text-primary transition-colors">
+                  Explore Series <span className="ml-2">&rarr;</span>
                 </span>
               </div>
-            </div>
+            </Link>
           ))}
+        </div>
+
+        <div className="mt-8 text-center md:hidden">
+          <Link
+            href="/collections"
+            className="text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
+          >
+            See All &rarr;
+          </Link>
         </div>
       </section>
 

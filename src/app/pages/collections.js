@@ -119,7 +119,7 @@ export default function CollectionsPage() {
                 <h3 className="text-3xl font-black uppercase tracking-tighter mb-3 text-white group-hover:text-primary transition-colors">
                   {collection.title}
                 </h3>
-                <p className="text-gray-300 mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 line-clamp-2">
+                <p className="mb-6 text-white group-hover:text-primary transition-colors line-clamp-2">
                   {collection.description}
                 </p>
                 <span className="inline-flex items-center text-white font-bold uppercase tracking-widest text-sm group-hover:text-primary transition-colors">
