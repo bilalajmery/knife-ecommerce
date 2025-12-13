@@ -116,20 +116,41 @@ export default function ProductDetailPage({ params }) {
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
       <Navbar />
 
-      <main className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        {/* Breadcrumb */}
-        <nav className="flex mb-8 text-sm text-gray-400">
-          <Link href="/" className="hover:text-primary transition-colors">
-            Home
-          </Link>
-          <span className="mx-2">/</span>
-          <Link href="/shop" className="hover:text-primary transition-colors">
-            Shop
-          </Link>
-          <span className="mx-2">/</span>
-          <span className="text-white">{product.name}</span>
-        </nav>
+      {/* Header */}
+      <div className="relative py-32 mb-12 bg-gray-900 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src={product.images[0]}
+            alt={product.name}
+            fill
+            className="object-cover opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/80" />
+        </div>
 
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <nav className="flex justify-center items-center text-sm text-gray-400 mb-6 uppercase tracking-widest">
+            <Link href="/" className="hover:text-primary transition-colors">
+              Home
+            </Link>
+            <span className="mx-3 text-gray-600">/</span>
+            <Link href="/shop" className="hover:text-primary transition-colors">
+              Shop
+            </Link>
+            <span className="mx-3 text-gray-600">/</span>
+            <span className="text-white font-bold">{product.name}</span>
+          </nav>
+
+          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4">
+            {product.name}
+          </h1>
+          <p className="text-primary font-bold uppercase tracking-widest text-lg">
+            {product.category} Series
+          </p>
+        </div>
+      </div>
+
+      <main className="pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Image Gallery */}
           <div className="space-y-4">
@@ -176,15 +197,6 @@ export default function ProductDetailPage({ params }) {
 
           {/* Product Info */}
           <div className="flex flex-col">
-            <div className="mb-2">
-              <span className="text-primary font-bold uppercase tracking-widest text-sm">
-                {product.category}
-              </span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 text-white">
-              {product.name}
-            </h1>
-
             <div className="flex items-center gap-4 mb-6">
               <span className="text-3xl font-bold text-white">
                 ${product.price}
