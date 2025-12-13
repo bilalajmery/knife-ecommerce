@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export default function ProductCard({ product, className = "" }) {
+export default function ProductCard({ product, className = "", onRemove }) {
   // Calculate discount percentage if not provided but original price exists
   const discountPercentage =
     product.discount ||
@@ -68,26 +68,52 @@ export default function ProductCard({ product, className = "" }) {
 
         {/* Action Buttons - Top Right */}
         <div className="absolute top-3 right-3 z-20 flex flex-col gap-2">
-          {/* Wishlist Button */}
-          <button
-            className="p-2 rounded-full bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all duration-300 opacity-0 group-hover/card:opacity-100 translate-x-4 group-hover/card:translate-x-0 shadow-sm"
-            title="Add to Wishlist"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-5 h-5"
+          {/* Wishlist/Remove Button */}
+          {onRemove ? (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                onRemove();
+              }}
+              className="p-2 rounded-full bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-red-600 hover:text-white transition-all duration-300 opacity-0 group-hover/card:opacity-100 translate-x-4 group-hover/card:translate-x-0 shadow-sm"
+              title="Remove"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          ) : (
+            <button
+              className="p-2 rounded-full bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all duration-300 opacity-0 group-hover/card:opacity-100 translate-x-4 group-hover/card:translate-x-0 shadow-sm"
+              title="Add to Wishlist"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                />
+              </svg>
+            </button>
+          )}
 
           {/* Add to Cart Button */}
           <button
