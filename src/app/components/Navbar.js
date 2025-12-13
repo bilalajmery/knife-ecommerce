@@ -1,11 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,16 +57,29 @@ export default function Navbar() {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
               {["Home", "Shop", "Collections", "About", "Contact"].map(
-                (item) => (
-                  <Link
-                    key={item}
-                    href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-                    className="relative group px-3 py-2 text-sm font-bold uppercase tracking-widest text-gray-300 hover:text-white transition-colors"
-                  >
-                    {item}
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-                  </Link>
-                )
+                (item) => {
+                  const href = item === "Home" ? "/" : `/${item.toLowerCase()}`;
+                  const isActive = pathname === href;
+
+                  return (
+                    <Link
+                      key={item}
+                      href={href}
+                      className={`relative group px-3 py-2 text-sm font-bold uppercase tracking-widest transition-colors ${
+                        isActive
+                          ? "text-primary"
+                          : "text-gray-300 hover:text-white"
+                      }`}
+                    >
+                      {item}
+                      <span
+                        className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ${
+                          isActive ? "w-full" : "w-0 group-hover:w-full"
+                        }`}
+                      ></span>
+                    </Link>
+                  );
+                }
               )}
             </div>
           </div>

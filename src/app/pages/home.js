@@ -224,6 +224,7 @@ export default function HomePage() {
                   src={collection.image}
                   alt={collection.title}
                   fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover opacity-60 group-hover:opacity-40 transition-opacity"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-90" />
