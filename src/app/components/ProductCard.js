@@ -51,7 +51,7 @@ export default function ProductCard({ product, className = "" }) {
         <div className="absolute top-3 left-3 z-20 flex flex-col gap-2">
           {discountPercentage > 0 && (
             <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold bg-red-600 text-white shadow-sm">
-              -{discountPercentage}%
+              {discountPercentage}% OFF
             </span>
           )}
           {product.isNew && (
@@ -119,18 +119,18 @@ export default function ProductCard({ product, className = "" }) {
             <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
               {product.category || "Knives"}
             </p>
-            <h3 className="text-sm font-medium text-gray-900 truncate group-hover/card:text-primary transition-colors">
+            <h3 className="text-sm font-medium text-gray-200 truncate group-hover/card:text-primary transition-colors">
               <Link href={`/product/${product.id}`}>{product.name}</Link>
             </h3>
           </div>
         </div>
 
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-sm font-bold text-gray-900 group-hover/card:text-primary transition-colors">
+          <span className="text-sm font-bold text-gray-200 group-hover/card:text-primary transition-colors">
             ${product.price}
           </span>
           {product.originalPrice && product.originalPrice > product.price && (
-            <span className="text-xs text-gray-400 line-through">
+            <span className="text-xs text-gray-200 line-through group-hover/card:text-primary transition-colors">
               ${product.originalPrice}
             </span>
           )}

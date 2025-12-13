@@ -1,7 +1,7 @@
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import HeroSlider from "@/app/components/HeroSlider";
-import ProductSlider from "@/app/components/ProductSlider";
+import ProductCard from "@/app/components/ProductCard";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -54,6 +54,33 @@ const bestSellers = [
     hoverImage: "/hero-knife.png",
     badge: "",
   },
+  {
+    id: 11,
+    name: "Survival Master",
+    price: 135,
+    category: "Outdoor",
+    image: "/hero-knife.png",
+    hoverImage: "/hero-tactical.png",
+    badge: "Popular",
+  },
+  {
+    id: 12,
+    name: "Combat Elite",
+    price: 195,
+    category: "Tactical",
+    image: "/hero-tactical.png",
+    hoverImage: "/hero-knife.png",
+    badge: "Elite",
+  },
+  {
+    id: 13,
+    name: "Forest Ranger",
+    price: 115,
+    category: "Hunting",
+    image: "/hero-kitchen.png",
+    hoverImage: "/hero-tactical.png",
+    badge: "",
+  },
 ];
 
 const newArrivals = [
@@ -100,6 +127,33 @@ const newArrivals = [
     category: "Kitchen",
     image: "/hero-tactical.png",
     hoverImage: "/hero-knife.png",
+    badge: "New Arrival",
+  },
+  {
+    id: 14,
+    name: "Urban Carry",
+    price: 75,
+    category: "Everyday",
+    image: "/hero-knife.png",
+    hoverImage: "/hero-kitchen.png",
+    badge: "New Arrival",
+  },
+  {
+    id: 15,
+    name: "Marine Corps",
+    price: 155,
+    category: "Tactical",
+    image: "/hero-tactical.png",
+    hoverImage: "/hero-knife.png",
+    badge: "New Arrival",
+  },
+  {
+    id: 16,
+    name: "Sushi Pro",
+    price: 220,
+    category: "Kitchen",
+    image: "/hero-kitchen.png",
+    hoverImage: "/hero-tactical.png",
     badge: "New Arrival",
   },
 ];
@@ -166,16 +220,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Best Sellers Slider */}
-      <ProductSlider
-        title={
-          <>
-            Best <span className="text-primary">Sellers</span>
-          </>
-        }
-        products={bestSellers}
-        link="/shop/best-sellers"
-      />
+      {/* Best Sellers Grid */}
+      <section className="py-20 bg-black border-t border-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-end mb-12">
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-wider text-white">
+              Best <span className="text-primary">Sellers</span>
+            </h2>
+            <Link
+              href="/shop/best-sellers"
+              className="hidden md:block text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
+            >
+              View All &rarr;
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {bestSellers.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          <div className="mt-8 text-center md:hidden">
+            <Link
+              href="/shop/best-sellers"
+              className="text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
+            >
+              View All &rarr;
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Promo Banner */}
       <section className="relative py-32 bg-gray-900 overflow-hidden">
@@ -210,16 +285,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* New Arrivals Slider */}
-      <ProductSlider
-        title={
-          <>
-            New <span className="text-primary">Arrivals</span>
-          </>
-        }
-        products={newArrivals}
-        link="/shop/new-arrivals"
-      />
+      {/* New Arrivals Grid */}
+      <section className="py-20 bg-black border-t border-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-end mb-12">
+            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-wider text-white">
+              New <span className="text-primary">Arrivals</span>
+            </h2>
+            <Link
+              href="/shop/new-arrivals"
+              className="hidden md:block text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
+            >
+              View All &rarr;
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {newArrivals.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          <div className="mt-8 text-center md:hidden">
+            <Link
+              href="/shop/new-arrivals"
+              className="text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
+            >
+              View All &rarr;
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Trust Indicators */}
       <section className="py-24 border-t border-gray-900">
