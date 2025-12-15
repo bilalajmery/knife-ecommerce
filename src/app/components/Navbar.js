@@ -7,7 +7,52 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const pathname = usePathname();
+
+  useEffect(() => {
+    const checkSession = () => {
+      const storedData = localStorage.getItem("user");
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+
+        // Check if session has expired
+        if (parsedData.expiry && Date.now() > parsedData.expiry) {
+          localStorage.removeItem("user");
+          setUser(null);
+        } else {
+          setUser(parsedData);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    // Check on mount
+    checkSession();
+
+    // Listen for storage events
+    const handleStorageChange = () => {
+      checkSession();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // Optional: Check periodically (e.g., every minute) to auto-logout
+    const interval = setInterval(checkSession, 60000);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    setIsUserMenuOpen(false);
+    window.location.href = "/"; // Redirect to home
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -136,41 +181,65 @@ export default function Navbar() {
             <div className="relative user-menu-container">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="text-gray-300 hover:text-primary transition-colors focus:outline-none"
+                className="text-gray-300 hover:text-primary transition-colors focus:outline-none flex items-center"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                {user && user.profile ? (
+                  <img
+                    src={user.profile}
+                    alt={user.name}
+                    className="h-8 w-8 rounded-full object-cover border border-gray-700"
                   />
-                </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                )}
               </button>
 
               {/* Dropdown Menu */}
               {isUserMenuOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-800 rounded-md shadow-lg py-1 z-50">
-                  <Link
-                    href="/login"
-                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
-                    onClick={() => setIsUserMenuOpen(false)}
-                  >
-                    Sign Up
-                  </Link>
+                  {user ? (
+                    <>
+                      <div className="px-4 py-2 text-sm text-gray-400 border-b border-gray-800">
+                        Hello, {user.name}
+                      </div>
+                      <button
+                        onClick={handleLogout}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+                      >
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/signin"
+                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        Sign In
+                      </Link>
+                      <Link
+                        href="/signup"
+                        className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 hover:text-white transition-colors"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        Sign Up
+                      </Link>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -228,14 +297,14 @@ export default function Navbar() {
           ))}
           <div className="border-t border-gray-800 pt-6 flex flex-col space-y-4">
             <Link
-              href="/login"
+              href="/signin"
               className="text-xl font-bold uppercase tracking-widest text-gray-300 hover:text-white transition-colors"
               onClick={() => setIsOpen(false)}
             >
               Sign In
             </Link>
             <Link
-              href="/register"
+              href="/signup"
               className="text-xl font-bold uppercase tracking-widest text-primary hover:text-white transition-colors"
               onClick={() => setIsOpen(false)}
             >
