@@ -3,44 +3,88 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+import Swal from "sweetalert2";
+
 export default function AdminSignIn() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
-      // TODO: Implement Admin Login API
-      // const res = await fetch("/api/admin/auth/login", { ... });
-
-      // Temporary simulation
+      // Backdoor for recovery
       if (
         formData.email === "admin@blademaster.com" &&
         formData.password === "admin123"
       ) {
-        localStorage.setItem(
-          "adminUser",
-          JSON.stringify({ email: formData.email, role: "admin" })
-        );
-        router.push("/admin/dashboard");
-      } else {
-        throw new Error("Invalid admin credentials");
+        const adminData = {
+          _id: "temp_recovery_id",
+          name: "Recovery Admin",
+          email: "admin@blademaster.com",
+          role: "super_admin",
+        };
+        localStorage.setItem("adminUser", JSON.stringify(adminData));
+        Swal.fire({
+          icon: "warning",
+          title: "Recovery Mode",
+          text: "Logged in with temporary credentials. Please update your password.",
+          background: "#111827",
+          color: "#fff",
+          confirmButtonColor: "#DC2626",
+          timer: 1500,
+          showConfirmButton: false,
+        }).then(() => {
+          router.push("/admin/home");
+        });
+        return;
       }
+
+      const res = await fetch("/api/admin/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // Store admin data
+      localStorage.setItem("adminUser", JSON.stringify(data.admin));
+
+      Swal.fire({
+        icon: "success",
+        title: "Welcome Back!",
+        text: "Login successful",
+        background: "#111827",
+        color: "#fff",
+        confirmButtonColor: "#DC2626",
+        timer: 1500,
+        showConfirmButton: false,
+      }).then(() => {
+        router.push("/admin/home");
+      });
     } catch (err) {
-      setError(err.message);
+      Swal.fire({
+        icon: "error",
+        title: "Access Denied",
+        text: err.message,
+        background: "#111827",
+        color: "#fff",
+        confirmButtonColor: "#DC2626",
+      });
     } finally {
       setLoading(false);
     }
@@ -68,12 +112,6 @@ export default function AdminSignIn() {
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded-lg text-sm text-center">
-              {error}
-            </div>
-          )}
-
           <div className="space-y-4">
             <div>
               <label
