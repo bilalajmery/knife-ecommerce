@@ -170,7 +170,7 @@ export default function HomePage() {
         <div className="flex justify-between items-end mb-12">
           <div className="text-left">
             <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4">
-              Choose Your <span className="text-primary">Weapon</span>
+              Explore Our <span className="text-primary">Knife Collection</span>
             </h2>
             <p className="text-gray-400 max-w-2xl">
               Select from our premium categories designed for specific needs.
