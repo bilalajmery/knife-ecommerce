@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
+import Loader from "../components/Loader";
+
 export default function AdminLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -37,11 +39,7 @@ export default function AdminLayout({ children }) {
   }, [pathname, router]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <Loader />;
   }
 
   return <>{children}</>;

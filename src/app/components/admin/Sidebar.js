@@ -41,6 +41,13 @@ export default function Sidebar() {
           Dashboard
         </NavItem>
         <NavItem
+          href="/admin/admins"
+          icon={UsersIcon}
+          active={pathname === "/admin/admins"}
+        >
+          Admins
+        </NavItem>
+        <NavItem
           href="/admin/products"
           icon={ShoppingBagIcon}
           active={pathname === "/admin/products"}
@@ -61,13 +68,7 @@ export default function Sidebar() {
         >
           Users
         </NavItem>
-        <NavItem
-          href="/admin/admins"
-          icon={UsersIcon}
-          active={pathname === "/admin/admins"}
-        >
-          Admins
-        </NavItem>
+
         <NavItem
           href="/admin/analytics"
           icon={ChartBarIcon}
