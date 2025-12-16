@@ -3,14 +3,52 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  HomeIcon,
   ShoppingBagIcon,
   UsersIcon,
   CurrencyDollarIcon,
-  Cog6ToothIcon,
-  ArrowLeftOnRectangleIcon,
-  ChartBarIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
+import Sidebar from "../../components/admin/Sidebar";
+
+// Mock Data for Charts
+const salesData = [
+  { name: "Jan", sales: 4000, orders: 240 },
+  { name: "Feb", sales: 3000, orders: 139 },
+  { name: "Mar", sales: 2000, orders: 980 },
+  { name: "Apr", sales: 2780, orders: 390 },
+  { name: "May", sales: 1890, orders: 480 },
+  { name: "Jun", sales: 2390, orders: 380 },
+  { name: "Jul", sales: 3490, orders: 430 },
+  { name: "Aug", sales: 4200, orders: 510 },
+  { name: "Sep", sales: 5100, orders: 620 },
+  { name: "Oct", sales: 4800, orders: 540 },
+  { name: "Nov", sales: 6200, orders: 780 },
+  { name: "Dec", sales: 7400, orders: 920 },
+];
+
+const categoryData = [
+  { name: "Chef Knives", value: 400 },
+  { name: "Hunting", value: 300 },
+  { name: "Pocket", value: 300 },
+  { name: "Accessories", value: 200 },
+];
+
+const COLORS = ["#DC2626", "#F87171", "#991B1B", "#450A0A"];
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -28,11 +66,6 @@ export default function AdminDashboard() {
     }
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("adminUser");
-    router.push("/admin/signin");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -42,60 +75,30 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans flex">
+    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col fixed h-full z-10">
-        <div className="h-20 flex items-center px-8 border-b border-gray-800">
-          <h1 className="text-xl font-black uppercase tracking-tighter">
-            Blade<span className="text-primary">Admin</span>
-          </h1>
-        </div>
-
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          <NavItem href="/admin/home" icon={HomeIcon} active>
-            Dashboard
-          </NavItem>
-          <NavItem href="/admin/products" icon={ShoppingBagIcon}>
-            Products
-          </NavItem>
-          <NavItem href="/admin/orders" icon={CurrencyDollarIcon}>
-            Orders
-          </NavItem>
-          <NavItem href="/admin/users" icon={UsersIcon}>
-            Users
-          </NavItem>
-          <NavItem href="/admin/admins" icon={UsersIcon}>
-            Admins
-          </NavItem>
-          <NavItem href="/admin/analytics" icon={ChartBarIcon}>
-            Analytics
-          </NavItem>
-          <NavItem href="/admin/settings" icon={Cog6ToothIcon}>
-            Settings
-          </NavItem>
-        </nav>
-
-        <div className="p-4 border-t border-gray-800">
-          <button
-            onClick={handleLogout}
-            className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" />
-            Sign Out
-          </button>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 p-8">
+      <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen custom-scrollbar">
         <header className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-2xl font-bold">Dashboard</h2>
-            <p className="text-gray-400 text-sm">Welcome back, Admin</p>
+            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+            <p className="text-gray-400 mt-1">
+              Overview of your store's performance.
+            </p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="h-10 w-10 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center text-primary font-bold">
-              A
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-medium text-white">
+                {adminUser?.name || "Admin"}
+              </p>
+              <p className="text-xs text-gray-500 capitalize">
+                {adminUser?.role?.replace("_", " ") || "Administrator"}
+              </p>
+            </div>
+            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-primary to-red-900 flex items-center justify-center text-white font-bold shadow-lg shadow-primary/20">
+              {adminUser?.name?.charAt(0) || "A"}
             </div>
           </div>
         </header>
@@ -108,6 +111,7 @@ export default function AdminDashboard() {
             change="+20.1%"
             trend="up"
             icon={CurrencyDollarIcon}
+            color="text-green-500"
           />
           <StatCard
             title="Active Orders"
@@ -115,6 +119,7 @@ export default function AdminDashboard() {
             change="-4.5%"
             trend="down"
             icon={ShoppingBagIcon}
+            color="text-blue-500"
           />
           <StatCard
             title="Total Products"
@@ -122,6 +127,7 @@ export default function AdminDashboard() {
             change="+2"
             trend="neutral"
             icon={ShoppingBagIcon}
+            color="text-purple-500"
           />
           <StatCard
             title="Total Users"
@@ -129,52 +135,220 @@ export default function AdminDashboard() {
             change="+10.5%"
             trend="up"
             icon={UsersIcon}
+            color="text-orange-500"
           />
         </div>
 
-        {/* Recent Orders */}
-        <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-800 flex justify-between items-center">
-            <h3 className="font-bold">Recent Orders</h3>
-            <Link
-              href="/admin/orders"
-              className="text-sm text-primary hover:text-red-400 transition-colors"
-            >
-              View All
-            </Link>
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          {/* Sales Chart */}
+          <div className="lg:col-span-2 bg-[#111] border border-gray-900 rounded-2xl p-6 shadow-xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-white">Sales Overview</h3>
+              <select className="bg-black border border-gray-800 text-xs text-gray-400 rounded-lg px-3 py-1 focus:outline-none focus:border-primary">
+                <option>Last 12 Months</option>
+                <option>Last 30 Days</option>
+                <option>Last 7 Days</option>
+              </select>
+            </div>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={salesData}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#DC2626" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#DC2626" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#333"
+                    vertical={false}
+                  />
+                  <XAxis
+                    dataKey="name"
+                    stroke="#666"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="#666"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `$${value}`}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#000",
+                      border: "1px solid #333",
+                      borderRadius: "8px",
+                    }}
+                    itemStyle={{ color: "#fff" }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="sales"
+                    stroke="#DC2626"
+                    strokeWidth={2}
+                    fillOpacity={1}
+                    fill="url(#colorSales)"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-400">
-              <thead className="bg-gray-950 text-gray-200 uppercase font-bold text-xs">
-                <tr>
-                  <th className="px-6 py-3">Order ID</th>
-                  <th className="px-6 py-3">Customer</th>
-                  <th className="px-6 py-3">Date</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3 text-right">Amount</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {[1, 2, 3, 4, 5].map((order) => (
-                  <tr
-                    key={order}
-                    className="hover:bg-gray-800/50 transition-colors"
+
+          {/* Category Chart */}
+          <div className="bg-[#111] border border-gray-900 rounded-2xl p-6 shadow-xl flex flex-col">
+            <h3 className="text-lg font-bold text-white mb-6">
+              Top Categories
+            </h3>
+            <div className="flex-1 min-h-[250px] relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categoryData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
                   >
-                    <td className="px-6 py-4 font-medium text-white">
-                      #ORD-00{order}
-                    </td>
-                    <td className="px-6 py-4">John Doe</td>
-                    <td className="px-6 py-4">Dec 15, 2025</td>
-                    <td className="px-6 py-4">
-                      <span className="px-2 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-500">
-                        Completed
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right text-white">$120.00</td>
+                    {categoryData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#000",
+                      border: "1px solid #333",
+                      borderRadius: "8px",
+                    }}
+                    itemStyle={{ color: "#fff" }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    height={36}
+                    iconType="circle"
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              {/* Center Text */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-white">1.2k</p>
+                  <p className="text-xs text-gray-500">Items Sold</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Orders & Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Recent Orders Table */}
+          <div className="lg:col-span-2 bg-[#111] border border-gray-900 rounded-2xl overflow-hidden shadow-xl">
+            <div className="px-6 py-5 border-b border-gray-900 flex justify-between items-center">
+              <h3 className="font-bold text-lg">Recent Orders</h3>
+              <Link
+                href="/admin/orders"
+                className="text-xs font-bold uppercase tracking-wider text-primary hover:text-red-400 transition-colors"
+              >
+                View All Orders
+              </Link>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm text-gray-400">
+                <thead className="bg-black text-gray-500 uppercase font-bold text-xs">
+                  <tr>
+                    <th className="px-6 py-4">Order ID</th>
+                    <th className="px-6 py-4">Customer</th>
+                    <th className="px-6 py-4">Date</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4 text-right">Amount</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-900">
+                  {[1, 2, 3, 4, 5].map((order) => (
+                    <tr
+                      key={order}
+                      className="hover:bg-gray-900/50 transition-colors group"
+                    >
+                      <td className="px-6 py-4 font-medium text-white group-hover:text-primary transition-colors">
+                        #ORD-00{order}
+                      </td>
+                      <td className="px-6 py-4">John Doe</td>
+                      <td className="px-6 py-4">Dec 15, 2025</td>
+                      <td className="px-6 py-4">
+                        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-500 border border-green-500/20">
+                          Completed
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right text-white font-medium">
+                        $120.00
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-[#111] border border-gray-900 rounded-2xl p-6 shadow-xl">
+            <h3 className="font-bold text-lg mb-6">Quick Actions</h3>
+            <div className="space-y-3">
+              <button className="w-full flex items-center justify-between p-4 bg-black border border-gray-900 rounded-xl hover:border-primary/50 hover:bg-gray-900 transition-all group">
+                <div className="flex items-center">
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                    <ShoppingBagIcon className="h-5 w-5" />
+                  </div>
+                  <span className="ml-4 font-medium text-gray-300 group-hover:text-white">
+                    Add New Product
+                  </span>
+                </div>
+                <span className="text-gray-600 group-hover:text-primary">
+                  &rarr;
+                </span>
+              </button>
+
+              <button className="w-full flex items-center justify-between p-4 bg-black border border-gray-900 rounded-xl hover:border-blue-500/50 hover:bg-gray-900 transition-all group">
+                <div className="flex items-center">
+                  <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                    <UsersIcon className="h-5 w-5" />
+                  </div>
+                  <span className="ml-4 font-medium text-gray-300 group-hover:text-white">
+                    Manage Users
+                  </span>
+                </div>
+                <span className="text-gray-600 group-hover:text-blue-500">
+                  &rarr;
+                </span>
+              </button>
+
+              <button className="w-full flex items-center justify-between p-4 bg-black border border-gray-900 rounded-xl hover:border-green-500/50 hover:bg-gray-900 transition-all group">
+                <div className="flex items-center">
+                  <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-colors">
+                    <CurrencyDollarIcon className="h-5 w-5" />
+                  </div>
+                  <span className="ml-4 font-medium text-gray-300 group-hover:text-white">
+                    View Transactions
+                  </span>
+                </div>
+                <span className="text-gray-600 group-hover:text-green-500">
+                  &rarr;
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </main>
@@ -182,44 +356,40 @@ export default function AdminDashboard() {
   );
 }
 
-function NavItem({ href, icon: Icon, children, active }) {
+function StatCard({ title, value, change, trend, icon: Icon, color }) {
   return (
-    <Link
-      href={href}
-      className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-        active
-          ? "bg-primary text-white"
-          : "text-gray-400 hover:text-white hover:bg-gray-800"
-      }`}
-    >
-      <Icon className="h-5 w-5 mr-3" />
-      {children}
-    </Link>
-  );
-}
-
-function StatCard({ title, value, change, trend, icon: Icon }) {
-  return (
-    <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl">
+    <div className="bg-[#111] border border-gray-900 p-6 rounded-2xl shadow-lg hover:border-gray-800 transition-colors">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-gray-400 text-sm font-medium">{title}</h3>
-        <div className="p-2 bg-gray-800 rounded-lg text-gray-400">
-          <Icon className="h-5 w-5" />
+        <div
+          className={`p-2 rounded-lg bg-opacity-10 ${color.replace(
+            "text-",
+            "bg-"
+          )}`}
+        >
+          <Icon className={`h-5 w-5 ${color}`} />
         </div>
       </div>
-      <div className="flex items-baseline">
-        <p className="text-2xl font-bold text-white">{value}</p>
-        <span
-          className={`ml-2 text-xs font-medium ${
+      <div className="flex items-end justify-between">
+        <p className="text-3xl font-bold text-white tracking-tight">{value}</p>
+        <div
+          className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${
             trend === "up"
-              ? "text-green-500"
+              ? "bg-green-500/10 text-green-500"
               : trend === "down"
-              ? "text-red-500"
-              : "text-gray-500"
+              ? "bg-red-500/10 text-red-500"
+              : "bg-gray-500/10 text-gray-500"
           }`}
         >
+          {trend === "up" ? (
+            <ArrowTrendingUpIcon className="h-3 w-3 mr-1" />
+          ) : trend === "down" ? (
+            <ArrowTrendingDownIcon className="h-3 w-3 mr-1" />
+          ) : (
+            <ClockIcon className="h-3 w-3 mr-1" />
+          )}
           {change}
-        </span>
+        </div>
       </div>
     </div>
   );
