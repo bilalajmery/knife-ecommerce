@@ -32,7 +32,7 @@ export default function Footer() {
           <div className="lg:col-span-2 space-y-6">
             <Link
               href="/"
-              className="block w-24 h-24 hover:scale-105 transition-transform duration-300"
+              className="block w-60 h-24 hover:scale-105 transition-transform duration-300"
             >
               <img
                 src="/logo.png"

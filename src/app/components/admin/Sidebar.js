@@ -24,7 +24,7 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-black border-r border-gray-900 flex flex-col fixed h-full z-20">
       <div className="h-20 flex items-center px-8 border-b border-gray-900">
-        <Link href="/admin/home" className="block relative w-14">
+        <Link href="/admin/home" className="block relative w-44">
           <img
             src="/logo.png"
             alt="BladeMaster Logo"

@@ -89,7 +89,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="block relative w-40 h-14">
+            <Link href="/" className="block relative w-50">
               <img
                 src="/logo.png"
                 alt="BladeMaster Logo"
@@ -118,9 +118,7 @@ export default function Navbar() {
                     >
                       {item}
                       <span
-                        className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 ${
-                          isActive ? "w-full" : "w-0 group-hover:w-full"
-                        }`}
+                        className={`absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300 w-0 group-hover:w-full`}
                       ></span>
                     </Link>
                   );

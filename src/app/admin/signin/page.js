@@ -99,7 +99,7 @@ export default function AdminSignIn() {
             <img
               src="/logo.png"
               alt="BladeMaster Logo"
-              className="object-contain w-50"
+              className="object-contain w-80"
             />
           </h1>
         </div>
