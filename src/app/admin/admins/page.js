@@ -18,7 +18,6 @@ export default function AdminsPage() {
     name: "",
     email: "",
     password: "",
-    role: "admin",
     status: "active",
   });
 
@@ -84,7 +83,6 @@ export default function AdminsPage() {
         name: "",
         email: "",
         password: "",
-        role: "admin",
         status: "active",
       });
 
@@ -119,7 +117,6 @@ export default function AdminsPage() {
       name: admin.name,
       email: admin.email,
       password: "", // Don't show password
-      role: admin.role,
       status: admin.status,
     });
     setShowModal(true);
@@ -186,7 +183,6 @@ export default function AdminsPage() {
       name: "",
       email: "",
       password: "",
-      role: "admin",
       status: "active",
     });
     setShowModal(true);
@@ -223,7 +219,7 @@ export default function AdminsPage() {
                 <tr>
                   <th className="px-6 py-3">Name</th>
                   <th className="px-6 py-3">Email</th>
-                  <th className="px-6 py-3">Role</th>
+
                   <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Created At</th>
                   <th className="px-6 py-3 text-right">Actions</th>
@@ -239,9 +235,7 @@ export default function AdminsPage() {
                       {admin.name}
                     </td>
                     <td className="px-6 py-4">{admin.email}</td>
-                    <td className="px-6 py-4 capitalize">
-                      {admin.role.replace("_", " ")}
-                    </td>
+
                     <td className="px-6 py-4">
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-bold ${
@@ -327,21 +321,6 @@ export default function AdminsPage() {
                   />
                 </div>
               )}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
-                  Role
-                </label>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  className="w-full bg-black border border-gray-800 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary"
-                >
-                  <option value="admin">Admin</option>
-                  <option value="super_admin">Super Admin</option>
-                  <option value="editor">Editor</option>
-                </select>
-              </div>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
                   Status

@@ -32,7 +32,6 @@ export default function AdminSignIn() {
           _id: "temp_recovery_id",
           name: "Recovery Admin",
           email: "admin@blademaster.com",
-          role: "super_admin",
         };
         localStorage.setItem("adminUser", JSON.stringify(adminData));
         Swal.fire({

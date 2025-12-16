@@ -81,9 +81,6 @@ export default function AdminDashboard() {
               <p className="text-sm font-medium text-white">
                 {adminUser?.name || "Admin"}
               </p>
-              <p className="text-xs text-gray-500 capitalize">
-                {adminUser?.role?.replace("_", " ") || "Administrator"}
-              </p>
             </div>
             <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-primary to-red-900 flex items-center justify-center text-white font-bold shadow-lg shadow-primary/20">
               {adminUser?.name?.charAt(0) || "A"}

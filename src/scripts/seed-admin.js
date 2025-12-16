@@ -28,7 +28,6 @@ const seedAdmin = async () => {
       name: "Initial Admin",
       email: adminEmail,
       password: adminPassword,
-      role: "super_admin",
       status: "active",
     });
 
