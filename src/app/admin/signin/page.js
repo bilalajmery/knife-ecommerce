@@ -3,6 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export default function AdminSignIn() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function AdminSignIn() {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -86,7 +88,7 @@ export default function AdminSignIn() {
             src="/hero-knife.png"
             alt="Admin Background"
             fill
-            className="object-cover opacity-40 hover:scale-105 transition-transform duration-1000 ease-out"
+            className="object-cover opacity-20 hover:scale-105 transition-transform duration-1000 ease-out"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
@@ -98,7 +100,7 @@ export default function AdminSignIn() {
             <img
               src="/logo.png"
               alt="BladeMaster Logo"
-              className="object-contain w-32"
+              className="object-contain w-50"
             />
           </h1>
         </div>
@@ -162,14 +164,25 @@ export default function AdminSignIn() {
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
                     value={formData.password}
                     onChange={handleChange}
-                    className="block w-full px-4 py-3.5 bg-[#171717] border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300"
+                    className="block w-full px-4 py-3.5 bg-[#171717] border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300 pr-12"
                     placeholder="••••••••"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeSlashIcon className="h-5 w-5" />
+                    ) : (
+                      <EyeIcon className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
