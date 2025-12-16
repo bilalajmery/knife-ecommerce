@@ -53,26 +53,14 @@ const COLORS = ["#DC2626", "#F87171", "#991B1B", "#450A0A"];
 export default function AdminDashboard() {
   const router = useRouter();
   const [adminUser, setAdminUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for admin session
+    // Get admin data
     const storedAdmin = localStorage.getItem("adminUser");
-    if (!storedAdmin) {
-      router.push("/admin/signin");
-    } else {
+    if (storedAdmin) {
       setAdminUser(JSON.parse(storedAdmin));
-      setLoading(false);
     }
-  }, [router]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex">

@@ -1,25 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import {
-  HomeIcon,
-  ShoppingBagIcon,
-  UsersIcon,
-  CurrencyDollarIcon,
-  Cog6ToothIcon,
-  ArrowLeftOnRectangleIcon,
-  ChartBarIcon,
   PlusIcon,
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import Swal from "sweetalert2";
+import Sidebar from "../../components/admin/Sidebar";
 
 export default function AdminsPage() {
   const router = useRouter();
   const [admins, setAdmins] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingAdmin, setEditingAdmin] = useState(null);
   const [formData, setFormData] = useState({
@@ -39,26 +31,12 @@ export default function AdminsPage() {
       }
     } catch (error) {
       console.error("Failed to fetch admins", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Check for admin session
-    const storedAdmin = localStorage.getItem("adminUser");
-    if (!storedAdmin) {
-      router.push("/admin/signin");
-      return;
-    }
-
     fetchAdmins();
-  }, [router]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("adminUser");
-    router.push("/admin/signin");
-  };
+  }, []);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -214,58 +192,10 @@ export default function AdminsPage() {
     setShowModal(true);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-black text-white font-sans flex">
-      {/* Sidebar - Reused for consistency */}
-      <aside className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col fixed h-full z-10">
-        <div className="h-20 flex items-center px-8 border-b border-gray-800">
-          <h1 className="text-xl font-black uppercase tracking-tighter">
-            Blade<span className="text-primary">Admin</span>
-          </h1>
-        </div>
-
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          <NavItem href="/admin/home" icon={HomeIcon}>
-            Dashboard
-          </NavItem>
-          <NavItem href="/admin/products" icon={ShoppingBagIcon}>
-            Products
-          </NavItem>
-          <NavItem href="/admin/orders" icon={CurrencyDollarIcon}>
-            Orders
-          </NavItem>
-          <NavItem href="/admin/users" icon={UsersIcon}>
-            Users
-          </NavItem>
-          <NavItem href="/admin/admins" icon={UsersIcon} active>
-            Admins
-          </NavItem>
-          <NavItem href="/admin/analytics" icon={ChartBarIcon}>
-            Analytics
-          </NavItem>
-          <NavItem href="/admin/settings" icon={Cog6ToothIcon}>
-            Settings
-          </NavItem>
-        </nav>
-
-        <div className="p-4 border-t border-gray-800">
-          <button
-            onClick={handleLogout}
-            className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" />
-            Sign Out
-          </button>
-        </div>
-      </aside>
+      {/* Sidebar */}
+      <Sidebar />
 
       {/* Main Content */}
       <main className="flex-1 ml-64 p-8">
@@ -446,21 +376,5 @@ export default function AdminsPage() {
         </div>
       )}
     </div>
-  );
-}
-
-function NavItem({ href, icon: Icon, children, active }) {
-  return (
-    <Link
-      href={href}
-      className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
-        active
-          ? "bg-primary text-white"
-          : "text-gray-400 hover:text-white hover:bg-gray-800"
-      }`}
-    >
-      <Icon className="h-5 w-5 mr-3" />
-      {children}
-    </Link>
   );
 }
