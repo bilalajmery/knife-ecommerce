@@ -113,7 +113,7 @@ export default function PrivacyPolicy() {
                             <p className="leading-relaxed">
                                 If there are any questions regarding this privacy policy, you may contact us using the information below:
                             </p>
-                            <p className="text-primary font-semibold">support@blademaster.com</p>
+                            <p className="text-primary font-semibold">support@knifemaster.com</p>
                         </section>
                     </div>
                 </div>
