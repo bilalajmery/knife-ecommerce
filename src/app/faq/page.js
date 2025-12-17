@@ -33,7 +33,7 @@ const faqs = [
       },
       {
         q: "Do your knives come with a warranty?",
-        a: "Yes, all BladeMaster knives come with a Lifetime Warranty against defects in material and workmanship. We stand behind the quality of our products.",
+        a: "Yes, all KnifeMaster knives come with a Lifetime Warranty against defects in material and workmanship. We stand behind the quality of our products.",
       },
     ],
   },
@@ -111,27 +111,24 @@ export default function FAQ() {
                     return (
                       <div
                         key={itemIdx}
-                        className={`bg-gray-900/30 border ${
-                          isOpen ? "border-primary/50" : "border-gray-800"
-                        } rounded-xl overflow-hidden transition-all duration-300`}
+                        className={`bg-gray-900/30 border ${isOpen ? "border-primary/50" : "border-gray-800"
+                          } rounded-xl overflow-hidden transition-all duration-300`}
                       >
                         <button
                           onClick={() => toggleFAQ(index)}
                           className="w-full flex justify-between items-center p-6 text-left hover:bg-gray-900/50 transition-colors"
                         >
                           <span
-                            className={`font-bold text-lg ${
-                              isOpen ? "text-white" : "text-gray-400"
-                            }`}
+                            className={`font-bold text-lg ${isOpen ? "text-white" : "text-gray-400"
+                              }`}
                           >
                             {item.q}
                           </span>
                           <span
-                            className={`ml-4 flex-shrink-0 transition-transform duration-300 ${
-                              isOpen
+                            className={`ml-4 flex-shrink-0 transition-transform duration-300 ${isOpen
                                 ? "rotate-180 text-primary"
                                 : "text-gray-500"
-                            }`}
+                              }`}
                           >
                             {isOpen ? (
                               <MinusIcon className="w-6 h-6" />
@@ -141,11 +138,10 @@ export default function FAQ() {
                           </span>
                         </button>
                         <div
-                          className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                            isOpen
+                          className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen
                               ? "max-h-96 opacity-100"
                               : "max-h-0 opacity-0"
-                          }`}
+                            }`}
                         >
                           <div className="p-6 pt-0 text-gray-400 leading-relaxed border-t border-gray-800/50 mt-2">
                             {item.a}

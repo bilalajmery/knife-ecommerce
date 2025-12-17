@@ -1,7 +1,7 @@
 import WishlistPage from "@/app/pages/wishlist";
 
 export const metadata = {
-  title: "My Wishlist | BladeMaster",
+  title: "My Wishlist | KnifeMaster",
   description: "View your saved items.",
 };
 

@@ -93,7 +93,7 @@ export const generateVerificationEmail = (otp, name) => {
 <body>
   <div class="container">
     <div class="header">
-      <a href="#" class="logo">Blade<span>Master</span></a>
+      <a href="#" class="logo">Knife<span>Master</span></a>
     </div>
     
     <div class="content">
@@ -113,7 +113,7 @@ export const generateVerificationEmail = (otp, name) => {
     </div>
     
     <div class="footer">
-      <p>&copy; ${new Date().getFullYear()} BladeMaster. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} KnifeMaster. All rights reserved.</p>
       <p>Premium Hand-Forged Knives & Tactical Gear</p>
       <div class="social-links">
         <a href="#" class="social-link">Instagram</a>

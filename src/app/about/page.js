@@ -1,7 +1,7 @@
 import AboutPage from "@/app/pages/about";
 
 export const metadata = {
-  title: "About Us | BladeMaster",
+  title: "About Us | KnifeMaster",
   description:
     "Learn about our heritage of craftsmanship and dedication to quality.",
 };

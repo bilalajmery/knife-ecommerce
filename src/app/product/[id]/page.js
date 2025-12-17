@@ -11,10 +11,10 @@ export async function generateMetadata({ params }) {
     "Hand-forged with 67 layers of premium Damascus steel, this hunting knife is a masterpiece of craftsmanship.";
 
   return {
-    title: `${productName} | BladeMaster`,
+    title: `${productName} | KnifeMaster`,
     description: productDescription,
     openGraph: {
-      title: `${productName} | BladeMaster`,
+      title: `${productName} | KnifeMaster`,
       description: productDescription,
       images: ["/hero-knife.png"], // Replace with actual product image URL
     },

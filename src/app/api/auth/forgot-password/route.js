@@ -47,9 +47,8 @@ export async function POST(req) {
 
     // Create reset URL
     // Assuming localhost for dev, but should be env var in prod
-    const resetUrl = `${
-      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    }/reset-password/${resetToken}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      }/reset-password/${resetToken}`;
 
     // Send Email
     const transporter = nodemailer.createTransport({
@@ -61,9 +60,9 @@ export async function POST(req) {
     });
 
     const mailOptions = {
-      from: `"BladeMaster" <${process.env.EMAIL_USER}>`,
+      from: `"KnifeMaster" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "Reset Your Password - BladeMaster",
+      subject: "Reset Your Password - KnifeMaster",
       html: generateResetPasswordEmail(resetUrl, user.name),
     };
 

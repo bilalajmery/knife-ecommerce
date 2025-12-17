@@ -81,9 +81,8 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-black/90 backdrop-blur-md" : "bg-transparent"
-      }`}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-black/90 backdrop-blur-md" : "bg-transparent"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
@@ -92,7 +91,7 @@ export default function Navbar() {
             <Link href="/" className="block relative w-50">
               <img
                 src="/logo.png"
-                alt="BladeMaster Logo"
+                alt="KnifeMaster Logo"
                 className="object-contain w-full h-full"
               />
             </Link>
@@ -110,11 +109,10 @@ export default function Navbar() {
                     <Link
                       key={item}
                       href={href}
-                      className={`relative group px-3 py-2 text-sm font-bold uppercase tracking-widest transition-colors ${
-                        isActive
+                      className={`relative group px-3 py-2 text-sm font-bold uppercase tracking-widest transition-colors ${isActive
                           ? "text-primary"
                           : "text-gray-300 hover:text-white"
-                      }`}
+                        }`}
                     >
                       {item}
                       <span
@@ -278,9 +276,8 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden fixed inset-0 bg-black z-40 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`md:hidden fixed inset-0 bg-black z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex flex-col h-full pt-24 px-6 space-y-6">
           {["Home", "Shop", "Collections", "About", "Contact"].map((item) => (

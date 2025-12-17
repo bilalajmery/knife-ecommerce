@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "BladeMaster | Premium Hand-Forged Knives",
+  title: "KnifeMaster | Premium Hand-Forged Knives",
   description:
     "Experience the pinnacle of craftsmanship with our premium collection of hand-forged knives.",
 };

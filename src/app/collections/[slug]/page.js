@@ -5,7 +5,7 @@ export async function generateMetadata({ params }) {
   const slug = resolvedParams.slug;
   const title = slug.charAt(0).toUpperCase() + slug.slice(1);
   return {
-    title: `${title} Collection | BladeMaster`,
+    title: `${title} Collection | KnifeMaster`,
     description: `Explore our premium ${title} knives.`,
   };
 }

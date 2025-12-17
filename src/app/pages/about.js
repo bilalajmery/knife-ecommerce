@@ -58,7 +58,7 @@ export default function AboutPage() {
                 The Art of <span className="text-primary">The Blade</span>
               </h2>
               <p className="text-gray-400 text-lg leading-relaxed mb-6">
-                At BladeMaster, we believe that a knife is more than just a
+                At KnifeMaster, we believe that a knife is more than just a
                 tool—it's an extension of the hand and a testament to human
                 ingenuity. Our journey began in a small workshop with a single
                 anvil and a burning passion for metallurgy.

@@ -42,7 +42,7 @@ export default function WarrantyHub() {
               Lifetime <span className="text-primary">Warranty</span>
             </h1>
             <p className="text-gray-300 max-w-2xl mx-auto text-lg">
-              We build tools to last a lifetime. If your BladeMaster product
+              We build tools to last a lifetime. If your KnifeMaster product
               ever fails due to a defect in material or workmanship, we'll fix
               or replace it.
             </p>

@@ -1,7 +1,7 @@
 import CollectionsPage from "@/app/pages/collections";
 
 export const metadata = {
-  title: "Collections | BladeMaster",
+  title: "Collections | KnifeMaster",
   description: "Explore our premium knife collections.",
 };
 

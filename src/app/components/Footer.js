@@ -36,7 +36,7 @@ export default function Footer() {
             >
               <img
                 src="/logo.png"
-                alt="BladeMaster Logo"
+                alt="KnifeMaster Logo"
                 className="object-contain w-full h-full"
               />
             </Link>
@@ -301,22 +301,22 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} BladeMaster. All rights reserved.
+            &copy; {new Date().getFullYear()} KnifeMaster. All rights reserved.
             Crafted with precision and passion.
           </p>
           <div className="flex flex-wrap justify-center space-x-6">
             {[
-              "Privacy Policy",
-              "Terms of Service",
-              "Cookie Policy",
-              "Sitemap",
+              { name: "Privacy Policy", href: "/privacy-policy" },
+              { name: "Terms of Service", href: "/terms-of-service" },
+              { name: "Cookie Policy", href: "/cookie-policy" },
+              { name: "Sitemap", href: "/site-map" },
             ].map((item) => (
               <Link
-                key={item}
-                href="#"
+                key={item.name}
+                href={item.href}
                 className="text-xs text-gray-500 hover:text-primary transition-colors uppercase tracking-wide hover:underline underline-offset-4"
               >
-                {item}
+                {item.name}
               </Link>
             ))}
           </div>

@@ -167,9 +167,9 @@ export default function ContactPage() {
                       Email Us
                     </h3>
                     <p className="text-gray-400">
-                      support@blademaster.com
+                      support@KnifeMaster.com
                       <br />
-                      custom@blademaster.com
+                      custom@KnifeMaster.com
                     </p>
                   </div>
                 </div>

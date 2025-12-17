@@ -1,7 +1,7 @@
 import CheckoutPage from "@/app/pages/checkout";
 
 export const metadata = {
-  title: "Checkout | BladeMaster",
+  title: "Checkout | KnifeMaster",
   description: "Securely complete your purchase.",
 };
 

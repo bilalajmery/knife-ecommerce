@@ -27,7 +27,7 @@ export default function Sidebar() {
         <Link href="/admin/home" className="block relative w-44">
           <img
             src="/logo.png"
-            alt="BladeMaster Logo"
+            alt="KnifeMaster Logo"
             className="object-contain w-full h-full"
           />
         </Link>
@@ -110,11 +110,10 @@ function NavItem({ href, icon: Icon, children, active }) {
   return (
     <Link
       href={href}
-      className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
-        active
+      className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${active
           ? "bg-primary text-white shadow-lg shadow-primary/25"
           : "text-gray-400 hover:text-white hover:bg-gray-900"
-      }`}
+        }`}
     >
       <Icon className="h-5 w-5 mr-3" />
       {children}

@@ -133,7 +133,7 @@ export default function CreateAdminPage() {
                       onChange={handleInputChange}
                       required
                       className="block w-full pl-11 pr-4 py-3 bg-black border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                      placeholder="admin@blademaster.com"
+                      placeholder="admin@KnifeMaster.com"
                     />
                   </div>
                 </div>
