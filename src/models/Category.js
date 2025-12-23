@@ -40,8 +40,5 @@ const CategorySchema = new mongoose.Schema(
 );
 
 // Delete the model from Mongoose cache if it exists to ensure the new schema is used
-if (mongoose.models.Category) {
-  delete mongoose.models.Category;
-}
-
-export default mongoose.model("Category", CategorySchema);
+// Switched to safer pattern for Next.js
+export default mongoose.models.Category || mongoose.model("Category", CategorySchema);
