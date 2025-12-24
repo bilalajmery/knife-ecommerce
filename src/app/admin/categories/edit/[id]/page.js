@@ -46,7 +46,7 @@ export default function EditCategoryPage({ params }) {
             });
             setImagePreview(category.image);
           } else {
-            showAlert("error", "Not Found", "Category not found").then(() =>
+            showAlert("error", "Not Found", "Collection not found").then(() =>
               router.push("/admin/categories")
             );
           }
@@ -99,10 +99,10 @@ export default function EditCategoryPage({ params }) {
       const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(result.message || "Failed to update category");
+        throw new Error(result.message || "Failed to update collection");
       }
 
-      showAlert("success", "Success", "Category updated successfully").then(
+      showAlert("success", "Success", "Collection updated successfully").then(
         () => {
           router.push("/admin/categories");
         }
@@ -132,8 +132,8 @@ export default function EditCategoryPage({ params }) {
             <ArrowLeftIcon className="h-6 w-6 group-hover:-translate-x-1 transition-transform" />
           </button>
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Edit Category</h2>
-            <p className="text-gray-400 mt-1">Update category details</p>
+            <h2 className="text-3xl font-bold tracking-tight">Edit Collection</h2>
+            <p className="text-gray-400 mt-1">Update collection details</p>
           </div>
         </header>
 
@@ -145,10 +145,10 @@ export default function EditCategoryPage({ params }) {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white">
-                  Category Information
+                  Collection Information
                 </h3>
                 <p className="text-sm text-gray-400">
-                  Update the details for this category.
+                  Update the details for this collection.
                 </p>
               </div>
             </div>
@@ -158,7 +158,7 @@ export default function EditCategoryPage({ params }) {
                 {/* Name Field */}
                 <div className="space-y-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">
-                    Category Name
+                    Collection Name
                   </label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -198,7 +198,7 @@ export default function EditCategoryPage({ params }) {
                 {/* Image Upload Field */}
                 <div className="space-y-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">
-                    Category Image
+                    Collection Image
                   </label>
                   <div className="relative">
                     <input
@@ -211,11 +211,10 @@ export default function EditCategoryPage({ params }) {
                     />
                     <label
                       htmlFor="image-upload"
-                      className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-200 ${
-                        imagePreview
+                      className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-200 ${imagePreview
                           ? "border-primary/50 bg-black"
                           : "border-gray-800 bg-black hover:bg-gray-900 hover:border-gray-700"
-                      }`}
+                        }`}
                     >
                       {imagePreview ? (
                         <div className="relative w-full h-full group overflow-hidden rounded-2xl">
@@ -364,7 +363,7 @@ export default function EditCategoryPage({ params }) {
                       Updating...
                     </>
                   ) : (
-                    "Update Category"
+                    "Update Collection"
                   )}
                 </button>
               </div>

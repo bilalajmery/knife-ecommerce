@@ -200,7 +200,7 @@ export default function CreateProductPage() {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold text-white">Basic Information</h3>
-                                    <p className="text-sm text-gray-400">Name, Category, and Pricing</p>
+                                    <p className="text-sm text-gray-400">Name, Collection, and Pricing</p>
                                 </div>
                             </div>
 
@@ -219,7 +219,7 @@ export default function CreateProductPage() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Category</label>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Collection</label>
                                     <select
                                         name="categoryId"
                                         value={formData.categoryId}
@@ -227,7 +227,7 @@ export default function CreateProductPage() {
                                         required
                                         className="block w-full px-4 py-3 bg-black border border-gray-800 rounded-xl text-white focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                                     >
-                                        <option value="">Select Category</option>
+                                        <option value="">Select Collection</option>
                                         {categories.map(cat => (
                                             <option key={cat._id} value={cat._id}>{cat.name}</option>
                                         ))}

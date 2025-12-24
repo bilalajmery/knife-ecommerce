@@ -1,9 +1,13 @@
 import ProductDetailPage from "@/app/pages/product-detail";
 
 // This function generates metadata for the page
-export async function generateMetadata({ params }) {
+// This function generates metadata for the page
+export async function generateMetadata(props) {
+  const params = await props.params;
+  console.log("SERVER METADATA: Generating metadata for slug:", params.slug);
+
   // In a real app, fetch product data here
-  // const product = await getProduct(params.id);
+  // const product = await getProduct(params.slug);
 
   // For now, using static data to match the mock data in ProductDetailPage
   const productName = "Damascus Hunter";
@@ -21,6 +25,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function Page({ params }) {
+export default async function Page(props) {
+  const params = await props.params;
+  console.log("SERVER PAGE: Rendering product detail for slug:", params?.slug);
   return <ProductDetailPage params={params} />;
 }

@@ -16,6 +16,7 @@ const bestSellers = [
     hoverImage: "/hero-tactical.png",
     badge: "Best Seller",
     originalPrice: 150,
+    slug: "damascus-hunter",
   },
   {
     id: 2,
@@ -26,6 +27,7 @@ const bestSellers = [
     hoverImage: "/hero-knife.png",
     badge: "Top Rated",
     originalPrice: 200,
+    slug: "chefs-choice",
   },
   {
     id: 3,
@@ -35,6 +37,7 @@ const bestSellers = [
     image: "/hero-tactical.png",
     hoverImage: "/hero-kitchen.png",
     badge: "New",
+    slug: "tactical-ops",
   },
   {
     id: 4,
@@ -44,6 +47,7 @@ const bestSellers = [
     image: "/hero-knife.png",
     hoverImage: "/hero-tactical.png",
     badge: "Trending",
+    slug: "bushcraft-pro",
   },
   {
     id: 5,
@@ -53,6 +57,7 @@ const bestSellers = [
     image: "/hero-tactical.png",
     hoverImage: "/hero-knife.png",
     badge: "",
+    slug: "folding-edc",
   },
   {
     id: 11,
@@ -62,6 +67,7 @@ const bestSellers = [
     image: "/hero-knife.png",
     hoverImage: "/hero-tactical.png",
     badge: "Popular",
+    slug: "survival-master",
   },
   {
     id: 12,
@@ -71,6 +77,7 @@ const bestSellers = [
     image: "/hero-tactical.png",
     hoverImage: "/hero-knife.png",
     badge: "Elite",
+    slug: "combat-elite",
   },
   {
     id: 13,
@@ -80,6 +87,7 @@ const bestSellers = [
     image: "/hero-kitchen.png",
     hoverImage: "/hero-tactical.png",
     badge: "",
+    slug: "forest-ranger",
   },
 ];
 
@@ -92,6 +100,7 @@ const newArrivals = [
     image: "/hero-tactical.png",
     hoverImage: "/hero-knife.png",
     badge: "New Arrival",
+    slug: "stealth-fighter",
   },
   {
     id: 7,
@@ -101,6 +110,7 @@ const newArrivals = [
     image: "/hero-kitchen.png",
     hoverImage: "/hero-tactical.png",
     badge: "New Arrival",
+    slug: "santoku-master",
   },
   {
     id: 8,
@@ -110,6 +120,7 @@ const newArrivals = [
     image: "/hero-knife.png",
     hoverImage: "/hero-kitchen.png",
     badge: "New Arrival",
+    slug: "rescue-tool",
   },
   {
     id: 9,
@@ -119,6 +130,7 @@ const newArrivals = [
     image: "/hero-kitchen.png",
     hoverImage: "/hero-knife.png",
     badge: "New Arrival",
+    slug: "fillet-pro",
   },
   {
     id: 10,
@@ -128,6 +140,7 @@ const newArrivals = [
     image: "/hero-tactical.png",
     hoverImage: "/hero-knife.png",
     badge: "New Arrival",
+    slug: "cleaver-beast",
   },
   {
     id: 14,
@@ -137,6 +150,7 @@ const newArrivals = [
     image: "/hero-knife.png",
     hoverImage: "/hero-kitchen.png",
     badge: "New Arrival",
+    slug: "urban-carry",
   },
   {
     id: 15,
@@ -146,6 +160,7 @@ const newArrivals = [
     image: "/hero-tactical.png",
     hoverImage: "/hero-knife.png",
     badge: "New Arrival",
+    slug: "marine-corps",
   },
   {
     id: 16,
@@ -155,10 +170,12 @@ const newArrivals = [
     image: "/hero-kitchen.png",
     hoverImage: "/hero-tactical.png",
     badge: "New Arrival",
+    slug: "sushi-pro",
   },
 ];
 
-export default function HomePage() {
+export default function HomePage({ newArrivalsData }) {
+  const displayNewArrivals = newArrivalsData && newArrivalsData.length > 0 ? newArrivalsData : newArrivals;
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
       <Navbar />
@@ -341,7 +358,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {newArrivals.map((product) => (
+            {displayNewArrivals.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

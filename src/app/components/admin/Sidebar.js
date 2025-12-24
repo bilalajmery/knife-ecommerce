@@ -53,7 +53,7 @@ export default function Sidebar() {
           icon={TagIcon}
           active={pathname === "/admin/categories"}
         >
-          Categories
+          Collections
         </NavItem>
         <NavItem
           href="/admin/products"
@@ -111,8 +111,8 @@ function NavItem({ href, icon: Icon, children, active }) {
     <Link
       href={href}
       className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${active
-          ? "bg-primary text-white shadow-lg shadow-primary/25"
-          : "text-gray-400 hover:text-white hover:bg-gray-900"
+        ? "bg-primary text-white shadow-lg shadow-primary/25"
+        : "text-gray-400 hover:text-white hover:bg-gray-900"
         }`}
     >
       <Icon className="h-5 w-5 mr-3" />

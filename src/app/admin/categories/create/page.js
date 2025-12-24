@@ -63,7 +63,7 @@ export default function CreateCategoryPage() {
         throw new Error(result.message || "Failed to create category");
       }
 
-      showAlert("success", "Success", "Category created successfully").then(
+      showAlert("success", "Success", "Collection created successfully").then(
         () => {
           router.push("/admin/categories");
         }
@@ -90,10 +90,10 @@ export default function CreateCategoryPage() {
           </button>
           <div>
             <h2 className="text-3xl font-bold tracking-tight">
-              Create New Category
+              Create New Collection
             </h2>
             <p className="text-gray-400 mt-1">
-              Add a new product category to the store.
+              Add a new product collection to the store.
             </p>
           </div>
         </header>
@@ -106,10 +106,10 @@ export default function CreateCategoryPage() {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white">
-                  Category Information
+                  Collection Information
                 </h3>
                 <p className="text-sm text-gray-400">
-                  Enter the details for the new category.
+                  Enter the details for the new collection.
                 </p>
               </div>
             </div>
@@ -119,7 +119,7 @@ export default function CreateCategoryPage() {
                 {/* Name Field */}
                 <div className="space-y-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">
-                    Category Name
+                    Collection Name
                   </label>
                   <div className="relative group">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -153,7 +153,7 @@ export default function CreateCategoryPage() {
                       required
                       rows={4}
                       className="block w-full pl-11 pr-4 py-3 bg-black border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none"
-                      placeholder="Describe the category..."
+                      placeholder="Describe the collection..."
                     />
                   </div>
                 </div>
@@ -161,7 +161,7 @@ export default function CreateCategoryPage() {
                 {/* Image Upload Field */}
                 <div className="space-y-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">
-                    Category Image
+                    Collection Image
                   </label>
                   <div className="relative">
                     <input
@@ -175,11 +175,10 @@ export default function CreateCategoryPage() {
                     />
                     <label
                       htmlFor="image-upload"
-                      className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-200 ${
-                        imagePreview
+                      className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-200 ${imagePreview
                           ? "border-primary/50 bg-black"
                           : "border-gray-800 bg-black hover:bg-gray-900 hover:border-gray-700"
-                      }`}
+                        }`}
                     >
                       {imagePreview ? (
                         <div className="relative w-full h-full group overflow-hidden rounded-2xl">
@@ -328,7 +327,7 @@ export default function CreateCategoryPage() {
                       Creating...
                     </>
                   ) : (
-                    "Create Category"
+                    "Create Collection"
                   )}
                 </button>
               </div>

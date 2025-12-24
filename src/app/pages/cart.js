@@ -14,6 +14,7 @@ const initialCart = [
     category: "Hunting",
     image: "/hero-knife.png",
     quantity: 1,
+    slug: "damascus-hunter",
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ const initialCart = [
     category: "Kitchen",
     image: "/hero-kitchen.png",
     quantity: 2,
+    slug: "chefs-choice",
   },
 ];
 
@@ -96,9 +98,8 @@ export default function CartPage() {
                   <span className="text-sm font-bold uppercase tracking-wide text-gray-300">
                     {subtotal >= freeShippingThreshold
                       ? "You've unlocked Free Shipping!"
-                      : `Add $${
-                          freeShippingThreshold - subtotal
-                        } more for Free Shipping`}
+                      : `Add $${freeShippingThreshold - subtotal
+                      } more for Free Shipping`}
                   </span>
                   <span className="text-sm font-bold text-primary">
                     {Math.round(progress)}%
@@ -140,7 +141,7 @@ export default function CartPage() {
                       <div>
                         <h3 className="text-lg font-bold uppercase tracking-wide text-white mb-1">
                           <Link
-                            href={`/product/${item.id}`}
+                            href={`/product/${item.slug || item.id}`}
                             className="hover:text-primary transition-colors"
                           >
                             {item.name}

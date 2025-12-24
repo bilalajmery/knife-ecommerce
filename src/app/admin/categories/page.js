@@ -86,9 +86,9 @@ export default function CategoriesPage() {
 
         if (res.ok) {
           fetchCategories();
-          showAlert("success", "Deleted!", "Category has been deleted.");
+          showAlert("success", "Deleted!", "Collection has been deleted.");
         } else {
-          showAlert("error", "Error", "Failed to delete category");
+          showAlert("error", "Error", "Failed to delete collection");
         }
       } catch (error) {
         console.error("Delete failed", error);
@@ -107,10 +107,10 @@ export default function CategoriesPage() {
         <header className="flex justify-between items-center mb-8">
           <div>
             <h2 className="text-3xl font-bold tracking-tight">
-              Category Management
+              Collection Ward
             </h2>
             <p className="text-gray-400 mt-1">
-              Manage product categories and organization
+              Manage product collections and organization
             </p>
           </div>
           <button
@@ -118,7 +118,7 @@ export default function CategoriesPage() {
             className="flex items-center px-6 py-3 bg-primary text-white rounded-xl hover:bg-red-700 transition-all font-bold text-sm uppercase tracking-wider shadow-lg shadow-primary/20 hover:shadow-primary/40"
           >
             <PlusIcon className="h-5 w-5 mr-2" />
-            Add Category
+            Add Collection
           </button>
         </header>
 
@@ -130,7 +130,7 @@ export default function CategoriesPage() {
             </div>
             <input
               type="text"
-              placeholder="Search categories..."
+              placeholder="Search collections..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="block w-full pl-11 pr-4 py-3 bg-black border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
@@ -193,11 +193,10 @@ export default function CategoriesPage() {
                       </td>
                       <td className="px-6 py-5">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${
-                            category.status === "active"
+                          className={`px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${category.status === "active"
                               ? "bg-green-500/10 text-green-500 border-green-500/20"
                               : "bg-red-500/10 text-red-500 border-red-500/20"
-                          }`}
+                            }`}
                         >
                           {category.status}
                         </span>
@@ -235,7 +234,7 @@ export default function CategoriesPage() {
                       <div className="flex flex-col items-center justify-center">
                         <MagnifyingGlassIcon className="h-12 w-12 text-gray-700 mb-4" />
                         <p className="text-lg font-medium text-gray-400">
-                          No categories found
+                          No collections found
                         </p>
                         <p className="text-sm text-gray-600">
                           Try adjusting your search or filters

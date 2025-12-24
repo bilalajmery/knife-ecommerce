@@ -8,16 +8,22 @@ export default function ProductCard({ product, className = "", onRemove }) {
     product.discount ||
     (product.originalPrice && product.price
       ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) *
-            100
-        )
+        ((product.originalPrice - product.price) / product.originalPrice) *
+        100
+      )
       : 0);
+
+  // Calculate prices based on discount
+  const originalPrice = product.originalPrice || (product.discount > 0 ? product.price : null);
+  const finalPrice = product.discount > 0
+    ? product.price * (1 - product.discount / 100)
+    : product.price;
 
   return (
     <div className={`group/card relative ${className}`}>
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg mb-4">
-        <Link href={`/product/${product.id}`} className="block h-full w-full">
+        <Link href={`/product/${product.slug}`} className="block h-full w-full">
           {/* Main Image */}
           <div className="absolute inset-0 transition-opacity duration-500 z-10 group-hover/card:opacity-0">
             {product.image ? (
@@ -146,18 +152,18 @@ export default function ProductCard({ product, className = "", onRemove }) {
               {product.category || "Knives"}
             </p>
             <h3 className="text-sm font-medium text-gray-200 truncate group-hover/card:text-primary transition-colors">
-              <Link href={`/product/${product.id}`}>{product.name}</Link>
+              <Link href={`/product/${product.slug}`}>{product.name}</Link>
             </h3>
           </div>
         </div>
 
         <div className="flex items-center gap-2 mt-1">
           <span className="text-sm font-bold text-gray-200 group-hover/card:text-primary transition-colors">
-            ${product.price}
+            ${finalPrice.toFixed(2)}
           </span>
-          {product.originalPrice && product.originalPrice > product.price && (
-            <span className="text-xs text-gray-200 line-through group-hover/card:text-primary transition-colors">
-              ${product.originalPrice}
+          {originalPrice && (
+            <span className="text-xs text-gray-500 line-through group-hover/card:text-primary transition-colors">
+              ${Number(originalPrice).toFixed(2)}
             </span>
           )}
         </div>
