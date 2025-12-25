@@ -10,12 +10,14 @@ import { toast } from "sonner";
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, addToCart, loading, applyPromo, removePromo } = useCart();
   const [promoCode, setPromoCode] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [appliedPromo, setAppliedPromo] = useState("");
   const [randomProducts, setRandomProducts] = useState([]);
 
-  console.log("CartPage Render. Cart:", cart);
-  console.log("CartPage State - Discount:", discount, "Applied:", appliedPromo);
+  // Derived state from cart context
+  const appliedPromo = cart?.appliedPromo || "";
+  const discount = cart?.discount || 0;
+
+  console.log("CartPage Render. Cart:", JSON.stringify(cart));
+  console.log("Derived State - Discount:", discount, "Applied:", appliedPromo);
 
   useEffect(() => {
     async function fetchRandomProducts() {
@@ -31,17 +33,6 @@ export default function CartPage() {
     }
     fetchRandomProducts();
   }, []);
-
-  // Sync state with cart data
-  useEffect(() => {
-    if (cart.appliedPromo) {
-      setAppliedPromo(cart.appliedPromo);
-      setDiscount(cart.discount || 0);
-    } else {
-      setAppliedPromo("");
-      setDiscount(0);
-    }
-  }, [cart]);
 
   const handleAddToCart = async (product) => {
     await addToCart(product, 1);
@@ -89,7 +80,8 @@ export default function CartPage() {
   const freeShippingThreshold = 150;
   const shipping = subtotal > freeShippingThreshold ? 0 : 15;
   const discountAmount = (subtotal * discount) / 100;
-  const total = subtotal + shipping - discountAmount;
+  // Use context's total if available, otherwise calculate locally
+  const total = cart.totalAmount || (subtotal + shipping - discountAmount);
   const progress = Math.min((subtotal / freeShippingThreshold) * 100, 100);
 
   return (

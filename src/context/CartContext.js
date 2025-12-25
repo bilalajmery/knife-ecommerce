@@ -5,7 +5,8 @@ import { toast } from "sonner";
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-    const [cart, setCart] = useState({ items: [], totalPrice: 0 });
+    const [cart, setCart] = useState({ items: [], totalPrice: 0, appliedPromo: null, discount: 0 });
+    console.log("CartProvider Render:", JSON.stringify(cart));
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -42,7 +43,9 @@ export function CartProvider({ children }) {
                 // Load from LocalStorage
                 const localCart = localStorage.getItem("guestCart");
                 if (localCart) {
-                    setCart(JSON.parse(localCart));
+                    const parsed = JSON.parse(localCart);
+                    // Ensure keys exist
+                    setCart(prev => ({ ...prev, ...parsed, appliedPromo: parsed.appliedPromo || null, discount: parsed.discount || 0 }));
                 }
             }
             setLoading(false);
@@ -54,6 +57,7 @@ export function CartProvider({ children }) {
     // Update LocalStorage whenever cart changes (only for guests)
     useEffect(() => {
         if (!user && !loading) {
+            console.log("CONTEXT: Saving to LS:", cart);
             localStorage.setItem("guestCart", JSON.stringify(cart));
         }
     }, [cart, user, loading]);
@@ -117,8 +121,12 @@ export function CartProvider({ children }) {
                 }
 
                 // Recalculate total
-                const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                return { ...prev, items, totalPrice };
+                const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const discount = prev.discount || 0;
+                const shipping = subtotal > 150 ? 0 : 15;
+                const totalAmount = subtotal + shipping - (subtotal * discount) / 100;
+
+                return { ...prev, items, totalPrice: subtotal, totalAmount };
             });
         }
     };
@@ -145,8 +153,11 @@ export function CartProvider({ children }) {
         } else {
             setCart((prev) => {
                 const items = prev.items.filter(item => (item.product._id || item.product.id || item.product) !== productId);
-                const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                return { ...prev, items, totalPrice };
+                const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const discount = prev.discount || 0;
+                const shipping = subtotal > 150 ? 0 : 15;
+                const totalAmount = subtotal + shipping - (subtotal * discount) / 100;
+                return { ...prev, items, totalPrice: subtotal, totalAmount };
             });
         }
     };
@@ -180,8 +191,11 @@ export function CartProvider({ children }) {
                 if (index > -1) {
                     items[index].quantity = quantity;
                 }
-                const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                return { ...prev, items, totalPrice };
+                const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const discount = prev.discount || 0;
+                const shipping = subtotal > 150 ? 0 : 15;
+                const totalAmount = subtotal + shipping - (subtotal * discount) / 100;
+                return { ...prev, items, totalPrice: subtotal, totalAmount };
             });
         }
     };
@@ -206,12 +220,18 @@ export function CartProvider({ children }) {
                     console.log("CONTEXT: Updating Guest Cart State");
                     // Update local state for guests
                     setCart(prev => {
+                        const subtotal = prev.totalPrice || 0;
+                        const discount = Number(data.discount);
+                        const shipping = subtotal > 150 ? 0 : 15;
+                        const totalAmount = subtotal + shipping - (subtotal * discount) / 100;
+
                         const newState = {
                             ...prev,
                             appliedPromo: code,
-                            discount: data.discount
+                            discount: discount,
+                            totalAmount: totalAmount
                         };
-                        console.log("CONTEXT: New Guest Cart State:", newState);
+                        console.log("CONTEXT: SETTING STATE TO V2:", JSON.stringify(newState));
                         return newState;
                     });
                 }

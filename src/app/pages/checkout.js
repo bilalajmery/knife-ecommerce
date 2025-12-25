@@ -420,8 +420,8 @@ export default function CheckoutPage() {
                 </div>
                 {cart.appliedPromo && cart.discount > 0 && (
                   <div className="flex justify-between text-green-500 text-sm">
-                    <span>Discount ({cart.appliedPromo.code})</span>
-                    <span className="font-bold">-${cart.discount.toFixed(2)}</span>
+                    <span>Discount ({typeof cart.appliedPromo === 'object' ? cart.appliedPromo.code : cart.appliedPromo})</span>
+                    <span className="font-bold">-${discountAmount.toFixed(2)}</span>
                   </div>
                 )}
               </div>

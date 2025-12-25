@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
@@ -132,6 +132,8 @@ const categories = [
 const ITEMS_PER_PAGE = 9;
 
 export default function ShopPage() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [minPrice, setMinPrice] = useState("");
@@ -141,12 +143,29 @@ export default function ShopPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch("/api/products?limit=100");
+        const data = await res.json();
+        if (data.success) {
+          setProducts(data.products);
+        }
+      } catch (err) {
+        console.error("Failed to fetch products", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
   const filteredProducts = useMemo(() => {
-    let result = [...allProducts];
+    let result = [...products];
 
     // Category Filter
     if (activeCategory !== "All") {
-      result = result.filter((product) => product.category === activeCategory);
+      result = result.filter((product) => product.category?.name === activeCategory || product.category === activeCategory);
     }
 
     // Search Filter
@@ -182,16 +201,16 @@ export default function ShopPage() {
         result.sort((a, b) => b.price - a.price);
         break;
       case "oldest":
-        result.sort((a, b) => a.id - b.id);
+        result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt) || a._id.localeCompare(b._id));
         break;
       case "newest":
       default:
-        result.sort((a, b) => b.id - a.id);
+        result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt) || b._id.localeCompare(a._id));
         break;
     }
 
     return result;
-  }, [activeCategory, searchQuery, minPrice, maxPrice, onlyDiscounted, sortBy]);
+  }, [products, activeCategory, searchQuery, minPrice, maxPrice, onlyDiscounted, sortBy]);
 
   // Pagination Logic
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
@@ -201,7 +220,7 @@ export default function ShopPage() {
   );
 
   // Reset page when filters change
-  useMemo(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [activeCategory, searchQuery, minPrice, maxPrice, onlyDiscounted, sortBy]);
 
@@ -245,9 +264,8 @@ export default function ShopPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <aside
-            className={`lg:w-1/4 space-y-8 ${
-              showFilters ? "block" : "hidden lg:block"
-            }`}
+            className={`lg:w-1/4 space-y-8 ${showFilters ? "block" : "hidden lg:block"
+              }`}
           >
             {/* Search */}
             <div>
@@ -273,11 +291,10 @@ export default function ShopPage() {
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`block w-full text-left text-sm transition-colors ${
-                      activeCategory === cat
-                        ? "text-primary font-bold"
-                        : "text-gray-400 hover:text-white"
-                    }`}
+                    className={`block w-full text-left text-sm transition-colors ${activeCategory === cat
+                      ? "text-primary font-bold"
+                      : "text-gray-400 hover:text-white"
+                      }`}
                   >
                     {cat}
                   </button>
@@ -355,7 +372,7 @@ export default function ShopPage() {
             {/* Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {paginatedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product._id} product={product} />
               ))}
             </div>
 
@@ -393,11 +410,10 @@ export default function ShopPage() {
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
-                        className={`w-10 h-10 rounded-md font-bold transition-colors ${
-                          currentPage === page
-                            ? "bg-primary text-white"
-                            : "bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-white"
-                        }`}
+                        className={`w-10 h-10 rounded-md font-bold transition-colors ${currentPage === page
+                          ? "bg-primary text-white"
+                          : "bg-gray-900 text-gray-400 hover:bg-gray-800 hover:text-white"
+                          }`}
                       >
                         {page}
                       </button>
