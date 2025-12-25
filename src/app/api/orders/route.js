@@ -15,7 +15,8 @@ export async function POST(req) {
             paymentMethod,
             total,
             discount,
-            appliedPromo // passed from frontend, but we should verify with DB
+            appliedPromo,
+            paymentId
         } = body;
 
         // Basic Validation
@@ -62,6 +63,7 @@ export async function POST(req) {
             items,
             shippingAddress,
             paymentMethod,
+            paymentId,
             total,
             discount: discount || 0,
             status: "pending",
