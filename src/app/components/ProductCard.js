@@ -26,9 +26,9 @@ export default function ProductCard({ product, className = "", onRemove }) {
         <Link href={`/product/${product.slug}`} className="block h-full w-full">
           {/* Main Image */}
           <div className="absolute inset-0 transition-opacity duration-500 z-10 group-hover/card:opacity-0">
-            {product.image ? (
+            {(product.mainImage || product.image) ? (
               <Image
-                src={product.image}
+                src={product.mainImage || product.image}
                 alt={product.name}
                 fill
                 className="object-cover"
@@ -44,7 +44,7 @@ export default function ProductCard({ product, className = "", onRemove }) {
           {/* Hover Image */}
           <div className="absolute inset-0 transition-opacity duration-500 opacity-0 group-hover/card:opacity-100 z-10">
             <Image
-              src={product.hoverImage || product.image || "/placeholder.png"}
+              src={product.hoverImage || product.mainImage || product.image || "/placeholder.png"}
               alt={`${product.name} hover`}
               fill
               className="object-cover scale-105 transition-transform duration-700"
@@ -149,7 +149,7 @@ export default function ProductCard({ product, className = "", onRemove }) {
         <div className="flex justify-between items-start">
           <div className="flex-1 min-w-0">
             <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-              {product.category || "Knives"}
+              {product.category?.name || product.category || "Knives"}
             </p>
             <h3 className="text-sm font-medium text-gray-200 truncate group-hover/card:text-primary transition-colors">
               <Link href={`/product/${product.slug}`}>{product.name}</Link>

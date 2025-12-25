@@ -2,54 +2,17 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useCart } from "@/context/CartContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const pathname = usePathname();
-
-  useEffect(() => {
-    const checkSession = () => {
-      const storedData = localStorage.getItem("user");
-      if (storedData) {
-        const parsedData = JSON.parse(storedData);
-
-        // Check if session has expired
-        if (parsedData.expiry && Date.now() > parsedData.expiry) {
-          localStorage.removeItem("user");
-          setUser(null);
-        } else {
-          setUser(parsedData);
-        }
-      } else {
-        setUser(null);
-      }
-    };
-
-    // Check on mount
-    checkSession();
-
-    // Listen for storage events
-    const handleStorageChange = () => {
-      checkSession();
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    // Optional: Check periodically (e.g., every minute) to auto-logout
-    const interval = setInterval(checkSession, 60000);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      clearInterval(interval);
-    };
-  }, []);
+  const { cart, user, logout } = useCart();
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
+    logout();
     setIsUserMenuOpen(false);
     window.location.href = "/"; // Redirect to home
   };
@@ -78,6 +41,9 @@ export default function Navbar() {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, [isUserMenuOpen]);
+
+  // Calculate total items
+  const cartItemCount = cart.items.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <nav
@@ -110,8 +76,8 @@ export default function Navbar() {
                       key={item}
                       href={href}
                       className={`relative group px-3 py-2 text-sm font-bold uppercase tracking-widest transition-colors ${isActive
-                          ? "text-primary"
-                          : "text-gray-300 hover:text-white"
+                        ? "text-primary"
+                        : "text-gray-300 hover:text-white"
                         }`}
                     >
                       {item}
@@ -168,9 +134,11 @@ export default function Navbar() {
                   d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                 />
               </svg>
-              <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                2
-              </span>
+              {cartItemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItemCount}
+                </span>
+              )}
             </Link>
 
             {/* User Dropdown (Desktop) */}

@@ -8,10 +8,12 @@ import Footer from "@/app/components/Footer";
 import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { useCart } from "@/context/CartContext";
 
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { syncCart } = useCart();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -66,8 +68,12 @@ function LoginContent() {
           ? Date.now() + 365 * 24 * 60 * 60 * 1000
           : Date.now() + 24 * 60 * 60 * 1000;
 
-        localStorage.setItem("user", JSON.stringify({ ...data.user, expiry }));
+        const userData = { ...data.user, expiry };
+        localStorage.setItem("user", JSON.stringify(userData));
         window.dispatchEvent(new Event("storage"));
+
+        // Sync Cart
+        await syncCart(userData);
       }
       router.push("/");
     } catch (err) {
@@ -111,8 +117,12 @@ function LoginContent() {
       if (data.user) {
         // Default 24 hours for Google Sign In
         const expiry = Date.now() + 24 * 60 * 60 * 1000;
-        localStorage.setItem("user", JSON.stringify({ ...data.user, expiry }));
+        const userData = { ...data.user, expiry };
+        localStorage.setItem("user", JSON.stringify(userData));
         window.dispatchEvent(new Event("storage"));
+
+        // Sync Cart
+        await syncCart(userData);
       }
 
       router.push("/");

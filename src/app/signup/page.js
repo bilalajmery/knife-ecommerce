@@ -8,9 +8,11 @@ import Footer from "@/app/components/Footer";
 import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { useCart } from "@/context/CartContext";
 
 function RegisterContent() {
   const router = useRouter();
+  const { syncCart } = useCart();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -63,6 +65,7 @@ function RegisterContent() {
           `/verify-email?email=${encodeURIComponent(formData.email)}`
         );
       } else {
+        // If auto-login happens after signup (implied by redirect to signin?registered=true, likely simpler flow is better)
         router.push("/signin?registered=true");
       }
     } catch (err) {
@@ -105,8 +108,12 @@ function RegisterContent() {
       if (data.user) {
         // Default 24 hours for Google Sign In
         const expiry = Date.now() + 24 * 60 * 60 * 1000;
-        localStorage.setItem("user", JSON.stringify({ ...data.user, expiry }));
+        const userData = { ...data.user, expiry };
+        localStorage.setItem("user", JSON.stringify(userData));
         window.dispatchEvent(new Event("storage"));
+
+        // Sync Cart
+        await syncCart(userData);
       }
 
       router.push("/"); // Redirect to home after successful login
