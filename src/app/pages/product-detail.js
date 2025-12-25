@@ -247,10 +247,11 @@ export default function ProductDetailPage({ params }) {
               </div>
             )}
 
-            <div
-              className="text-gray-300 leading-relaxed mb-8 prose prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: product.description }}
-            />
+<div className="max-w-lg overflow-hidden">            
+  <div
+  className="text-gray-300 leading-relaxed mb-8 prose prose-invert"
+  dangerouslySetInnerHTML={{ __html: product.description }}
+/></div>
 
             {/* Features List - Rendered as HTML - HIDDEN IF EMPTY */}
             {product.features && (
