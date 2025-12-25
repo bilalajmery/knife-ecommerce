@@ -40,8 +40,11 @@ const OrderSchema = new mongoose.Schema(
         },
         paymentMethod: {
             type: String,
-            enum: ["cod", "card"],
+            enum: ["cod", "card", "stripe"],
             default: "cod",
+        },
+        paymentId: {
+            type: String,
         },
         total: {
             type: Number,
