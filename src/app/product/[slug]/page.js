@@ -1,28 +1,43 @@
 import ProductDetailPage from "@/app/pages/product-detail";
+import dbConnect from "@/lib/db";
+import Product from "@/models/Product";
 
 // This function generates metadata for the page
 // This function generates metadata for the page
 export async function generateMetadata(props) {
   const params = await props.params;
-  console.log("SERVER METADATA: Generating metadata for slug:", params.slug);
 
-  // In a real app, fetch product data here
-  // const product = await getProduct(params.slug);
+  try {
+    await dbConnect();
+    const product = await Product.findOne({ slug: params.slug }).select("name description metaTitle metaDescription mainImage");
 
-  // For now, using static data to match the mock data in ProductDetailPage
-  const productName = "Damascus Hunter";
-  const productDescription =
-    "Hand-forged with 67 layers of premium Damascus steel, this hunting knife is a masterpiece of craftsmanship.";
+    if (!product) {
+      return {
+        title: "Product Not Found | KnifeMaster",
+        description: "The requested product could not be found.",
+      };
+    }
 
-  return {
-    title: `${productName} | KnifeMaster`,
-    description: productDescription,
-    openGraph: {
-      title: `${productName} | KnifeMaster`,
-      description: productDescription,
-      images: ["/hero-knife.png"], // Replace with actual product image URL
-    },
-  };
+    const title = product.metaTitle || `${product.name} | KnifeMaster`;
+    const description = product.metaDescription || product.description?.substring(0, 160) || "Premium Hand-Forged Knives";
+    const image = product.mainImage || "/hero-knife.png";
+
+    return {
+      title: title,
+      description: description,
+      openGraph: {
+        title: title,
+        description: description,
+        images: [image],
+      },
+    };
+  } catch (error) {
+    console.error("METADATA ERROR:", error);
+    return {
+      title: "KnifeMaster | Premium Hand-Forged Knives",
+      description: "Experience the pinnacle of craftsmanship.",
+    };
+  }
 }
 
 export default async function Page(props) {

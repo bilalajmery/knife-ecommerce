@@ -13,13 +13,13 @@ export async function GET(request, { params }) {
         await dbConnect();
 
         // Log what we are looking for
-        console.log(`Searching for product with slug: "${slug}"`);
+        // console.log(`Searching for product with slug: "${slug}"`);
 
         const product = await Product.findOne({ slug: slug })
             .populate("category")
             .lean();
 
-        console.log("Product found:", product ? "YES" : "NO");
+        // console.log("Product found:", product ? "YES" : "NO");
 
         if (!product) {
             return NextResponse.json(

@@ -6,6 +6,8 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import ProductCard from "@/app/components/ProductCard";
 
+import { useCart } from "@/context/CartContext";
+
 export default function ProductDetailPage({ params }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,6 +15,15 @@ export default function ProductDetailPage({ params }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("specifications");
+  const { addToCart } = useCart();
+
+  const handleAddToCart = async () => {
+    if (product) {
+      await addToCart(product, quantity);
+      // Optional: Add a toast notification here
+      // alert(`Added ${quantity} ${product.name} to cart`);
+    }
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -58,21 +69,45 @@ export default function ProductDetailPage({ params }) {
     fetchProduct();
   }, [params]);
 
-  // Mock related products for now (or fetch them as well)
-  const relatedProducts = [
-    {
-      id: 2,
-      name: "Chef's Choice",
-      price: 189,
-      category: "Kitchen",
-      image: "/hero-kitchen.png",
-      hoverImage: "/hero-knife.png",
-      badge: "Top Rated",
-      originalPrice: 200,
-      slug: "chefs-choice" // Add mock slugs
-    },
-    // ... add more if needed
-  ];
+  // Fetch related products when product is loaded
+  useEffect(() => {
+    if (!product) return;
+
+    const fetchRelated = async () => {
+      try {
+        const categoryId = product.category?._id || product.category; // Handle populated or unpopulated
+        if (!categoryId) return;
+
+        const res = await fetch(`/api/products?category=${categoryId}&exclude=${product._id}&limit=4`);
+        const data = await res.json();
+
+        if (data.success) {
+          setRelatedProducts(data.products);
+        }
+      } catch (err) {
+        console.error("Failed to fetch related products", err);
+      }
+    };
+
+    fetchRelated();
+  }, [product]);
+
+  // Determine available tabs based on product data (safe to run always, empty if no product)
+  const availableTabs = product ? [
+    { id: 'specifications', label: 'Specifications', content: product.specifications },
+    { id: 'materials', label: 'Materials', content: product.materials },
+    { id: 'dimensions', label: 'Dimensions', content: product.dimensions },
+    { id: 'usage', label: 'Usage', content: product.usage },
+  ].filter(tab => tab.content) : [];
+
+  // Set active tab to first available on load, if not already set correctly
+  useEffect(() => {
+    if (availableTabs.length > 0 && !availableTabs.find(t => t.id === activeTab)) {
+      setActiveTab(availableTabs[0].id);
+    }
+  }, [availableTabs, activeTab]);
+
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   if (loading) {
     return (
@@ -109,6 +144,8 @@ export default function ProductDetailPage({ params }) {
   const images = product.galleryImages && product.galleryImages.length > 0
     ? product.galleryImages
     : [product.mainImage, product.hoverImage].filter(Boolean);
+
+
 
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
@@ -215,7 +252,7 @@ export default function ProductDetailPage({ params }) {
               dangerouslySetInnerHTML={{ __html: product.description }}
             />
 
-            {/* Features List - Rendered as HTML */}
+            {/* Features List - Rendered as HTML - HIDDEN IF EMPTY */}
             {product.features && (
               <div className="mb-8">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4">
@@ -249,7 +286,10 @@ export default function ProductDetailPage({ params }) {
                   +
                 </button>
               </div>
-              <button className="flex-1 bg-primary text-white font-bold uppercase tracking-widest py-4 px-8 rounded-md hover:bg-red-700 transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+              <button
+                onClick={handleAddToCart}
+                className="flex-1 bg-primary text-white font-bold uppercase tracking-widest py-4 px-8 rounded-md hover:bg-red-700 transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
@@ -292,60 +332,35 @@ export default function ProductDetailPage({ params }) {
           </div>
         </div>
 
-        {/* Product Details Tabs */}
-        <div className="mb-20">
-          <div className="border-b border-gray-800 mb-8 overflow-x-auto">
-            <nav className="flex space-x-8 min-w-max">
-              {['specifications', 'materials', 'dimensions', 'usage'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors border-b-2 ${activeTab === tab
-                    ? "border-primary text-primary"
-                    : "border-transparent text-gray-400 hover:text-white hover:border-gray-700"
-                    }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </nav>
-          </div>
+        {/* Product Details Tabs - ONLY SHOW IF TABS EXIST */}
+        {availableTabs.length > 0 && (
+          <div className="mb-20">
+            <div className="border-b border-gray-800 mb-8 overflow-x-auto">
+              <nav className="flex space-x-8 min-w-max">
+                {availableTabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors border-b-2 ${activeTab === tab.id
+                      ? "border-primary text-primary"
+                      : "border-transparent text-gray-400 hover:text-white hover:border-gray-700"
+                      }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
+            </div>
 
-          <div className="min-h-[200px] text-gray-300 leading-relaxed">
-            {activeTab === 'specifications' && product.specifications && (
+            <div className="min-h-[200px] text-gray-300 leading-relaxed">
+              {/* Render content of active tab */}
               <div
                 className="prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: product.specifications }}
+                dangerouslySetInnerHTML={{ __html: availableTabs.find(t => t.id === activeTab)?.content || "" }}
               />
-            )}
-            {activeTab === 'materials' && product.materials && (
-              <div
-                className="prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: product.materials }}
-              />
-            )}
-            {activeTab === 'dimensions' && product.dimensions && (
-              <div
-                className="prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: product.dimensions }}
-              />
-            )}
-            {activeTab === 'usage' && product.usage && (
-              <div
-                className="prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: product.usage }}
-              />
-            )}
-
-            {/* Fallback for empty content */}
-            {((activeTab === 'specifications' && !product.specifications) ||
-              (activeTab === 'materials' && !product.materials) ||
-              (activeTab === 'dimensions' && !product.dimensions) ||
-              (activeTab === 'usage' && !product.usage)) && (
-                <p className="text-gray-500 italic">No information available for this section.</p>
-              )}
+            </div>
           </div>
-        </div>
+        )}
       </main>
 
       {/* Related Products */}
@@ -356,7 +371,7 @@ export default function ProductDetailPage({ params }) {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {relatedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product._id || product.id} product={product} />
             ))}
           </div>
         </div>

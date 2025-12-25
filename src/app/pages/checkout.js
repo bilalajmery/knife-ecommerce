@@ -1,12 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
+import { useCart } from "@/context/CartContext";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const { cart, loading: cartLoading } = useCart();
+  const [submitting, setSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cod"); // 'cod' or 'card'
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -25,17 +32,93 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const cartItems = cart.items || [];
+
+  // Use persisted discount from Cart model if available
+  const appliedDiscount = cart.discount || 0;
+
+  const subtotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
+  // Basic shipping logic (match CartPage)
+  const freeShippingThreshold = 150;
+  const shipping = subtotal > freeShippingThreshold ? 0 : 15;
+  const discountAmount = (subtotal * appliedDiscount) / 100;
+  const total = subtotal + shipping - discountAmount;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle order submission logic here
-    console.log("Order Placed:", { paymentMethod, formData });
-    alert("Order Placed Successfully! (Mock)");
+    setSubmitting(true);
+
+    try {
+      // Basic validation
+      if (cartItems.length === 0) {
+        toast.error("Your cart is empty");
+        setSubmitting(false);
+        return;
+      }
+
+      const orderData = {
+        userId: cart.user, // Assuming cart has user ID linked
+        items: cartItems.map(item => ({
+          product: item.product._id || item.product,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image
+        })),
+        shippingAddress: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          address: formData.address,
+          city: formData.city,
+          zip: formData.zip,
+          country: formData.country
+        },
+        paymentMethod,
+        paymentMethod,
+        total,
+        discount: appliedDiscount,
+        appliedPromo: cart.appliedPromo
+      };
+
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success("Order placed successfully!");
+        // Clear local state if needed, though redirect happens fast
+        setTimeout(() => {
+          router.push(`/thank-you?orderId=${data.orderId}`);
+        }, 1500);
+      } else {
+        toast.error(data.message || "Failed to place order");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("Something went wrong");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  // Mock Cart Data for Summary
-  const cartTotal = 318;
-  const shipping = 0;
-  const total = cartTotal + shipping;
+  if (cartLoading) {
+    return (
+      <div className="bg-black min-h-screen text-white font-sans flex items-center justify-center">
+        <Navbar />
+        <div className="animate-pulse">Loading Checkout...</div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
@@ -177,11 +260,10 @@ export default function CheckoutPage() {
               <div className="space-y-4">
                 {/* Cash on Delivery Option */}
                 <label
-                  className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                    paymentMethod === "cod"
-                      ? "border-primary bg-primary/10"
-                      : "border-gray-800 bg-gray-900/50 hover:border-gray-600"
-                  }`}
+                  className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === "cod"
+                    ? "border-primary bg-primary/10"
+                    : "border-gray-800 bg-gray-900/50 hover:border-gray-600"
+                    }`}
                 >
                   <input
                     type="radio"
@@ -203,11 +285,10 @@ export default function CheckoutPage() {
 
                 {/* Credit Card Option */}
                 <label
-                  className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${
-                    paymentMethod === "card"
-                      ? "border-primary bg-primary/10"
-                      : "border-gray-800 bg-gray-900/50 hover:border-gray-600"
-                  }`}
+                  className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === "card"
+                    ? "border-primary bg-primary/10"
+                    : "border-gray-800 bg-gray-900/50 hover:border-gray-600"
+                    }`}
                 >
                   <input
                     type="radio"
@@ -239,11 +320,10 @@ export default function CheckoutPage() {
 
                 {/* Credit Card Fields (Conditional) */}
                 <div
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    paymentMethod === "card"
-                      ? "max-h-96 opacity-100 mt-4"
-                      : "max-h-0 opacity-0"
-                  }`}
+                  className={`overflow-hidden transition-all duration-300 ease-in-out ${paymentMethod === "card"
+                    ? "max-h-96 opacity-100 mt-4"
+                    : "max-h-0 opacity-0"
+                    }`}
                 >
                   <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 space-y-4">
                     <div className="space-y-2">
@@ -300,48 +380,33 @@ export default function CheckoutPage() {
                 Your Order
               </h2>
 
-              {/* Mock Items List */}
+              {/* Cart Items List */}
               <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                <div className="flex gap-4 items-center">
-                  <div className="relative w-16 h-16 bg-gray-800 rounded overflow-hidden flex-shrink-0">
-                    <Image
-                      src="/hero-knife.png"
-                      alt="Product"
-                      fill
-                      className="object-cover"
-                    />
+                {cartItems.map((item) => (
+                  <div key={item.product._id || item.product} className="flex gap-4 items-center">
+                    <div className="relative w-16 h-16 bg-gray-800 rounded overflow-hidden flex-shrink-0">
+                      <Image
+                        src={item.image || "/placeholder.png"}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-bold text-white">
+                        {item.name}
+                      </h4>
+                      <p className="text-xs text-gray-400">Qty: {item.quantity}</p>
+                    </div>
+                    <span className="text-sm font-bold text-primary">${(item.price * item.quantity).toFixed(2)}</span>
                   </div>
-                  <div className="flex-1">
-                    <h4 className="text-sm font-bold text-white">
-                      Damascus Hunter
-                    </h4>
-                    <p className="text-xs text-gray-400">Qty: 1</p>
-                  </div>
-                  <span className="text-sm font-bold text-primary">$129</span>
-                </div>
-                <div className="flex gap-4 items-center">
-                  <div className="relative w-16 h-16 bg-gray-800 rounded overflow-hidden flex-shrink-0">
-                    <Image
-                      src="/hero-kitchen.png"
-                      alt="Product"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-sm font-bold text-white">
-                      Chef's Choice
-                    </h4>
-                    <p className="text-xs text-gray-400">Qty: 2</p>
-                  </div>
-                  <span className="text-sm font-bold text-primary">$189</span>
-                </div>
+                ))}
               </div>
 
               <div className="space-y-3 mb-6 border-t border-gray-800 pt-4">
                 <div className="flex justify-between text-gray-400 text-sm">
                   <span>Subtotal</span>
-                  <span className="text-white font-bold">${cartTotal}</span>
+                  <span className="text-white font-bold">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-400 text-sm">
                   <span>Shipping</span>
@@ -349,26 +414,33 @@ export default function CheckoutPage() {
                     {shipping === 0 ? (
                       <span className="text-green-500">Free</span>
                     ) : (
-                      `$${shipping}`
+                      `$${shipping.toFixed(2)}`
                     )}
                   </span>
                 </div>
+                {cart.appliedPromo && cart.discount > 0 && (
+                  <div className="flex justify-between text-green-500 text-sm">
+                    <span>Discount ({cart.appliedPromo.code})</span>
+                    <span className="font-bold">-${cart.discount.toFixed(2)}</span>
+                  </div>
+                )}
               </div>
 
               <div className="border-t border-gray-800 pt-4 mb-8">
                 <div className="flex justify-between items-end">
                   <span className="text-lg font-bold text-white">Total</span>
                   <span className="text-3xl font-black text-primary leading-none">
-                    ${total}
+                    ${total.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-primary text-white font-bold uppercase tracking-widest py-4 rounded-md hover:bg-red-700 transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 flex justify-center items-center gap-2 group"
+                disabled={submitting}
+                className="w-full bg-primary text-white font-bold uppercase tracking-widest py-4 rounded-md hover:bg-red-700 transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 flex justify-center items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span>Place Order</span>
+                <span>{submitting ? "Processing..." : "Place Order"}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 group-hover:translate-x-1 transition-transform"

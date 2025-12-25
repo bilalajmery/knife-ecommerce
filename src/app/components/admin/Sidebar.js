@@ -10,6 +10,7 @@ import {
   ArrowLeftOnRectangleIcon,
   ChartBarIcon,
   TagIcon,
+  TicketIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Sidebar() {
@@ -61,6 +62,13 @@ export default function Sidebar() {
           active={pathname === "/admin/products"}
         >
           Products
+        </NavItem>
+        <NavItem
+          href="/admin/promos"
+          icon={TicketIcon}
+          active={pathname === "/admin/promos"}
+        >
+          Promo Codes
         </NavItem>
         <NavItem
           href="/admin/orders"

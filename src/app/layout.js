@@ -1,6 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ScrollToTop from "./components/ScrollToTop";
+import { Toaster } from "sonner";
+import { CartProvider } from "@/context/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +18,7 @@ export const metadata = {
   title: "KnifeMaster | Premium Hand-Forged Knives",
   description:
     "Experience the pinnacle of craftsmanship with our premium collection of hand-forged knives.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
 };
 
 export default function RootLayout({ children }) {
@@ -24,8 +27,22 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <ScrollToTop />
+        <CartProvider>
+          {children}
+          <ScrollToTop />
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: '#18181b',
+                border: '1px solid #333',
+                color: '#fff',
+              },
+            }}
+            richColors
+            theme="dark"
+          />
+        </CartProvider>
       </body>
     </html>
   );
