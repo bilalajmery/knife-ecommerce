@@ -1,6 +1,7 @@
 import HomePage from "./pages/home";
 import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
+import Category from "@/models/Category";
 
 async function getNewArrivals() {
   await dbConnect();
