@@ -47,14 +47,14 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-black/90 backdrop-blur-md" : "bg-transparent"
+      className={`fixed top-0 w-full z-40 transition-all duration-300 ${scrolled ? "bg-black/90 backdrop-blur-md" : "bg-transparent"
         }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="block relative w-50">
+            <Link href="/" className="block relative w-38 md:w-50 z-50">
               <img
                 src="/logo.png"
                 alt="KnifeMaster Logo"
@@ -65,7 +65,7 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+            <div className="ml-10 flex items-baseline space-x-8 ">
               {["Home", "Shop", "Collections", "About", "Contact"].map(
                 (item) => {
                   const href = item === "Home" ? "/" : `/${item.toLowerCase()}`;
@@ -210,49 +210,55 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="-mr-2 flex md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-white/10 focus:outline-none"
-            >
-              <svg
-                className="h-6 w-6"
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                {isOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
-            </button>
-          </div>
+          <div className="-mr-2 flex md:hidden z-50 relative">
+  <button
+    onClick={() => setIsOpen(!isOpen)}
+    className="inline-flex items-center justify-center p-2 rounded-md
+               text-gray-400 hover:text-red-500
+               transition-all duration-300 ease-in-out
+               focus:outline-none"
+  >
+    <svg
+      className={`h-6 w-6 transform transition-all duration-300 ease-in-out
+        ${isOpen ? "rotate-90 scale-110 opacity-100" : "rotate-0 scale-100 opacity-100"}
+      `}
+      stroke="currentColor"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      {isOpen ? (
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      ) : (
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        />
+      )}
+    </svg>
+  </button>
+</div>
+
         </div>
       </div>
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden fixed inset-0 bg-black z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"
+        className={`md:hidden fixed inset-0  z-40 transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0 " : "translate-x-full"
           }`}
       >
-        <div className="flex flex-col h-full pt-24 px-6 space-y-6">
+        <div className="flex flex-col h-screen pt-24 px-6 space-y-6 bg-black/90 backdrop-blur-md">
           {["Home", "Shop", "Collections", "About", "Contact"].map((item) => (
             <Link
               key={item}
               href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-              className="text-2xl font-bold uppercase tracking-widest text-white hover:text-primary transition-colors"
+              className="text-xl sm:text-2xl font-bold uppercase tracking-widest text-gray-200 hover:text-primary transition-colors"
               onClick={() => setIsOpen(false)}
             >
               {item}
