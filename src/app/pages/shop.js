@@ -6,134 +6,12 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import ProductCard from "@/app/components/ProductCard";
 
-// Mock Data for Shop
-const allProducts = [
-  {
-    id: 1,
-    name: "Damascus Hunter",
-    price: 129,
-    category: "Hunting",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "Best Seller",
-    originalPrice: 150,
-  },
-  {
-    id: 2,
-    name: "Chef's Choice",
-    price: 189,
-    category: "Kitchen",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-knife.png",
-    badge: "Top Rated",
-    originalPrice: 200,
-  },
-  {
-    id: 3,
-    name: "Tactical Ops",
-    price: 89,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-kitchen.png",
-    badge: "New",
-  },
-  {
-    id: 4,
-    name: "Bushcraft Pro",
-    price: 145,
-    category: "Outdoor",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "Trending",
-  },
-  {
-    id: 5,
-    name: "Folding EDC",
-    price: 65,
-    category: "Everyday",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "",
-  },
-  {
-    id: 6,
-    name: "Stealth Fighter",
-    price: 210,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "New Arrival",
-  },
-  {
-    id: 7,
-    name: "Santoku Master",
-    price: 165,
-    category: "Kitchen",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "New Arrival",
-  },
-  {
-    id: 8,
-    name: "Rescue Tool",
-    price: 55,
-    category: "Emergency",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-kitchen.png",
-    badge: "New Arrival",
-  },
-  {
-    id: 9,
-    name: "Fillet Pro",
-    price: 45,
-    category: "Fishing",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-knife.png",
-    badge: "",
-  },
-  {
-    id: 10,
-    name: "Cleaver Beast",
-    price: 110,
-    category: "Kitchen",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "",
-  },
-  {
-    id: 11,
-    name: "Survival Master",
-    price: 135,
-    category: "Outdoor",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "Popular",
-  },
-  {
-    id: 12,
-    name: "Combat Elite",
-    price: 195,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "Elite",
-  },
-];
-
-const categories = [
-  "All",
-  "Hunting",
-  "Kitchen",
-  "Tactical",
-  "Outdoor",
-  "Everyday",
-];
-
 const ITEMS_PER_PAGE = 9;
 
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState(["All"]);
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [minPrice, setMinPrice] = useState("");
@@ -143,21 +21,44 @@ export default function ShopPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Helper to strip HTML tags for clean filter labels
+  const stripHtml = (html) => {
+    if (!html) return "";
+    return html
+      .replace(/<[^>]*>?/gm, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchData() {
       try {
-        const res = await fetch("/api/products?limit=100");
-        const data = await res.json();
-        if (data.success) {
-          setProducts(data.products);
+        setLoading(true);
+        // Fetch Products
+        const prodRes = await fetch("/api/products?limit=100");
+        const prodData = await prodRes.json();
+
+        // Fetch Categories
+        const catRes = await fetch("/api/admin/categories");
+        const catData = await catRes.json();
+
+        if (prodData.success) {
+          const allProds = prodData.products;
+          setProducts(allProds);
+        }
+
+        if (catData.categories) {
+          const activeCats = catData.categories.filter(c => c.status === "active");
+          setCategories(["All", ...activeCats.map(c => c.name)]);
         }
       } catch (err) {
-        console.error("Failed to fetch products", err);
+        console.error("Failed to fetch shop data", err);
       } finally {
         setLoading(false);
       }
     }
-    fetchProducts();
+    fetchData();
   }, []);
 
   const filteredProducts = useMemo(() => {
@@ -177,28 +78,42 @@ export default function ShopPage() {
     }
 
     // Price Filter
-    if (minPrice) {
-      result = result.filter((product) => product.price >= Number(minPrice));
-    }
-    if (maxPrice) {
-      result = result.filter((product) => product.price <= Number(maxPrice));
+    if (minPrice || maxPrice) {
+      result = result.filter((product) => {
+        const effectivePrice = product.discount > 0
+          ? product.price * (1 - product.discount / 100)
+          : product.price;
+
+        const min = minPrice ? Number(minPrice) : 0;
+        const max = maxPrice ? Number(maxPrice) : Infinity;
+
+        return effectivePrice >= min && effectivePrice <= max;
+      });
     }
 
     // Discount Filter
     if (onlyDiscounted) {
       result = result.filter(
         (product) =>
-          product.originalPrice && product.originalPrice > product.price
+          product.discount > 0 || (product.originalPrice && product.originalPrice > product.price)
       );
     }
 
     // Sorting
     switch (sortBy) {
       case "price-low-high":
-        result.sort((a, b) => a.price - b.price);
+        result.sort((a, b) => {
+          const priceA = a.discount > 0 ? a.price * (1 - a.discount / 100) : a.price;
+          const priceB = b.discount > 0 ? b.price * (1 - b.discount / 100) : b.price;
+          return priceA - priceB;
+        });
         break;
       case "price-high-low":
-        result.sort((a, b) => b.price - a.price);
+        result.sort((a, b) => {
+          const priceA = a.discount > 0 ? a.price * (1 - a.discount / 100) : a.price;
+          const priceB = b.discount > 0 ? b.price * (1 - b.discount / 100) : b.price;
+          return priceB - priceA;
+        });
         break;
       case "oldest":
         result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt) || a._id.localeCompare(b._id));
@@ -223,6 +138,8 @@ export default function ShopPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [activeCategory, searchQuery, minPrice, maxPrice, onlyDiscounted, sortBy]);
+
+
 
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
@@ -282,7 +199,8 @@ export default function ShopPage() {
 
             {/* Categories */}
             <div>
-              <h3 className="text-sm font-bold uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
+                <span className="w-1 h-4 bg-primary inline-block"></span>
                 Categories
               </h3>
               <div className="space-y-2">
@@ -290,9 +208,9 @@ export default function ShopPage() {
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`block w-full text-left text-sm transition-colors ${activeCategory === cat
-                      ? "text-primary font-bold"
-                      : "text-gray-400 hover:text-white"
+                    className={`block w-full text-left text-sm transition-all duration-300 px-2 py-1 rounded break-words ${activeCategory === cat
+                      ? "text-primary font-bold bg-primary/10 pl-3"
+                      : "text-gray-400 hover:text-white hover:bg-white/5 pl-2"
                       }`}
                   >
                     {cat}
@@ -301,44 +219,56 @@ export default function ShopPage() {
               </div>
             </div>
 
+
+
+
+
             {/* Price Range */}
             <div>
-              <h3 className="text-sm font-bold uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2">
+                <span className="w-1 h-4 bg-primary inline-block"></span>
                 Price Range
               </h3>
               <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                  className="w-full bg-gray-900 border border-gray-800 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors"
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                  className="w-full bg-gray-900 border border-gray-800 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors"
-                />
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-2 text-xs text-gray-500">$</span>
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    className="w-full bg-gray-900 border border-gray-800 rounded-md pl-6 pr-2 py-2 text-sm focus:outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+                <div className="relative flex-1">
+                  <span className="absolute left-3 top-2 text-xs text-gray-500">$</span>
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    className="w-full bg-gray-900 border border-gray-800 rounded-md pl-6 pr-2 py-2 text-sm focus:outline-none focus:border-primary transition-colors"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Discount Checkbox */}
             <div>
-              <label className="flex items-center space-x-2 cursor-pointer group">
+              <label className="flex items-center space-x-2 cursor-pointer group p-2 bg-gray-900/50 rounded-md border border-gray-800 hover:border-primary/50 transition-all">
                 <input
                   type="checkbox"
                   checked={onlyDiscounted}
                   onChange={(e) => setOnlyDiscounted(e.target.checked)}
                   className="form-checkbox h-4 w-4 text-primary rounded border-gray-800 bg-gray-900 focus:ring-primary focus:ring-offset-black"
                 />
-                <span className="text-sm text-gray-400 group-hover:text-white transition-colors">
-                  Only Discounted
+                <span className="text-sm font-bold uppercase tracking-widest text-gray-400 group-hover:text-primary transition-colors">
+                  Clearance Sale
                 </span>
               </label>
             </div>
           </aside>
+
 
           {/* Product Grid Area */}
           <div className="lg:w-3/4">
