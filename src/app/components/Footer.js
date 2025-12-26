@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
+  const [error, setError] = useState("");
   const [randomCategories, setRandomCategories] = useState([]);
 
   useEffect(() => {
@@ -22,14 +24,35 @@ export default function Footer() {
     fetchRandomCategories();
   }, []);
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setTimeout(() => {
-        setSubscribed(false);
+    if (!email) return;
+
+    setSubscribing(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSubscribed(true);
         setEmail("");
-      }, 3000);
+        setTimeout(() => {
+          setSubscribed(false);
+        }, 5000);
+      } else {
+        setError(data.message || "Failed to subscribe");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setSubscribing(false);
     }
   };
 
@@ -238,7 +261,7 @@ export default function Footer() {
               </div>
               <button
                 type="submit"
-                disabled={subscribed}
+                disabled={subscribed || subscribing}
                 className="w-full bg-gradient-to-r from-primary to-red-700 hover:from-red-700 hover:to-primary text-white px-4 py-3.5 rounded-lg font-bold uppercase tracking-widest text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-primary/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {subscribed ? (
@@ -256,10 +279,15 @@ export default function Footer() {
                     </svg>
                     Subscribed!
                   </span>
+                ) : subscribing ? (
+                  "Subscribing..."
                 ) : (
                   "Subscribe"
                 )}
               </button>
+              {error && (
+                <p className="text-red-500 text-xs mt-2">{error}</p>
+              )}
             </form>
           </div>
         </div>

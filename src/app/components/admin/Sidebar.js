@@ -11,6 +11,8 @@ import {
   ChartBarIcon,
   TagIcon,
   TicketIcon,
+  EnvelopeIcon,
+  ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Sidebar() {
@@ -76,6 +78,20 @@ export default function Sidebar() {
           active={pathname === "/admin/orders"}
         >
           Orders
+        </NavItem>
+        <NavItem
+          href="/admin/subscribers"
+          icon={EnvelopeIcon}
+          active={pathname === "/admin/subscribers"}
+        >
+          Subscribers
+        </NavItem>
+        <NavItem
+          href="/admin/contact-messages"
+          icon={ChatBubbleLeftRightIcon}
+          active={pathname === "/admin/contact-messages"}
+        >
+          Contact Messages
         </NavItem>
         <NavItem
           href="/admin/users"
