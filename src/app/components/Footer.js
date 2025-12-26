@@ -1,10 +1,26 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [randomCategories, setRandomCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchRandomCategories = async () => {
+      try {
+        const res = await fetch("/api/categories/random");
+        const data = await res.json();
+        if (data.success) {
+          setRandomCategories(data.categories);
+        }
+      } catch (error) {
+        console.error("Failed to fetch footer categories:", error);
+      }
+    };
+    fetchRandomCategories();
+  }, []);
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -134,31 +150,38 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links / Dynamic Categories */}
           <div>
             <h3 className="text-white text-sm font-bold uppercase tracking-widest mb-6 relative inline-block">
-              Shop
+              Shop Collections
               <span className="absolute -bottom-2 left-0 w-12 h-0.5 bg-gradient-to-r from-primary to-transparent"></span>
             </h3>
             <ul className="space-y-3">
-              {[
-                "Hunting Knives",
-                "Kitchen Cutlery",
-                "Tactical Gear",
-                "Accessories",
-                "New Arrivals",
-                "Best Sellers",
-              ].map((item) => (
-                <li key={item}>
-                  <Link
-                    href="#"
-                    className="group flex items-center text-sm text-gray-400 hover:text-white transition-all duration-200"
-                  >
-                    <span className="w-0 group-hover:w-2 h-px bg-primary transition-all duration-200 mr-0 group-hover:mr-2"></span>
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              {randomCategories.length > 0 ? (
+                randomCategories.map((cat) => (
+                  <li key={cat.id}>
+                    <Link
+                      href={cat.link}
+                      className="group flex items-center text-sm text-gray-400 hover:text-white transition-all duration-200"
+                    >
+                      <span className="w-0 group-hover:w-2 h-px bg-primary transition-all duration-200 mr-0 group-hover:mr-2"></span>
+                      {cat.name}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                ["Best Sellers", "New Arrivals", "Hunting", "Tactical", "Kitchen", "Folding"].map((item) => (
+                  <li key={item}>
+                    <Link
+                      href="/shop"
+                      className="group flex items-center text-sm text-gray-400 hover:text-white transition-all duration-200"
+                    >
+                      <span className="w-0 group-hover:w-2 h-px bg-primary transition-all duration-200 mr-0 group-hover:mr-2"></span>
+                      {item}
+                    </Link>
+                  </li>
+                ))
+              )}
             </ul>
           </div>
 
