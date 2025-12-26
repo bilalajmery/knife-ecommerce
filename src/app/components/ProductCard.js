@@ -1,8 +1,13 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 export default function ProductCard({ product, className = "", onRemove }) {
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
   // Calculate discount percentage if not provided but original price exists
   const discountPercentage =
     product.discount ||
@@ -19,12 +24,32 @@ export default function ProductCard({ product, className = "", onRemove }) {
     ? product.price * (1 - product.discount / 100)
     : product.price;
 
+  const productId = product._id || product.id;
+  const inWishlist = isInWishlist(productId);
+
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await addToCart(product, 1);
+  };
+
+  const handleWishlistToggle = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (inWishlist) {
+      await removeFromWishlist(productId);
+    } else {
+      await addToWishlist(product);
+    }
+  };
+
   return (
     <div className={`group/card relative ${className}`}>
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg mb-4">
         <Link href={`/product/${product.slug}`} className="block h-full w-full">
-          {/* Main Image */}YAZD
+          {/* Main Image */}
           <div className="absolute inset-0 transition-opacity duration-500 z-10 group-hover/card:opacity-0">
             {(product.mainImage || product.image) ? (
               <Image
@@ -101,12 +126,16 @@ export default function ProductCard({ product, className = "", onRemove }) {
             </button>
           ) : (
             <button
-              className="p-2 rounded-full bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all duration-300 opacity-0 group-hover/card:opacity-100 translate-x-4 group-hover/card:translate-x-0 shadow-sm"
-              title="Add to Wishlist"
+              onClick={handleWishlistToggle}
+              className={`p-2 rounded-full backdrop-blur-sm transition-all duration-300 opacity-0 group-hover/card:opacity-100 translate-x-4 group-hover/card:translate-x-0 shadow-sm ${inWishlist
+                  ? 'bg-red-600 text-white hover:bg-red-700'
+                  : 'bg-white/90 text-gray-800 hover:bg-red-50 hover:text-red-600'
+                }`}
+              title={inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                fill="none"
+                fill={inWishlist ? "currentColor" : "none"}
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
@@ -123,6 +152,7 @@ export default function ProductCard({ product, className = "", onRemove }) {
 
           {/* Add to Cart Button */}
           <button
+            onClick={handleAddToCart}
             className="p-2 rounded-full bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-primary hover:text-white transition-all duration-300 opacity-0 group-hover/card:opacity-100 translate-x-4 group-hover/card:translate-x-0 shadow-sm delay-75"
             title="Add to Cart"
           >
