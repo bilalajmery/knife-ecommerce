@@ -177,7 +177,16 @@ export default function ProductDetailPage({ params }) {
           </nav>
 
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4">
-            {product.name}
+            {(() => {
+              const words = product.name.split(" ");
+              if (words.length <= 1) return product.name;
+              const lastWord = words.pop();
+              return (
+                <>
+                  {words.join(" ")} <span className="text-primary">{lastWord}</span>
+                </>
+              );
+            })()}
           </h1>
           <p className="text-primary font-bold uppercase tracking-widest text-lg">
             {product.category?.name || "Collection"} Series
@@ -247,11 +256,11 @@ export default function ProductDetailPage({ params }) {
               </div>
             )}
 
-<div className="max-w-lg overflow-hidden">            
-  <div
-  className="text-gray-300 leading-relaxed mb-8 prose prose-invert"
-  dangerouslySetInnerHTML={{ __html: product.description }}
-/></div>
+            <div className="max-w-lg overflow-hidden">
+              <div
+                className="text-gray-300 leading-relaxed mb-8 prose prose-invert"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              /></div>
 
             {/* Features List - Rendered as HTML - HIDDEN IF EMPTY */}
             {product.features && (

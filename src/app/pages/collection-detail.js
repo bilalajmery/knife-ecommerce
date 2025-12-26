@@ -199,7 +199,16 @@ export default function CollectionDetailPage({ params, initialData }) {
           </nav>
 
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6">
-            {info.title}
+            {(() => {
+              const words = info.title.split(" ");
+              if (words.length <= 1) return info.title;
+              const lastWord = words.pop();
+              return (
+                <>
+                  {words.join(" ")} <span className="text-primary">{lastWord}</span>
+                </>
+              );
+            })()}
           </h1>
           <p className="text-gray-300 max-w-2xl mx-auto text-lg">
             {info.description}
