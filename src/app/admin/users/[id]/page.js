@@ -14,8 +14,8 @@ import {
     ClockIcon,
     CreditCardIcon
 } from "@heroicons/react/24/outline";
-import { showAlert } from "../../../../utils/sweetAlert";
-import Sidebar from "../../../components/admin/Sidebar";
+import { showAlert } from "@/utils/sweetAlert";
+import Sidebar from "@/app/components/admin/Sidebar";
 import Link from "next/link";
 
 export default function UserDetailsPage() {
@@ -118,8 +118,8 @@ export default function UserDetailsPage() {
                                 <h3 className="text-xl font-bold">{user.name}</h3>
                                 <p className="text-gray-400 text-sm mb-4">{user.email}</p>
                                 <span className={`px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${user.provider === "GOOGLE"
-                                        ? "bg-red-500/10 text-red-500 border-red-500/20"
-                                        : "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                                    ? "bg-red-500/10 text-red-500 border-red-500/20"
+                                    : "bg-blue-500/10 text-blue-500 border-blue-500/20"
                                     }`}>
                                     {user.provider}
                                 </span>
