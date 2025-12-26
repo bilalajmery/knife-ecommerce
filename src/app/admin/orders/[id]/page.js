@@ -82,43 +82,79 @@ export default function OrderDetailPage({ params }) {
                 useCORS: true,
                 backgroundColor: "#ffffff",
                 onclone: (clonedDoc) => {
+                    // CRITICAL: Remove all existing stylesheets to prevent parsing errors
+                    // from modern CSS functions (lab, oklch) which html2canvas doesn't support.
+                    clonedDoc.head.querySelectorAll("style, link[rel='stylesheet']").forEach(el => el.remove());
+
+                    // Create a specialized, ultra-safe stylesheet for the invoice
+                    const safeStyle = clonedDoc.createElement("style");
+                    safeStyle.textContent = `
+                        * { box-sizing: border-box !important; }
+                        body { 
+                            background: white !important; 
+                            color: black !important; 
+                            font-family: Arial, sans-serif !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                        }
+                        .print-section { 
+                            width: 1000px !important; 
+                            padding: 40px !important; 
+                            background: white !important; 
+                            display: block !important;
+                        }
+                        .grid { display: flex !important; flex-wrap: wrap !important; gap: 30px !important; }
+                        .lg\\:col-span-2 { flex: 0 0 65% !important; width: 65% !important; }
+                        .space-y-8 > * + * { margin-top: 30px !important; }
+                        .space-y-6 > * + * { margin-top: 20px !important; }
+                        .space-y-4 > * + * { margin-top: 15px !important; }
+                        .flex { display: flex !important; align-items: center !important; }
+                        .justify-between { justify-content: space-between !important; }
+                        .items-start { align-items: flex-start !important; }
+                        .gap-2 { gap: 8px !important; }
+                        .gap-4 { gap: 16px !important; }
+                        .bg-black, .bg-\\[\\#111\\], .bg-gray-900, .bg-black\\/50 { 
+                            background: white !important; 
+                            border: 1px solid #eee !important; 
+                        }
+                        .bg-gray-800, .bg-gray-900\\/30 { background: #f9f9f9 !important; }
+                        .border-b, .border-t, .border, .border-gray-900, .border-gray-800, .border-gray-700 { 
+                            border-color: #eee !important; 
+                        }
+                        .text-white { color: black !important; }
+                        .text-gray-400, .text-gray-500, .text-gray-600 { color: #666 !important; }
+                        .text-primary { color: #dc2626 !important; }
+                        .font-black, .font-bold { font-weight: bold !important; }
+                        .uppercase { text-transform: uppercase !important; }
+                        .text-3xl { font-size: 28px !important; }
+                        .text-xl { font-size: 20px !important; }
+                        .text-lg { font-size: 18px !important; }
+                        .text-sm { font-size: 14px !important; }
+                        .text-xs { font-size: 11px !important; }
+                        .text-right { text-align: right !important; }
+                        table { width: 100% !important; border-collapse: collapse !important; margin: 10px 0 !important; }
+                        th { background: #f6f6f6 !important; border-bottom: 2px solid #eee !important; padding: 12px !important; text-align: left !important; }
+                        td { border-bottom: 1px solid #eee !important; padding: 12px !important; }
+                        img { max-width: 100% !important; filter: none !important; }
+                        .w-12 { width: 48px !important; height: 48px !important; border-radius: 4px !important; }
+                        .rounded-2xl, .rounded-xl { border-radius: 12px !important; }
+                        .no-print, .absolute { display: none !important; }
+                        .flex-1 { flex: 1 !important; }
+                    `;
+                    clonedDoc.head.appendChild(safeStyle);
+
+                    // Ensure no stray inline styles with lab/oklch survive
                     const clonedSection = clonedDoc.querySelector(".print-section");
                     if (clonedSection) {
-                        // 1. Force extreme simplicity for the PDF capture
-                        clonedSection.style.fontFamily = "Arial, sans-serif";
-                        clonedSection.style.background = "#ffffff";
-
-                        // 2. Remove any problematic styles like complex filters, masks, or modern colors
-                        const allElements = clonedSection.querySelectorAll("*");
-                        allElements.forEach(el => {
-                            const style = window.getComputedStyle(el);
-
-                            // If an element has a background involving 'lab' or 'oklch', force it to something safe
-                            // html2canvas fails on these. We'll just reset them to basic hex/rgb.
-                            if (el.classList.contains("bg-[#111]") || el.classList.contains("bg-black")) {
-                                el.style.backgroundColor = "#ffffff";
-                            }
-
-                            el.style.color = "#000000";
-                            el.style.borderColor = "#dddddd";
+                        clonedSection.querySelectorAll("*").forEach(el => {
+                            el.style.filter = "none";
                             el.style.boxShadow = "none";
                             el.style.textShadow = "none";
-                            el.style.filter = "none";
+                            const styleAttr = el.getAttribute("style");
+                            if (styleAttr && (styleAttr.includes("lab(") || styleAttr.includes("oklch("))) {
+                                el.setAttribute("style", styleAttr.replace(/lab\([^)]*\)/g, "#000").replace(/oklch\([^)]*\)/g, "#000"));
+                            }
                         });
-
-                        // 3. Ensure tables are clean
-                        clonedSection.querySelectorAll("table").forEach(tab => {
-                            tab.style.borderCollapse = "collapse";
-                            tab.style.width = "100%";
-                        });
-
-                        clonedSection.querySelectorAll("th").forEach(th => {
-                            th.style.backgroundColor = "#f3f4f6";
-                            th.style.color = "#000000";
-                        });
-
-                        // 4. Hide anything marked no-print
-                        clonedDoc.querySelectorAll(".no-print").forEach(el => el.style.display = "none");
                     }
                 }
             });
@@ -129,7 +165,20 @@ export default function OrderDetailPage({ params }) {
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+            let heightLeft = pdfHeight;
+            let position = 0;
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft > 0) {
+                position = heightLeft - pdfHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+                heightLeft -= pageHeight;
+            }
+
             pdf.save(`invoice-${order.orderId}.pdf`);
             showAlert("success", "PDF Saved", "Invoice has been downloaded.");
         } catch (error) {

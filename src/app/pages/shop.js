@@ -264,8 +264,7 @@ export default function ShopPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <aside
-            className={`lg:w-1/4 space-y-8 ${showFilters ? "block" : "hidden lg:block"
-              }`}
+            className={`lg:w-1/4 space-y-8 ${showFilters ? "block" : "hidden lg:block"}`}
           >
             {/* Search */}
             <div>
