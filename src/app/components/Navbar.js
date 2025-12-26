@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +11,7 @@ export default function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const pathname = usePathname();
   const { cart, user, logout } = useCart();
+  const { wishlist } = useWishlist();
 
   const handleLogout = () => {
     logout();
@@ -44,6 +46,7 @@ export default function Navbar() {
 
   // Calculate total items
   const cartItemCount = cart.items.reduce((total, item) => total + item.quantity, 0);
+  const wishlistItemCount = wishlist.length;
 
   return (
     <nav
@@ -110,9 +113,11 @@ export default function Navbar() {
                   d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                 />
               </svg>
-              <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
+              {wishlistItemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {wishlistItemCount}
+                </span>
+              )}
             </Link>
 
             <Link

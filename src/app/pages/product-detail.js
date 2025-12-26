@@ -7,6 +7,7 @@ import Footer from "@/app/components/Footer";
 import ProductCard from "@/app/components/ProductCard";
 
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 export default function ProductDetailPage({ params }) {
   const [product, setProduct] = useState(null);
@@ -16,12 +17,22 @@ export default function ProductDetailPage({ params }) {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("specifications");
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const handleAddToCart = async () => {
     if (product) {
       await addToCart(product, quantity);
-      // Optional: Add a toast notification here
-      // alert(`Added ${quantity} ${product.name} to cart`);
+    }
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!product) return;
+    const productId = product._id || product.id;
+
+    if (isInWishlist(productId)) {
+      await removeFromWishlist(productId);
+    } else {
+      await addToWishlist(product);
     }
   };
 
@@ -317,11 +328,18 @@ export default function ProductDetailPage({ params }) {
                 Add to Cart
               </button>
               {/* Wishlist Button */}
-              <button className="p-4 border border-gray-700 rounded-md hover:border-primary hover:text-primary transition-colors text-gray-400">
+              <button
+                onClick={handleWishlistToggle}
+                className={`p-4 border rounded-md transition-all ${isInWishlist(product._id || product.id)
+                    ? 'border-primary text-primary bg-primary/10'
+                    : 'border-gray-700 text-gray-400 hover:border-primary hover:text-primary'
+                  }`}
+                title={isInWishlist(product._id || product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
-                  fill="none"
+                  fill={isInWishlist(product._id || product.id) ? "currentColor" : "none"}
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >

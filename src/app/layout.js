@@ -3,6 +3,7 @@ import "./globals.css";
 import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "sonner";
 import { CartProvider } from "@/context/CartContext";
+import { WishlistProvider } from "@/context/WishlistContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,20 +29,22 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <CartProvider>
-          {children}
-          <ScrollToTop />
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                background: '#18181b',
-                border: '1px solid #333',
-                color: '#fff',
-              },
-            }}
-            richColors
-            theme="dark"
-          />
+          <WishlistProvider>
+            {children}
+            <ScrollToTop />
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                style: {
+                  background: '#18181b',
+                  border: '1px solid #333',
+                  color: '#fff',
+                },
+              }}
+              richColors
+              theme="dark"
+            />
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>
