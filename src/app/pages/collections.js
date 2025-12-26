@@ -55,7 +55,36 @@ const collections = [
   },
 ];
 
-export default function CollectionsPage() {
+export default function CollectionsPage({ initialCollections }) {
+  const mockCollections = [
+    {
+      id: 1,
+      title: "Hunting Series",
+      description: "Built for the wild. Rugged, durable, and razor-sharp.",
+      image: "/hero-knife.png",
+      link: "/collections/hunting",
+      count: 24,
+    },
+    {
+      id: 2,
+      title: "Kitchen Master",
+      description: "Elevate your culinary skills with professional-grade blades.",
+      image: "/hero-kitchen.png",
+      link: "/collections/kitchen",
+      count: 18,
+    },
+    {
+      id: 3,
+      title: "Tactical Ops",
+      description: "Precision engineered for mission-critical performance.",
+      image: "/hero-tactical.png",
+      link: "/collections/tactical",
+      count: 32,
+    },
+  ];
+
+  const displayCollections = initialCollections && initialCollections.length > 0 ? initialCollections : mockCollections;
+
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
       <Navbar />
@@ -94,9 +123,9 @@ export default function CollectionsPage() {
       {/* Collections Grid */}
       <main className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-24">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {collections.map((collection) => (
+          {displayCollections.map((collection) => (
             <Link
-              key={collection.id}
+              key={collection.id || collection._id}
               href={collection.link}
               className="group relative h-[400px] overflow-hidden rounded-lg border border-gray-800 hover:border-primary transition-all duration-500"
             >
@@ -113,7 +142,7 @@ export default function CollectionsPage() {
               <div className="absolute bottom-0 left-0 w-full p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                 <div className="mb-2">
                   <span className="text-primary font-bold uppercase tracking-widest text-xs">
-                    {collection.count} Products
+                    {collection.count || 0} Products
                   </span>
                 </div>
                 <h3 className="text-3xl font-black uppercase tracking-tighter mb-3 text-white group-hover:text-primary transition-colors">
