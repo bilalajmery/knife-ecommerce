@@ -336,6 +336,13 @@ export function CartProvider({ children }) {
         }
     };
 
+    const clearCart = () => {
+        setCart({ items: [], totalPrice: 0, appliedPromo: null, discount: 0 });
+        if (!user) {
+            localStorage.removeItem("guestCart");
+        }
+    };
+
     return (
         <CartContext.Provider
             value={{
@@ -349,7 +356,8 @@ export function CartProvider({ children }) {
                 syncCart,
                 logout,
                 loading,
-                refreshCart
+                refreshCart,
+                clearCart
             }}
         >
             {children}
@@ -357,4 +365,12 @@ export function CartProvider({ children }) {
     );
 }
 
-export const useCart = () => useContext(CartContext);
+export function useCart() {
+    const context = useContext(CartContext);
+    if (!context) {
+        throw new Error("useCart must be used within a CartProvider");
+    }
+    return context;
+}
+
+

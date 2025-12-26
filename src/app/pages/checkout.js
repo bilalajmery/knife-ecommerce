@@ -22,7 +22,7 @@ function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
-  const { cart, loading: cartLoading } = useCart();
+  const { cart, loading: cartLoading, clearCart } = useCart();
   const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -140,6 +140,7 @@ function CheckoutForm() {
 
         if (res.ok) {
           toast.success("Payment successful! Order placed.");
+          clearCart(); // Clear local cart state and localStorage
           setTimeout(() => {
             router.push(`/thank-you?orderId=${data.orderId}`);
           }, 1500);
