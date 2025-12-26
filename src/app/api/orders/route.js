@@ -1,8 +1,10 @@
+
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import Cart from "@/models/Cart";
 import Promo from "@/models/Promo";
+import { startAgenda } from "@/lib/agenda";
 
 export async function POST(req) {
     try {
@@ -68,6 +70,16 @@ export async function POST(req) {
             discount: discount || 0,
             status: "pending",
         });
+
+        // Schedule Email via Agenda (10 seconds delay as requested)
+        try {
+            const agenda = await startAgenda();
+            // Pass a plain object to avoid serialization issues with Mongoose documents
+            await agenda.schedule("in 10 seconds", "sendOrderEmail", { order: order.toObject() });
+            console.log(`Order email scheduled for ${orderId} in 10 seconds`);
+        } catch (agendaError) {
+            console.error("Agenda Scheduling Error:", agendaError);
+        }
 
         // Mark Promo as Used
         if (appliedPromo) {
