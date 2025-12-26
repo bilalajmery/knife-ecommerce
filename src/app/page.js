@@ -28,7 +28,35 @@ async function getNewArrivals() {
   }));
 }
 
+async function getRandomCategories() {
+  await dbConnect();
+  const categories = await Category.aggregate([
+    { $match: { status: "active" } },
+    { $sample: { size: 3 } }
+  ]);
+
+  // Fetch real product counts for these categories
+  const categoriesWithCounts = await Promise.all(categories.map(async (cat) => {
+    const productCount = await Product.countDocuments({
+      category: cat._id,
+      status: "active"
+    });
+
+    return {
+      ...cat,
+      _id: cat._id.toString(),
+      id: cat._id.toString(),
+      link: `/collections/${cat.slug}`,
+      title: cat.name,
+      count: productCount
+    };
+  }));
+
+  return categoriesWithCounts;
+}
+
 export default async function Page() {
   const newArrivalsData = await getNewArrivals();
-  return <HomePage newArrivalsData={newArrivalsData} />;
+  const randomCategories = await getRandomCategories();
+  return <HomePage newArrivalsData={newArrivalsData} randomCategories={randomCategories} />;
 }

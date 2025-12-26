@@ -174,8 +174,38 @@ const newArrivals = [
   },
 ];
 
-export default function HomePage({ newArrivalsData }) {
+export default function HomePage({ newArrivalsData, randomCategories }) {
   const displayNewArrivals = newArrivalsData && newArrivalsData.length > 0 ? newArrivalsData : newArrivals;
+
+  const mockCategories = [
+    {
+      id: 1,
+      title: "Hunting Series",
+      description: "Built for the wild. Rugged, durable, and razor-sharp.",
+      image: "/hero-knife.png",
+      link: "/collections/hunting",
+      count: 24,
+    },
+    {
+      id: 2,
+      title: "Kitchen Master",
+      description: "Elevate your culinary skills with professional-grade blades.",
+      image: "/hero-kitchen.png",
+      link: "/collections/kitchen",
+      count: 18,
+    },
+    {
+      id: 3,
+      title: "Tactical Ops",
+      description: "Precision engineered for mission-critical performance.",
+      image: "/hero-tactical.png",
+      link: "/collections/tactical",
+      count: 32,
+    },
+  ];
+
+  const displayCategories = randomCategories && randomCategories.length > 0 ? randomCategories : mockCategories;
+
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
       <Navbar />
@@ -202,37 +232,9 @@ export default function HomePage({ newArrivalsData }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              id: 1,
-              title: "Hunting Series",
-              description:
-                "Built for the wild. Rugged, durable, and razor-sharp.",
-              image: "/hero-knife.png",
-              link: "/collections/hunting",
-              count: 24,
-            },
-            {
-              id: 2,
-              title: "Kitchen Master",
-              description:
-                "Elevate your culinary skills with professional-grade blades.",
-              image: "/hero-kitchen.png",
-              link: "/collections/kitchen",
-              count: 18,
-            },
-            {
-              id: 3,
-              title: "Tactical Ops",
-              description:
-                "Precision engineered for mission-critical performance.",
-              image: "/hero-tactical.png",
-              link: "/collections/tactical",
-              count: 32,
-            },
-          ].map((collection) => (
+          {displayCategories.map((collection) => (
             <Link
-              key={collection.id}
+              key={collection.id || collection._id}
               href={collection.link}
               className="group relative h-[500px] overflow-hidden rounded-lg border border-gray-800 hover:border-primary transition-all duration-500"
             >
@@ -250,7 +252,7 @@ export default function HomePage({ newArrivalsData }) {
               <div className="absolute bottom-0 left-0 w-full p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                 <div className="mb-2">
                   <span className="text-primary font-bold uppercase tracking-widest text-xs">
-                    {collection.count} Products
+                    {(collection.count !== undefined && collection.count !== null) ? collection.count : 0} Products
                   </span>
                 </div>
                 <h3 className="text-3xl font-black uppercase tracking-tighter mb-3 text-white group-hover:text-primary transition-colors">

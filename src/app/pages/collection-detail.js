@@ -153,21 +153,18 @@ const collectionInfo = {
   },
 };
 
-export default function CollectionDetailPage({ params }) {
+export default function CollectionDetailPage({ params, initialData }) {
   const slug = params.slug;
-  const info = collectionInfo[slug] || {
+
+  // Use passed data or fallback to empty state
+  const info = initialData?.category || {
     title: slug.charAt(0).toUpperCase() + slug.slice(1),
     description: "Premium collection.",
     image: "/hero-knife.png",
   };
 
-  // Filter products based on category (slug)
-  // Note: This matches simple categories. For 'limited', you might need a different logic or mock data.
-  // Here we assume category name in product matches slug (case-insensitive) or mapped.
-  const products = allProducts.filter((product) => {
-    if (slug === "limited") return product.badge === "Limited"; // Example logic
-    return product.category.toLowerCase() === slug.toLowerCase();
-  });
+  const products = initialData?.products || [];
+
 
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
