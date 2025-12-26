@@ -17,7 +17,7 @@ const PromoSchema = new mongoose.Schema(
         },
         maxUsage: {
             type: Number,
-            default: -1, // -1 means infinite
+            default: 1, // 1 means it can only be used once
         },
         usedCount: {
             type: Number,
@@ -26,6 +26,11 @@ const PromoSchema = new mongoose.Schema(
         isActive: {
             type: Boolean,
             default: true,
+        },
+        status: {
+            type: String,
+            enum: ["active", "used"],
+            default: "active",
         },
     },
     { timestamps: true }

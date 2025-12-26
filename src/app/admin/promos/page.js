@@ -211,12 +211,14 @@ export default function PromosPage() {
                                             </td>
                                             <td className="px-6 py-5">
                                                 <span
-                                                    className={`px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${promo.isActive
+                                                    className={`px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${promo.status === "used"
+                                                        ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+                                                        : promo.isActive
                                                             ? "bg-green-500/10 text-green-500 border-green-500/20"
                                                             : "bg-red-500/10 text-red-500 border-red-500/20"
                                                         }`}
                                                 >
-                                                    {promo.isActive ? "Active" : "Inactive"}
+                                                    {promo.status === "used" ? "Used" : promo.isActive ? "Active" : "Inactive"}
                                                 </span>
                                             </td>
                                             <td className="px-8 py-5 text-right">

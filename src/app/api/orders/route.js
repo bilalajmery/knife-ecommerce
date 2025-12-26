@@ -69,11 +69,14 @@ export async function POST(req) {
             status: "pending",
         });
 
-        // Increment Promo Usage
+        // Mark Promo as Used
         if (appliedPromo) {
             await Promo.findOneAndUpdate(
                 { code: appliedPromo },
-                { $inc: { usedCount: 1 } }
+                {
+                    $inc: { usedCount: 1 },
+                    $set: { status: "used", isActive: false }
+                }
             );
         }
 
