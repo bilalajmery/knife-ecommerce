@@ -5,177 +5,9 @@ import ProductCard from "@/app/components/ProductCard";
 import Image from "next/image";
 import Link from "next/link";
 
-// Mock Data
-const bestSellers = [
-  {
-    id: 1,
-    name: "Damascus Hunter",
-    price: 129,
-    category: "Hunting",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "Best Seller",
-    originalPrice: 150,
-    slug: "damascus-hunter",
-  },
-  {
-    id: 2,
-    name: "Chef's Choice",
-    price: 189,
-    category: "Kitchen",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-knife.png",
-    badge: "Top Rated",
-    originalPrice: 200,
-    slug: "chefs-choice",
-  },
-  {
-    id: 3,
-    name: "Tactical Ops",
-    price: 89,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-kitchen.png",
-    badge: "New",
-    slug: "tactical-ops",
-  },
-  {
-    id: 4,
-    name: "Bushcraft Pro",
-    price: 145,
-    category: "Outdoor",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "Trending",
-    slug: "bushcraft-pro",
-  },
-  {
-    id: 5,
-    name: "Folding EDC",
-    price: 65,
-    category: "Everyday",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "",
-    slug: "folding-edc",
-  },
-  {
-    id: 11,
-    name: "Survival Master",
-    price: 135,
-    category: "Outdoor",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "Popular",
-    slug: "survival-master",
-  },
-  {
-    id: 12,
-    name: "Combat Elite",
-    price: 195,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "Elite",
-    slug: "combat-elite",
-  },
-  {
-    id: 13,
-    name: "Forest Ranger",
-    price: 115,
-    category: "Hunting",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "",
-    slug: "forest-ranger",
-  },
-];
-
-const newArrivals = [
-  {
-    id: 6,
-    name: "Stealth Fighter",
-    price: 210,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "New Arrival",
-    slug: "stealth-fighter",
-  },
-  {
-    id: 7,
-    name: "Santoku Master",
-    price: 165,
-    category: "Kitchen",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "New Arrival",
-    slug: "santoku-master",
-  },
-  {
-    id: 8,
-    name: "Rescue Tool",
-    price: 55,
-    category: "Emergency",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-kitchen.png",
-    badge: "New Arrival",
-    slug: "rescue-tool",
-  },
-  {
-    id: 9,
-    name: "Fillet Pro",
-    price: 45,
-    category: "Fishing",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-knife.png",
-    badge: "New Arrival",
-    slug: "fillet-pro",
-  },
-  {
-    id: 10,
-    name: "Cleaver Beast",
-    price: 110,
-    category: "Kitchen",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "New Arrival",
-    slug: "cleaver-beast",
-  },
-  {
-    id: 14,
-    name: "Urban Carry",
-    price: 75,
-    category: "Everyday",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-kitchen.png",
-    badge: "New Arrival",
-    slug: "urban-carry",
-  },
-  {
-    id: 15,
-    name: "Marine Corps",
-    price: 155,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "New Arrival",
-    slug: "marine-corps",
-  },
-  {
-    id: 16,
-    name: "Sushi Pro",
-    price: 220,
-    category: "Kitchen",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "New Arrival",
-    slug: "sushi-pro",
-  },
-];
-
-export default function HomePage({ newArrivalsData, randomCategories }) {
-  const displayNewArrivals = newArrivalsData && newArrivalsData.length > 0 ? newArrivalsData : newArrivals;
+export default function HomePage({ bestSellersData, newArrivalsData, randomCategories }) {
+  const displayBestSellers = bestSellersData || [];
+  const displayNewArrivals = newArrivalsData || [];
 
   const mockCategories = [
     {
@@ -268,15 +100,6 @@ export default function HomePage({ newArrivalsData, randomCategories }) {
             </Link>
           ))}
         </div>
-
-        <div className="mt-8 text-center md:hidden">
-          <Link
-            href="/collections"
-            className="text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
-          >
-            See All &rarr;
-          </Link>
-        </div>
       </section>
 
       {/* Best Sellers Grid */}
@@ -287,7 +110,7 @@ export default function HomePage({ newArrivalsData, randomCategories }) {
               Best <span className="text-primary">Sellers</span>
             </h2>
             <Link
-              href="/shop/best-sellers"
+              href="/shop"
               className="hidden md:block text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
             >
               View All &rarr;
@@ -295,18 +118,9 @@ export default function HomePage({ newArrivalsData, randomCategories }) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {bestSellers.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {displayBestSellers.slice(0, 8).map((product) => (
+              <ProductCard key={product.id || product._id} product={product} />
             ))}
-          </div>
-
-          <div className="mt-8 text-center md:hidden">
-            <Link
-              href="/shop/best-sellers"
-              className="text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
-            >
-              View All &rarr;
-            </Link>
           </div>
         </div>
       </section>
@@ -335,7 +149,7 @@ export default function HomePage({ newArrivalsData, randomCategories }) {
               and durability.
             </p>
             <Link
-              href="/shop/damascus"
+              href="/shop"
               className="inline-block bg-white text-black hover:bg-primary hover:text-white px-10 py-4 font-bold uppercase tracking-widest transition-colors"
             >
               Shop Now
@@ -352,7 +166,7 @@ export default function HomePage({ newArrivalsData, randomCategories }) {
               New <span className="text-primary">Arrivals</span>
             </h2>
             <Link
-              href="/shop/new-arrivals"
+              href="/shop"
               className="hidden md:block text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
             >
               View All &rarr;
@@ -360,18 +174,9 @@ export default function HomePage({ newArrivalsData, randomCategories }) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {displayNewArrivals.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {displayNewArrivals.slice(0, 8).map((product) => (
+              <ProductCard key={product.id || product._id} product={product} />
             ))}
-          </div>
-
-          <div className="mt-8 text-center md:hidden">
-            <Link
-              href="/shop/new-arrivals"
-              className="text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
-            >
-              View All &rarr;
-            </Link>
           </div>
         </div>
       </section>
