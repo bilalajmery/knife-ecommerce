@@ -53,6 +53,9 @@ const COLORS = ["#DC2626", "#F87171", "#991B1B", "#450A0A"];
 export default function AdminDashboard() {
   const router = useRouter();
   const [adminUser, setAdminUser] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Get admin data
@@ -60,7 +63,39 @@ export default function AdminDashboard() {
     if (storedAdmin) {
       setAdminUser(JSON.parse(storedAdmin));
     }
+
+    const fetchData = async () => {
+      try {
+        const [analyticsRes, ordersRes] = await Promise.all([
+          fetch("/api/admin/analytics"),
+          fetch("/api/admin/orders")
+        ]);
+
+        const analyticsData = await analyticsRes.json();
+        const ordersData = await ordersRes.json();
+
+        if (analyticsData.success) setAnalytics(analyticsData);
+        if (ordersData.success) setRecentOrders(ordersData.orders.slice(0, 5));
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Dashboard Fetch Error:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
+      </div>
+    );
+  }
+
+  const stats = analytics?.stats || {};
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex">
@@ -92,32 +127,32 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Total Revenue"
-            value="$45,231.89"
-            change="+20.1%"
+            value={`$${stats.totalRevenue?.toLocaleString() || '0'}`}
+            change="+12.5%"
             trend="up"
             icon={CurrencyDollarIcon}
             color="text-green-500"
           />
           <StatCard
-            title="Active Orders"
-            value="12"
-            change="-4.5%"
-            trend="down"
+            title="Total Orders"
+            value={stats.totalOrders || '0'}
+            change="+5.2%"
+            trend="up"
             icon={ShoppingBagIcon}
             color="text-blue-500"
           />
           <StatCard
             title="Total Products"
-            value="48"
-            change="+2"
+            value={stats.totalProducts || '0'}
+            change="Active"
             trend="neutral"
             icon={ShoppingBagIcon}
             color="text-purple-500"
           />
           <StatCard
             title="Total Users"
-            value="2,345"
-            change="+10.5%"
+            value={stats.totalUsers || '0'}
+            change="+3.1%"
             trend="up"
             icon={UsersIcon}
             color="text-orange-500"
@@ -129,8 +164,13 @@ export default function AdminDashboard() {
           {/* Sales Chart */}
           <div className="lg:col-span-2 bg-[#111] border border-gray-900 rounded-2xl p-6 shadow-xl">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-white">Sales Overview</h3>
-              <select className="bg-black border border-gray-800 text-xs text-gray-400 rounded-lg px-3 py-1 focus:outline-none focus:border-primary">
+              <div>
+                <h3 className="text-lg font-bold text-white">Sales Overview</h3>
+                <Link href="/admin/analytics" className="text-xs text-primary hover:underline italic font-medium">
+                  View Detailed Tactical Analytics &rarr;
+                </Link>
+              </div>
+              <select className="bg-black border border-gray-900 text-xs text-gray-400 rounded-lg px-3 py-1 focus:outline-none focus:border-primary">
                 <option>Last 12 Months</option>
                 <option>Last 30 Days</option>
                 <option>Last 7 Days</option>
@@ -139,7 +179,7 @@ export default function AdminDashboard() {
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={salesData}
+                  data={analytics?.revenueOverTime}
                   margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                 >
                   <defs>
@@ -154,11 +194,15 @@ export default function AdminDashboard() {
                     vertical={false}
                   />
                   <XAxis
-                    dataKey="name"
+                    dataKey="_id"
                     stroke="#666"
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
+                    tickFormatter={(val) => {
+                      const date = new Date(val);
+                      return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+                    }}
                   />
                   <YAxis
                     stroke="#666"
@@ -177,7 +221,7 @@ export default function AdminDashboard() {
                   />
                   <Area
                     type="monotone"
-                    dataKey="sales"
+                    dataKey="revenue"
                     stroke="#DC2626"
                     strokeWidth={2}
                     fillOpacity={1}
@@ -197,7 +241,7 @@ export default function AdminDashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={categoryData}
+                    data={analytics?.statusDistribution}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
@@ -205,7 +249,7 @@ export default function AdminDashboard() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {categoryData.map((entry, index) => (
+                    {analytics?.statusDistribution.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
@@ -230,8 +274,8 @@ export default function AdminDashboard() {
               {/* Center Text */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-white">1.2k</p>
-                  <p className="text-xs text-gray-500">Items Sold</p>
+                  <p className="text-2xl font-bold text-white">{stats.totalOrders || 0}</p>
+                  <p className="text-xs text-gray-500">Orders</p>
                 </div>
               </div>
             </div>
@@ -263,26 +307,38 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-900">
-                  {[1, 2, 3, 4, 5].map((order) => (
+                  {recentOrders.map((order) => (
                     <tr
-                      key={order}
+                      key={order._id}
                       className="hover:bg-gray-900/50 transition-colors group"
                     >
                       <td className="px-6 py-4 font-medium text-white group-hover:text-primary transition-colors">
-                        #ORD-00{order}
+                        #{order.orderId}
                       </td>
-                      <td className="px-6 py-4">John Doe</td>
-                      <td className="px-6 py-4">Dec 15, 2025</td>
                       <td className="px-6 py-4">
-                        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-green-500 border border-green-500/20">
-                          Completed
+                        {order.shippingAddress?.firstName} {order.shippingAddress?.lastName}
+                      </td>
+                      <td className="px-6 py-4">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${order.status === 'delivered' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                            order.status === 'cancelled' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                              'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+                          }`}>
+                          {order.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right text-white font-medium">
-                        $120.00
+                        ${order.total?.toFixed(2)}
                       </td>
                     </tr>
                   ))}
+                  {recentOrders.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-10 text-center text-gray-500 italic">No orders found yet.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -358,13 +414,12 @@ function StatCard({ title, value, change, trend, icon: Icon, color }) {
       <div className="flex items-end justify-between">
         <p className="text-3xl font-bold text-white tracking-tight">{value}</p>
         <div
-          className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${
-            trend === "up"
-              ? "bg-green-500/10 text-green-500"
-              : trend === "down"
+          className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${trend === "up"
+            ? "bg-green-500/10 text-green-500"
+            : trend === "down"
               ? "bg-red-500/10 text-red-500"
               : "bg-gray-500/10 text-gray-500"
-          }`}
+            }`}
         >
           {trend === "up" ? (
             <ArrowTrendingUpIcon className="h-3 w-3 mr-1" />

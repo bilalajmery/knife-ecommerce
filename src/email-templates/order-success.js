@@ -1,6 +1,6 @@
 export const generateOrderSuccessEmail = (order) => {
-    const { orderId, items, total, shippingAddress, discount } = order;
-    const itemsHtml = items.map(item => `
+  const { orderId, items, total, shippingAddress, discount } = order;
+  const itemsHtml = items.map(item => `
     <tr>
       <td style="padding: 15px 10px; border-bottom: 1px solid #333; width: 80px;">
         <img src="${item.image || 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=80&auto=format&fit=crop'}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #444;">
@@ -14,13 +14,13 @@ export const generateOrderSuccessEmail = (order) => {
     </tr>
   `).join('');
 
-    return `
+  return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your BladeMaster Order - #${orderId}</title>
+  <title>Your KnifeMaster Order - #${orderId}</title>
   <style>
     body {
       margin: 0;
@@ -146,7 +146,7 @@ export const generateOrderSuccessEmail = (order) => {
   <div class="container">
     <div class="header">
       <div class="logo-container">
-        <img src="cid:logo" alt="BladeMaster" style="width: 60px; height: 60px; margin-bottom: 10px;">
+        <img src="cid:logo" alt="KnifeMaster" style="width: 60px; height: 60px; margin-bottom: 10px;">
         <div class="logo-text">Blade<span>Master</span></div>
       </div>
     </div>
@@ -219,7 +219,7 @@ export const generateOrderSuccessEmail = (order) => {
         <a href="#" class="social-link">Youtube</a>
       </div>
       <p style="color: #9ca3af; font-size: 14px;">Questions? Reply to this email or visit our Help Center.</p>
-      <div class="tagline">&copy; ${new Date().getFullYear()} BladeMaster Industries. Excellence in Every Edge.</div>
+      <div class="tagline">&copy; ${new Date().getFullYear()} KnifeMaster Industries. Excellence in Every Edge.</div>
     </div>
   </div>
 </body>

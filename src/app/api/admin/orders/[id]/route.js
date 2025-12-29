@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import User from "@/models/User";
+import { startAgenda } from "@/lib/agenda";
 
 export async function GET(req, { params }) {
     try {
@@ -42,6 +43,18 @@ export async function PUT(req, { params }) {
 
         if (!order) {
             return NextResponse.json({ message: "Order not found" }, { status: 404 });
+        }
+
+        // Schedule Status Update Email via Agenda (10 seconds delay)
+        try {
+            const agenda = await startAgenda();
+            await agenda.schedule("in 10 seconds", "sendOrderStatusEmail", {
+                order: order.toObject(),
+                status: status
+            });
+            console.log(`Order status update email scheduled for ${order.orderId} in 10 seconds`);
+        } catch (agendaError) {
+            console.error("Agenda Status Scheduling Error:", agendaError);
         }
 
         return NextResponse.json({

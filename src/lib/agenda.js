@@ -1,21 +1,23 @@
 import Agenda from "agenda";
 import nodemailer from "nodemailer";
-import { generateOrderSuccessEmail } from "@/email-templates/order-success";
+import { generateOrderSuccessEmail } from "../email-templates/order-success.js";
+import { generateOrderStatusEmail } from "../email-templates/order-update.js";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
 let agenda = global.agenda;
 
 const createAgenda = () => {
-    if (agenda) return agenda;
+    if (global.agenda) return global.agenda;
 
-    agenda = new Agenda({
+    const instance = new Agenda({
         db: { address: MONGODB_URI, collection: "agendaJobs" },
-        processEvery: "10 seconds",
+        processEvery: "5 seconds", // Poll more frequently
     });
 
     // Define Jobs
-    agenda.define("sendOrderEmail", async (job) => {
+    instance.define("sendOrderEmail", async (job) => {
+        console.log("Job started: sendOrderEmail", job.attrs._id);
         const { order } = job.attrs.data;
         const { shippingAddress } = order;
 
@@ -34,14 +36,14 @@ const createAgenda = () => {
             });
 
             const mailOptions = {
-                from: `"BladeMaster" <${process.env.EMAIL_USER}>`,
+                from: `"KnifeMaster" <${process.env.EMAIL_USER}>`,
                 to: shippingAddress.email,
                 subject: `Order Confirmation - #${order.orderId}`,
                 html: generateOrderSuccessEmail(order),
                 attachments: [
                     {
                         filename: 'logo.png',
-                        path: 'https://cdn-icons-png.flaticon.com/512/3218/3218579.png', // Temporary professional knife icon as logo
+                        path: 'https://cdn-icons-png.flaticon.com/512/3218/3218579.png',
                         cid: 'logo'
                     }
                 ]
@@ -55,17 +57,68 @@ const createAgenda = () => {
         }
     });
 
-    global.agenda = agenda;
-    return agenda;
+    instance.define("sendOrderStatusEmail", async (job) => {
+        console.log("Job started: sendOrderStatusEmail", job.attrs._id);
+        const { order, status } = job.attrs.data;
+        const { shippingAddress } = order;
+
+        if (!shippingAddress || !shippingAddress.email) {
+            console.error("No email found for order update:", order.orderId);
+            return;
+        }
+
+        try {
+            const transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS,
+                },
+            });
+
+            const statusSubject = {
+                shipped: `Your order #${order.orderId} has been shipped!`,
+                delivered: `Your order #${order.orderId} has been delivered!`,
+                cancelled: `Your order #${order.orderId} has been cancelled`,
+                processing: `We are now processing your order #${order.orderId}`
+            };
+
+            const mailOptions = {
+                from: `"KnifeMaster" <${process.env.EMAIL_USER}>`,
+                to: shippingAddress.email,
+                subject: statusSubject[status] || `Update on your order #${order.orderId}`,
+                html: generateOrderStatusEmail(order, status),
+                attachments: [
+                    {
+                        filename: 'logo.png',
+                        path: 'https://cdn-icons-png.flaticon.com/512/3218/3218579.png',
+                        cid: 'logo'
+                    }
+                ]
+            };
+
+            await transporter.sendMail(mailOptions);
+            console.log(`Status update email (${status}) sent for order ${order.orderId} to ${shippingAddress.email}`);
+        } catch (error) {
+            console.error("Error sending status update email via Agenda:", error);
+            throw error;
+        }
+    });
+
+    global.agenda = instance;
+    return instance;
 };
 
 export const startAgenda = async () => {
     const instance = createAgenda();
-    if (global.agendaStarted) return instance;
 
-    await instance.start();
-    console.log("Agenda background worker started");
-    global.agendaStarted = true;
+    // Ensure the worker is started and running
+    if (!global.agendaStarted) {
+        await instance.start();
+        console.log("Agenda background worker started successfully");
+        global.agendaStarted = true;
+    }
+
     return instance;
 };
 

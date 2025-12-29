@@ -31,6 +31,11 @@ async function dbConnect() {
 
   try {
     cached.conn = await cached.promise;
+
+    // Warm up Agenda worker on DB connect
+    const { startAgenda } = await import("./agenda.js");
+    startAgenda().catch(err => console.error("Failed to start Agenda from DB connect:", err));
+
   } catch (e) {
     cached.promise = null;
     throw e;

@@ -219,7 +219,7 @@ export default function ShopPage() {
                 <span className="w-4 h-px bg-primary"></span>
                 Collection
               </h3>
-              <div className="space-y-1">
+              <div className="space-y-1 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                 {categories.map((cat) => (
                   <button
                     key={cat}

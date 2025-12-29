@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "seed:admin": "node src/scripts/seed-admin.js"
+    "seed:admin": "node src/scripts/seed-admin.js",
+    "seed:data": "node src/scripts/seed-data.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
