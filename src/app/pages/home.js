@@ -5,160 +5,39 @@ import ProductCard from "@/app/components/ProductCard";
 import Image from "next/image";
 import Link from "next/link";
 
-// Mock Data
-const bestSellers = [
-  {
-    id: 1,
-    name: "Damascus Hunter",
-    price: 129,
-    category: "Hunting",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "Best Seller",
-    originalPrice: 150,
-  },
-  {
-    id: 2,
-    name: "Chef's Choice",
-    price: 189,
-    category: "Kitchen",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-knife.png",
-    badge: "Top Rated",
-    originalPrice: 200,
-  },
-  {
-    id: 3,
-    name: "Tactical Ops",
-    price: 89,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-kitchen.png",
-    badge: "New",
-  },
-  {
-    id: 4,
-    name: "Bushcraft Pro",
-    price: 145,
-    category: "Outdoor",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "Trending",
-  },
-  {
-    id: 5,
-    name: "Folding EDC",
-    price: 65,
-    category: "Everyday",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "",
-  },
-  {
-    id: 11,
-    name: "Survival Master",
-    price: 135,
-    category: "Outdoor",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "Popular",
-  },
-  {
-    id: 12,
-    name: "Combat Elite",
-    price: 195,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "Elite",
-  },
-  {
-    id: 13,
-    name: "Forest Ranger",
-    price: 115,
-    category: "Hunting",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "",
-  },
-];
+export default function HomePage({ bestSellersData, newArrivalsData, randomCategories }) {
+  const displayBestSellers = bestSellersData || [];
+  const displayNewArrivals = newArrivalsData || [];
 
-const newArrivals = [
-  {
-    id: 6,
-    name: "Stealth Fighter",
-    price: 210,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "New Arrival",
-  },
-  {
-    id: 7,
-    name: "Santoku Master",
-    price: 165,
-    category: "Kitchen",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "New Arrival",
-  },
-  {
-    id: 8,
-    name: "Rescue Tool",
-    price: 55,
-    category: "Emergency",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-kitchen.png",
-    badge: "New Arrival",
-  },
-  {
-    id: 9,
-    name: "Fillet Pro",
-    price: 45,
-    category: "Fishing",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-knife.png",
-    badge: "New Arrival",
-  },
-  {
-    id: 10,
-    name: "Cleaver Beast",
-    price: 110,
-    category: "Kitchen",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "New Arrival",
-  },
-  {
-    id: 14,
-    name: "Urban Carry",
-    price: 75,
-    category: "Everyday",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-kitchen.png",
-    badge: "New Arrival",
-  },
-  {
-    id: 15,
-    name: "Marine Corps",
-    price: 155,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "New Arrival",
-  },
-  {
-    id: 16,
-    name: "Sushi Pro",
-    price: 220,
-    category: "Kitchen",
-    image: "/hero-kitchen.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "New Arrival",
-  },
-];
+  const mockCategories = [
+    {
+      id: 1,
+      title: "Hunting Series",
+      description: "Built for the wild. Rugged, durable, and razor-sharp.",
+      image: "/hero-knife.png",
+      link: "/collections/hunting",
+      count: 24,
+    },
+    {
+      id: 2,
+      title: "Kitchen Master",
+      description: "Elevate your culinary skills with professional-grade blades.",
+      image: "/hero-kitchen.png",
+      link: "/collections/kitchen",
+      count: 18,
+    },
+    {
+      id: 3,
+      title: "Tactical Ops",
+      description: "Precision engineered for mission-critical performance.",
+      image: "/hero-tactical.png",
+      link: "/collections/tactical",
+      count: 32,
+    },
+  ];
 
-export default function HomePage() {
+  const displayCategories = randomCategories && randomCategories.length > 0 ? randomCategories : mockCategories;
+
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
       <Navbar />
@@ -170,7 +49,7 @@ export default function HomePage() {
         <div className="flex justify-between items-end mb-12">
           <div className="text-left">
             <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4">
-              Choose Your <span className="text-primary">Weapon</span>
+              Explore Our <span className="text-primary">Knife Collection</span>
             </h2>
             <p className="text-gray-400 max-w-2xl">
               Select from our premium categories designed for specific needs.
@@ -185,37 +64,9 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              id: 1,
-              title: "Hunting Series",
-              description:
-                "Built for the wild. Rugged, durable, and razor-sharp.",
-              image: "/hero-knife.png",
-              link: "/collections/hunting",
-              count: 24,
-            },
-            {
-              id: 2,
-              title: "Kitchen Master",
-              description:
-                "Elevate your culinary skills with professional-grade blades.",
-              image: "/hero-kitchen.png",
-              link: "/collections/kitchen",
-              count: 18,
-            },
-            {
-              id: 3,
-              title: "Tactical Ops",
-              description:
-                "Precision engineered for mission-critical performance.",
-              image: "/hero-tactical.png",
-              link: "/collections/tactical",
-              count: 32,
-            },
-          ].map((collection) => (
+          {displayCategories.map((collection) => (
             <Link
-              key={collection.id}
+              key={collection.id || collection._id}
               href={collection.link}
               className="group relative h-[500px] overflow-hidden rounded-lg border border-gray-800 hover:border-primary transition-all duration-500"
             >
@@ -233,7 +84,7 @@ export default function HomePage() {
               <div className="absolute bottom-0 left-0 w-full p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                 <div className="mb-2">
                   <span className="text-primary font-bold uppercase tracking-widest text-xs">
-                    {collection.count} Products
+                    {(collection.count !== undefined && collection.count !== null) ? collection.count : 0} Products
                   </span>
                 </div>
                 <h3 className="text-3xl font-black uppercase tracking-tighter mb-3 text-white group-hover:text-primary transition-colors">
@@ -249,15 +100,6 @@ export default function HomePage() {
             </Link>
           ))}
         </div>
-
-        <div className="mt-8 text-center md:hidden">
-          <Link
-            href="/collections"
-            className="text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
-          >
-            See All &rarr;
-          </Link>
-        </div>
       </section>
 
       {/* Best Sellers Grid */}
@@ -268,7 +110,7 @@ export default function HomePage() {
               Best <span className="text-primary">Sellers</span>
             </h2>
             <Link
-              href="/shop/best-sellers"
+              href="/shop"
               className="hidden md:block text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
             >
               View All &rarr;
@@ -276,18 +118,9 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {bestSellers.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {displayBestSellers.slice(0, 8).map((product) => (
+              <ProductCard key={product.id || product._id} product={product} />
             ))}
-          </div>
-
-          <div className="mt-8 text-center md:hidden">
-            <Link
-              href="/shop/best-sellers"
-              className="text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
-            >
-              View All &rarr;
-            </Link>
           </div>
         </div>
       </section>
@@ -316,7 +149,7 @@ export default function HomePage() {
               and durability.
             </p>
             <Link
-              href="/shop/damascus"
+              href="/shop"
               className="inline-block bg-white text-black hover:bg-primary hover:text-white px-10 py-4 font-bold uppercase tracking-widest transition-colors"
             >
               Shop Now
@@ -333,7 +166,7 @@ export default function HomePage() {
               New <span className="text-primary">Arrivals</span>
             </h2>
             <Link
-              href="/shop/new-arrivals"
+              href="/shop"
               className="hidden md:block text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
             >
               View All &rarr;
@@ -341,18 +174,9 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {newArrivals.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {displayNewArrivals.slice(0, 8).map((product) => (
+              <ProductCard key={product.id || product._id} product={product} />
             ))}
-          </div>
-
-          <div className="mt-8 text-center md:hidden">
-            <Link
-              href="/shop/new-arrivals"
-              className="text-primary hover:text-white font-bold uppercase tracking-widest text-sm transition-colors"
-            >
-              View All &rarr;
-            </Link>
           </div>
         </div>
       </section>

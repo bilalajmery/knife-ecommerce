@@ -1,0 +1,245 @@
+[2025-12-23T11:53:30.790Z] POST /products
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryGq1MZAZfnxlv9ncN
+Content-Length: 38980952
+[2025-12-23T11:53:42.799Z] POST /products
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryeLgsD164OzC1i9iK
+Content-Length: 38980952
+[2025-12-23T11:55:33.810Z] POST /products
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryoClcIwTOGba9FBXD
+Content-Length: 38980954
+Error: Failed to parse body as FormData.
+TypeError: Failed to parse body as FormData.
+    at node:internal/deps/undici/undici:5675:27
+    at successSteps (node:internal/deps/undici/undici:5719:27)
+    at fullyReadBody (node:internal/deps/undici/undici:4609:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async consumeBody (node:internal/deps/undici/undici:5728:7)
+    at async POST (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\[root-of-the-server]__8f322ea9._.js:399:26)
+    at async AppRouteRouteModule.do (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37789)
+    at async AppRouteRouteModule.handle (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45045)
+    at async responseGenerator (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14333:38)
+    at async AppRouteRouteModule.handleResponse (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187851)
+    at async handleResponse (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14395:32)
+    at async handler (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14448:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1413:9)
+    at async DevServer.renderPageComponent (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1465:24)
+    at async DevServer.renderToResponseImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1515:32)
+    at async DevServer.pipeImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1021:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\next-server.js:394:17)
+    at async DevServer.handleRequestImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:912:17)
+    at async D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:382:20
+    at async Span.traceAsyncFn (D:\nextjs\knife-ecommerce\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:378:24)
+    at async invokeRender (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:436:24)
+    at async requestHandlerImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:484:13)
+    at async Server.requestListener (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\start-server.js:226:13)
+[2025-12-23T11:58:19.692Z] POST /products
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryNW3lJaTJ8VGAzo9r
+Content-Length: 38980952
+Error: Failed to parse body as FormData.
+TypeError: Failed to parse body as FormData.
+    at node:internal/deps/undici/undici:5675:27
+    at successSteps (node:internal/deps/undici/undici:5719:27)
+    at fullyReadBody (node:internal/deps/undici/undici:4609:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async consumeBody (node:internal/deps/undici/undici:5728:7)
+    at async POST (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\[root-of-the-server]__8f322ea9._.js:399:26)
+    at async AppRouteRouteModule.do (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37789)
+    at async AppRouteRouteModule.handle (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45045)
+    at async responseGenerator (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14333:38)
+    at async AppRouteRouteModule.handleResponse (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187851)
+    at async handleResponse (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14395:32)
+    at async handler (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14448:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1413:9)
+    at async DevServer.renderPageComponent (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1465:24)
+    at async DevServer.renderToResponseImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1515:32)
+    at async DevServer.pipeImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1021:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\next-server.js:394:17)
+    at async DevServer.handleRequestImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:912:17)
+    at async D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:382:20
+    at async Span.traceAsyncFn (D:\nextjs\knife-ecommerce\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:378:24)
+    at async invokeRender (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:436:24)
+    at async requestHandlerImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:484:13)
+    at async Server.requestListener (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\start-server.js:226:13)
+[2025-12-23T11:58:24.901Z] POST /products
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryNKgasr1qVIk2s5gi
+Content-Length: 38980996
+Error: Failed to parse body as FormData.
+TypeError: Failed to parse body as FormData.
+    at node:internal/deps/undici/undici:5675:27
+    at successSteps (node:internal/deps/undici/undici:5719:27)
+    at fullyReadBody (node:internal/deps/undici/undici:4609:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async consumeBody (node:internal/deps/undici/undici:5728:7)
+    at async POST (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\[root-of-the-server]__8f322ea9._.js:399:26)
+    at async AppRouteRouteModule.do (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37789)
+    at async AppRouteRouteModule.handle (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45045)
+    at async responseGenerator (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14333:38)
+    at async AppRouteRouteModule.handleResponse (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187851)
+    at async handleResponse (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14395:32)
+    at async handler (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14448:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1413:9)
+    at async DevServer.renderPageComponent (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1465:24)
+    at async DevServer.renderToResponseImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1515:32)
+    at async DevServer.pipeImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1021:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\next-server.js:394:17)
+    at async DevServer.handleRequestImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:912:17)
+    at async D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:382:20
+    at async Span.traceAsyncFn (D:\nextjs\knife-ecommerce\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:378:24)
+    at async invokeRender (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:436:24)
+    at async requestHandlerImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:484:13)
+    at async Server.requestListener (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\start-server.js:226:13)
+[2025-12-23T11:58:35.066Z] POST /products
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryK3u9mNnKjE8gqOcX
+Content-Length: 38981344
+Error: Failed to parse body as FormData.
+TypeError: Failed to parse body as FormData.
+    at node:internal/deps/undici/undici:5675:27
+    at successSteps (node:internal/deps/undici/undici:5719:27)
+    at fullyReadBody (node:internal/deps/undici/undici:4609:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async consumeBody (node:internal/deps/undici/undici:5728:7)
+    at async POST (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\[root-of-the-server]__8f322ea9._.js:399:26)
+    at async AppRouteRouteModule.do (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37789)
+    at async AppRouteRouteModule.handle (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45045)
+    at async responseGenerator (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14333:38)
+    at async AppRouteRouteModule.handleResponse (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187851)
+    at async handleResponse (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14395:32)
+    at async handler (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14448:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1413:9)
+    at async DevServer.renderPageComponent (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1465:24)
+    at async DevServer.renderToResponseImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1515:32)
+    at async DevServer.pipeImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1021:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\next-server.js:394:17)
+    at async DevServer.handleRequestImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:912:17)
+    at async D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:382:20
+    at async Span.traceAsyncFn (D:\nextjs\knife-ecommerce\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:378:24)
+    at async invokeRender (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:436:24)
+    at async requestHandlerImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:484:13)
+    at async Server.requestListener (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\start-server.js:226:13)
+Error: Unexpected end of form
+Error: Unexpected end of form
+    at Multipart._final (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_3b3da394._.js:16676:40)
+    at prefinish (node:internal/streams/writable:916:14)
+    at finishMaybe (node:internal/streams/writable:930:5)
+    at Writable.end (node:internal/streams/writable:845:5)
+    at Readable.onend (node:internal/streams/readable:948:10)
+    at Object.onceWrapper (node:events:638:28)
+    at Readable.emit (node:events:524:28)
+    at endReadableNT (node:internal/streams/readable:1698:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Error: Failed to parse body as FormData.
+TypeError: Failed to parse body as FormData.
+    at node:internal/deps/undici/undici:5675:27
+    at successSteps (node:internal/deps/undici/undici:5719:27)
+    at fullyReadBody (node:internal/deps/undici/undici:4609:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async consumeBody (node:internal/deps/undici/undici:5728:7)
+    at async POST (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\[root-of-the-server]__8f322ea9._.js:394:26)
+    at async AppRouteRouteModule.do (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37789)
+    at async AppRouteRouteModule.handle (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45045)
+    at async responseGenerator (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14333:38)
+    at async AppRouteRouteModule.handleResponse (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187851)
+    at async handleResponse (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14395:32)
+    at async handler (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14448:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1413:9)
+    at async DevServer.renderPageComponent (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1465:24)
+    at async DevServer.renderToResponseImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1515:32)
+    at async DevServer.pipeImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1021:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\next-server.js:394:17)
+    at async DevServer.handleRequestImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:912:17)
+    at async D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:382:20
+    at async Span.traceAsyncFn (D:\nextjs\knife-ecommerce\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:378:24)
+    at async invokeRender (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:436:24)
+    at async requestHandlerImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:484:13)
+    at async Server.requestListener (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\start-server.js:226:13)
+Error: Failed to parse body as FormData.
+TypeError: Failed to parse body as FormData.
+    at node:internal/deps/undici/undici:5675:27
+    at successSteps (node:internal/deps/undici/undici:5719:27)
+    at fullyReadBody (node:internal/deps/undici/undici:4609:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async consumeBody (node:internal/deps/undici/undici:5728:7)
+    at async POST (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\[root-of-the-server]__8f322ea9._.js:394:26)
+    at async AppRouteRouteModule.do (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37789)
+    at async AppRouteRouteModule.handle (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45045)
+    at async responseGenerator (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14333:38)
+    at async AppRouteRouteModule.handleResponse (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187851)
+    at async handleResponse (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14395:32)
+    at async handler (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14448:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1413:9)
+    at async DevServer.renderPageComponent (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1465:24)
+    at async DevServer.renderToResponseImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1515:32)
+    at async DevServer.pipeImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1021:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\next-server.js:394:17)
+    at async DevServer.handleRequestImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:912:17)
+    at async D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:382:20
+    at async Span.traceAsyncFn (D:\nextjs\knife-ecommerce\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:378:24)
+    at async invokeRender (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:436:24)
+    at async requestHandlerImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:484:13)
+    at async Server.requestListener (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\start-server.js:226:13)
+Error: Failed to parse body as FormData.
+TypeError: Failed to parse body as FormData.
+    at node:internal/deps/undici/undici:5675:27
+    at successSteps (node:internal/deps/undici/undici:5719:27)
+    at fullyReadBody (node:internal/deps/undici/undici:4609:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async consumeBody (node:internal/deps/undici/undici:5728:7)
+    at async POST (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\[root-of-the-server]__8f322ea9._.js:394:26)
+    at async AppRouteRouteModule.do (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37789)
+    at async AppRouteRouteModule.handle (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45045)
+    at async responseGenerator (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14333:38)
+    at async AppRouteRouteModule.handleResponse (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187851)
+    at async handleResponse (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14395:32)
+    at async handler (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14448:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1413:9)
+    at async DevServer.renderPageComponent (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1465:24)
+    at async DevServer.renderToResponseImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1515:32)
+    at async DevServer.pipeImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1021:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\next-server.js:394:17)
+    at async DevServer.handleRequestImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:912:17)
+    at async D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:382:20
+    at async Span.traceAsyncFn (D:\nextjs\knife-ecommerce\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:378:24)
+    at async invokeRender (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:436:24)
+    at async requestHandlerImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:484:13)
+    at async Server.requestListener (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\start-server.js:226:13)
+Error: Failed to parse body as FormData.
+TypeError: Failed to parse body as FormData.
+    at node:internal/deps/undici/undici:5675:27
+    at successSteps (node:internal/deps/undici/undici:5719:27)
+    at fullyReadBody (node:internal/deps/undici/undici:4609:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async consumeBody (node:internal/deps/undici/undici:5728:7)
+    at async POST (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\[root-of-the-server]__8f322ea9._.js:394:26)
+    at async AppRouteRouteModule.do (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:37789)
+    at async AppRouteRouteModule.handle (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:5:45045)
+    at async responseGenerator (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14333:38)
+    at async AppRouteRouteModule.handleResponse (D:\nextjs\knife-ecommerce\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.dev.js:1:187851)
+    at async handleResponse (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14395:32)
+    at async handler (D:\nextjs\knife-ecommerce\.next\dev\server\chunks\node_modules_next_eebe76ed._.js:14448:13)
+    at async DevServer.renderToResponseWithComponentsImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1413:9)
+    at async DevServer.renderPageComponent (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1465:24)
+    at async DevServer.renderToResponseImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1515:32)
+    at async DevServer.pipeImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:1021:25)
+    at async NextNodeServer.handleCatchallRenderRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\next-server.js:394:17)
+    at async DevServer.handleRequestImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\base-server.js:912:17)
+    at async D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:382:20
+    at async Span.traceAsyncFn (D:\nextjs\knife-ecommerce\node_modules\next\dist\trace\trace.js:157:20)
+    at async DevServer.handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\dev\next-dev-server.js:378:24)
+    at async invokeRender (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:240:21)
+    at async handleRequest (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:436:24)
+    at async requestHandlerImpl (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\router-server.js:484:13)
+    at async Server.requestListener (D:\nextjs\knife-ecommerce\node_modules\next\dist\server\lib\start-server.js:226:13)

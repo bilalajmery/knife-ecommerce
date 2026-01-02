@@ -1,19 +1,58 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
+  const [error, setError] = useState("");
+  const [randomCategories, setRandomCategories] = useState([]);
 
-  const handleSubscribe = (e) => {
+  useEffect(() => {
+    const fetchRandomCategories = async () => {
+      try {
+        const res = await fetch("/api/categories/random");
+        const data = await res.json();
+        if (data.success) {
+          setRandomCategories(data.categories);
+        }
+      } catch (error) {
+        console.error("Failed to fetch footer categories:", error);
+      }
+    };
+    fetchRandomCategories();
+  }, []);
+
+  const handleSubscribe = async (e) => {
     e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setTimeout(() => {
-        setSubscribed(false);
+    if (!email) return;
+
+    setSubscribing(true);
+    setError("");
+
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSubscribed(true);
         setEmail("");
-      }, 3000);
+        setTimeout(() => {
+          setSubscribed(false);
+        }, 5000);
+      } else {
+        setError(data.message || "Failed to subscribe");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setSubscribing(false);
     }
   };
 
@@ -32,11 +71,11 @@ export default function Footer() {
           <div className="lg:col-span-2 space-y-6">
             <Link
               href="/"
-              className="block w-24 h-24 hover:scale-105 transition-transform duration-300"
+              className="block w-60 h-24 hover:scale-105 transition-transform duration-300"
             >
               <img
                 src="/logo.png"
-                alt="BladeMaster Logo"
+                alt="KnifeMaster Logo"
                 className="object-contain w-full h-full"
               />
             </Link>
@@ -134,31 +173,38 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links / Dynamic Categories */}
           <div>
             <h3 className="text-white text-sm font-bold uppercase tracking-widest mb-6 relative inline-block">
-              Shop
+              Shop Collections
               <span className="absolute -bottom-2 left-0 w-12 h-0.5 bg-gradient-to-r from-primary to-transparent"></span>
             </h3>
             <ul className="space-y-3">
-              {[
-                "Hunting Knives",
-                "Kitchen Cutlery",
-                "Tactical Gear",
-                "Accessories",
-                "New Arrivals",
-                "Best Sellers",
-              ].map((item) => (
-                <li key={item}>
-                  <Link
-                    href="#"
-                    className="group flex items-center text-sm text-gray-400 hover:text-white transition-all duration-200"
-                  >
-                    <span className="w-0 group-hover:w-2 h-px bg-primary transition-all duration-200 mr-0 group-hover:mr-2"></span>
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              {randomCategories.length > 0 ? (
+                randomCategories.map((cat) => (
+                  <li key={cat.id}>
+                    <Link
+                      href={cat.link}
+                      className="group flex items-center text-sm text-gray-400 hover:text-white transition-all duration-200"
+                    >
+                      <span className="w-0 group-hover:w-2 h-px bg-primary transition-all duration-200 mr-0 group-hover:mr-2"></span>
+                      {cat.name}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                ["Best Sellers", "New Arrivals", "Hunting", "Tactical", "Kitchen", "Folding"].map((item) => (
+                  <li key={item}>
+                    <Link
+                      href="/shop"
+                      className="group flex items-center text-sm text-gray-400 hover:text-white transition-all duration-200"
+                    >
+                      <span className="w-0 group-hover:w-2 h-px bg-primary transition-all duration-200 mr-0 group-hover:mr-2"></span>
+                      {item}
+                    </Link>
+                  </li>
+                ))
+              )}
             </ul>
           </div>
 
@@ -215,7 +261,7 @@ export default function Footer() {
               </div>
               <button
                 type="submit"
-                disabled={subscribed}
+                disabled={subscribed || subscribing}
                 className="w-full bg-gradient-to-r from-primary to-red-700 hover:from-red-700 hover:to-primary text-white px-4 py-3.5 rounded-lg font-bold uppercase tracking-widest text-sm transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-primary/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {subscribed ? (
@@ -233,10 +279,15 @@ export default function Footer() {
                     </svg>
                     Subscribed!
                   </span>
+                ) : subscribing ? (
+                  "Subscribing..."
                 ) : (
                   "Subscribe"
                 )}
               </button>
+              {error && (
+                <p className="text-red-500 text-xs mt-2">{error}</p>
+              )}
             </form>
           </div>
         </div>
@@ -301,22 +352,22 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} BladeMaster. All rights reserved.
+            &copy; {new Date().getFullYear()} KnifeMaster. All rights reserved.
             Crafted with precision and passion.
           </p>
           <div className="flex flex-wrap justify-center space-x-6">
             {[
-              "Privacy Policy",
-              "Terms of Service",
-              "Cookie Policy",
-              "Sitemap",
+              { name: "Privacy Policy", href: "/privacy-policy" },
+              { name: "Terms of Service", href: "/terms-of-service" },
+              { name: "Cookie Policy", href: "/cookie-policy" },
+              { name: "Sitemap", href: "/site-map" },
             ].map((item) => (
               <Link
-                key={item}
-                href="#"
+                key={item.name}
+                href={item.href}
                 className="text-xs text-gray-500 hover:text-primary transition-colors uppercase tracking-wide hover:underline underline-offset-4"
               >
-                {item}
+                {item.name}
               </Link>
             ))}
           </div>

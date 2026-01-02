@@ -1,116 +1,162 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import ProductCard from "@/app/components/ProductCard";
 
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
+
 export default function ProductDetailPage({ params }) {
-  // Mock product data - in a real app, you'd fetch this based on params.id
-  const product = {
-    id: 1,
-    name: "Damascus Hunter",
-    price: 129,
-    originalPrice: 150,
-    description:
-      "Hand-forged with 67 layers of premium Damascus steel, this hunting knife is a masterpiece of craftsmanship. The blade features a stunning pattern and a razor-sharp edge that retains its sharpness through the toughest tasks. The handle is made from stabilized wood, offering a comfortable and secure grip.",
-    features: [
-      "67-layer Damascus Steel",
-      "Stabilized Wood Handle",
-      "Razor Sharp Edge",
-      "Includes Leather Sheath",
-      "Lifetime Warranty",
-    ],
-    images: [
-      "/hero-knife.png",
-      "/hero-tactical.png",
-      "/hero-kitchen.png",
-      "/hero-knife.png",
-    ],
-    category: "Hunting",
-    sku: "DH-001",
-    stock: "In Stock",
-  };
-
-  const relatedProducts = [
-    {
-      id: 2,
-      name: "Chef's Choice",
-      price: 189,
-      category: "Kitchen",
-      image: "/hero-kitchen.png",
-      hoverImage: "/hero-knife.png",
-      badge: "Top Rated",
-      originalPrice: 200,
-    },
-    {
-      id: 3,
-      name: "Tactical Ops",
-      price: 89,
-      category: "Tactical",
-      image: "/hero-tactical.png",
-      hoverImage: "/hero-kitchen.png",
-      badge: "New",
-    },
-    {
-      id: 4,
-      name: "Bushcraft Pro",
-      price: 145,
-      category: "Outdoor",
-      image: "/hero-knife.png",
-      hoverImage: "/hero-tactical.png",
-      badge: "Trending",
-    },
-    {
-      id: 5,
-      name: "Folding EDC",
-      price: 65,
-      category: "Everyday",
-      image: "/hero-tactical.png",
-      hoverImage: "/hero-knife.png",
-      badge: "",
-    },
-    {
-      id: 6,
-      name: "Stealth Fighter",
-      price: 210,
-      category: "Tactical",
-      image: "/hero-tactical.png",
-      hoverImage: "/hero-knife.png",
-      badge: "New Arrival",
-    },
-    {
-      id: 7,
-      name: "Santoku Master",
-      price: 165,
-      category: "Kitchen",
-      image: "/hero-kitchen.png",
-      hoverImage: "/hero-tactical.png",
-      badge: "New Arrival",
-    },
-    {
-      id: 8,
-      name: "Rescue Tool",
-      price: 55,
-      category: "Emergency",
-      image: "/hero-knife.png",
-      hoverImage: "/hero-kitchen.png",
-      badge: "New Arrival",
-    },
-    {
-      id: 9,
-      name: "Fillet Pro",
-      price: 45,
-      category: "Fishing",
-      image: "/hero-kitchen.png",
-      hoverImage: "/hero-knife.png",
-      badge: "New Arrival",
-    },
-  ];
-
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [activeTab, setActiveTab] = useState("specifications");
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  const handleAddToCart = async () => {
+    if (product) {
+      await addToCart(product, quantity);
+    }
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!product) return;
+    const productId = product._id || product.id;
+
+    if (isInWishlist(productId)) {
+      await removeFromWishlist(productId);
+    } else {
+      await addToWishlist(product);
+    }
+  };
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        // params is already resolved in the parent page
+        const slug = params?.slug;
+
+        if (!slug) {
+          console.error("CLIENT: No slug provided in params");
+          setError("Product not found");
+          setLoading(false);
+          return;
+        }
+
+        console.log("CLIENT: Fetching product with slug:", slug);
+        const url = `/api/products/${slug}`;
+        console.log("CLIENT: Fetch URL:", url);
+
+        const response = await fetch(url);
+        console.log("CLIENT: Fetch response status:", response.status);
+
+        const data = await response.json();
+        console.log("CLIENT: Fetch data success:", data.success);
+
+        if (data.success) {
+          setProduct(data.product);
+          // Set initial image if gallery exists
+          if (data.product.galleryImages && data.product.galleryImages.length > 0) {
+            // Ensure main image is also included or handled
+            // If galleryImages doesn't include mainImage, we might want to combine them or just use gallery
+          }
+        } else {
+          setError(data.message || "Failed to load product");
+        }
+      } catch (err) {
+        setError("An error occurred while fetching the product");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [params]);
+
+  // Fetch related products when product is loaded
+  useEffect(() => {
+    if (!product) return;
+
+    const fetchRelated = async () => {
+      try {
+        const categoryId = product.category?._id || product.category; // Handle populated or unpopulated
+        if (!categoryId) return;
+
+        const res = await fetch(`/api/products?category=${categoryId}&exclude=${product._id}&limit=4`);
+        const data = await res.json();
+
+        if (data.success) {
+          setRelatedProducts(data.products);
+        }
+      } catch (err) {
+        console.error("Failed to fetch related products", err);
+      }
+    };
+
+    fetchRelated();
+  }, [product]);
+
+  // Determine available tabs based on product data (safe to run always, empty if no product)
+  const availableTabs = product ? [
+    { id: 'specifications', label: 'Specifications', content: product.specifications },
+    { id: 'materials', label: 'Materials', content: product.materials },
+    { id: 'dimensions', label: 'Dimensions', content: product.dimensions },
+    { id: 'usage', label: 'Usage', content: product.usage },
+  ].filter(tab => tab.content) : [];
+
+  // Set active tab to first available on load, if not already set correctly
+  useEffect(() => {
+    if (availableTabs.length > 0 && !availableTabs.find(t => t.id === activeTab)) {
+      setActiveTab(availableTabs[0].id);
+    }
+  }, [availableTabs, activeTab]);
+
+  const [relatedProducts, setRelatedProducts] = useState([]);
+
+  if (loading) {
+    return (
+      <div className="bg-black min-h-screen text-white font-sans flex items-center justify-center">
+        <Navbar />
+        <div className="animate-pulse">Loading...</div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="bg-black min-h-screen text-white font-sans">
+        <Navbar />
+        <div className="py-32 text-center">
+          <h1 className="text-3xl font-bold mb-4">Product Not Found</h1>
+          <p className="text-gray-400 mb-8">{error || "The requested product does not exist."}</p>
+          <Link href="/shop" className="bg-primary px-6 py-3 rounded text-white font-bold uppercase">
+            Back to Shop
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Calculate discount if needed
+  const discountPercentage = product.originalPrice && product.price
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    : 0;
+
+  // Use gallery images or fallback to main image
+  const images = product.galleryImages && product.galleryImages.length > 0
+    ? product.galleryImages
+    : [product.mainImage, product.hoverImage].filter(Boolean);
+
+
 
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
@@ -120,7 +166,7 @@ export default function ProductDetailPage({ params }) {
       <div className="relative py-32 mb-12 bg-gray-900 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src={product.images[0]}
+            src={images[0] || "/placeholder.png"}
             alt={product.name}
             fill
             className="object-cover opacity-40"
@@ -142,47 +188,51 @@ export default function ProductDetailPage({ params }) {
           </nav>
 
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4">
-            {product.name}
+            {(() => {
+              const words = product.name.split(" ");
+              if (words.length <= 1) return product.name;
+              const lastWord = words.pop();
+              return (
+                <>
+                  {words.join(" ")} <span className="text-primary">{lastWord}</span>
+                </>
+              );
+            })()}
           </h1>
           <p className="text-primary font-bold uppercase tracking-widest text-lg">
-            {product.category} Series
+            {product.category?.name || "Collection"} Series
           </p>
         </div>
       </div>
 
       <main className="pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-20">
           {/* Image Gallery */}
           <div className="space-y-4">
             <div className="relative aspect-square bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
               <Image
-                src={product.images[selectedImage]}
+                src={images[selectedImage] || "/placeholder.png"}
                 alt={product.name}
                 fill
                 className="object-cover"
                 priority
               />
-              {product.originalPrice > product.price && (
+              {/* Using same discount logic as Product Card */}
+              {product.discount > 0 && (
                 <div className="absolute top-4 left-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-md">
-                  {Math.round(
-                    ((product.originalPrice - product.price) /
-                      product.originalPrice) *
-                      100
-                  )}
-                  % OFF
+                  {product.discount}% OFF
                 </div>
               )}
             </div>
             <div className="grid grid-cols-4 gap-4">
-              {product.images.map((img, idx) => (
+              {images.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
-                  className={`relative aspect-square bg-gray-900 rounded-md overflow-hidden border-2 transition-colors ${
-                    selectedImage === idx
-                      ? "border-primary"
-                      : "border-transparent hover:border-gray-700"
-                  }`}
+                  className={`relative aspect-square bg-gray-900 rounded-md overflow-hidden border-2 transition-colors ${selectedImage === idx
+                    ? "border-primary"
+                    : "border-transparent hover:border-gray-700"
+                    }`}
                 >
                   <Image
                     src={img}
@@ -199,48 +249,42 @@ export default function ProductDetailPage({ params }) {
           <div className="flex flex-col">
             <div className="flex items-center gap-4 mb-6">
               <span className="text-3xl font-bold text-white">
-                ${product.price}
+                ${(product.discount > 0 ? product.price * (1 - product.discount / 100) : product.price).toFixed(2)}
               </span>
-              {product.originalPrice && (
+              {(product.originalPrice || (product.discount > 0 ? product.price : null)) && (
                 <span className="text-xl text-gray-500 line-through">
-                  ${product.originalPrice}
+                  ${(product.originalPrice || product.price).toFixed(2)}
                 </span>
               )}
               <span className="text-sm text-green-400 font-medium bg-green-400/10 px-2 py-1 rounded">
-                {product.stock}
+                In Stock
               </span>
             </div>
 
-            <p className="text-gray-300 leading-relaxed mb-8">
-              {product.description}
-            </p>
+            {product.status !== "active" && (
+              <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-md mb-6 font-bold uppercase tracking-wider text-center">
+                This product is currently unavailable
+              </div>
+            )}
 
-            {/* Features List */}
-            <div className="mb-8">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4">
-                Key Features
-              </h3>
-              <ul className="space-y-2">
-                {product.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-center text-gray-400">
-                    <svg
-                      className="w-5 h-5 text-primary mr-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <div className="max-w-lg overflow-hidden">
+              <div
+                className="text-gray-300 leading-relaxed mb-8 prose prose-invert"
+                dangerouslySetInnerHTML={{ __html: product.description }}
+              /></div>
+
+            {/* Features List - Rendered as HTML - HIDDEN IF EMPTY */}
+            {product.features && (
+              <div className="mb-8">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-white mb-4">
+                  Key Features
+                </h3>
+                <div
+                  className="text-gray-400 prose prose-invert prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: product.features }}
+                />
+              </div>
+            )}
 
             <div className="border-t border-gray-800 my-8"></div>
 
@@ -263,7 +307,10 @@ export default function ProductDetailPage({ params }) {
                   +
                 </button>
               </div>
-              <button className="flex-1 bg-primary text-white font-bold uppercase tracking-widest py-4 px-8 rounded-md hover:bg-red-700 transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+              <button
+                onClick={handleAddToCart}
+                className="flex-1 bg-primary text-white font-bold uppercase tracking-widest py-4 px-8 rounded-md hover:bg-red-700 transition-colors shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"
@@ -280,11 +327,19 @@ export default function ProductDetailPage({ params }) {
                 </svg>
                 Add to Cart
               </button>
-              <button className="p-4 border border-gray-700 rounded-md hover:border-primary hover:text-primary transition-colors text-gray-400">
+              {/* Wishlist Button */}
+              <button
+                onClick={handleWishlistToggle}
+                className={`p-4 border rounded-md transition-all ${isInWishlist(product._id || product.id)
+                    ? 'border-primary text-primary bg-primary/10'
+                    : 'border-gray-700 text-gray-400 hover:border-primary hover:text-primary'
+                  }`}
+                title={isInWishlist(product._id || product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
-                  fill="none"
+                  fill={isInWishlist(product._id || product.id) ? "currentColor" : "none"}
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
@@ -300,10 +355,40 @@ export default function ProductDetailPage({ params }) {
 
             <div className="text-xs text-gray-500 space-y-2">
               <p>SKU: {product.sku}</p>
-              <p>Category: {product.category}</p>
+              <p>Collection: {product.category?.name || "Uncategorized"}</p>
             </div>
           </div>
         </div>
+
+        {/* Product Details Tabs - ONLY SHOW IF TABS EXIST */}
+        {availableTabs.length > 0 && (
+          <div className="mb-20">
+            <div className="border-b border-gray-800 mb-8 overflow-x-auto">
+              <nav className="flex space-x-8 min-w-max">
+                {availableTabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors border-b-2 ${activeTab === tab.id
+                      ? "border-primary text-primary"
+                      : "border-transparent text-gray-400 hover:text-white hover:border-gray-700"
+                      }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            <div className="min-h-[200px] text-gray-300 leading-relaxed">
+              {/* Render content of active tab */}
+              <div
+                className="prose prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: availableTabs.find(t => t.id === activeTab)?.content || "" }}
+              />
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Related Products */}
@@ -314,7 +399,7 @@ export default function ProductDetailPage({ params }) {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {relatedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product._id || product.id} product={product} />
             ))}
           </div>
         </div>

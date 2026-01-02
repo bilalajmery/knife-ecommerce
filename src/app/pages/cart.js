@@ -1,54 +1,87 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
-
-// Mock Data for Cart
-const initialCart = [
-  {
-    id: 1,
-    name: "Damascus Hunter",
-    price: 129,
-    category: "Hunting",
-    image: "/hero-knife.png",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "Chef's Choice",
-    price: 189,
-    category: "Kitchen",
-    image: "/hero-kitchen.png",
-    quantity: 2,
-  },
-];
+import { useCart } from "@/context/CartContext";
+import { toast } from "sonner";
 
 export default function CartPage() {
-  const [cart, setCart] = useState(initialCart);
+  const { cart, updateQuantity, removeFromCart, addToCart, loading, applyPromo, removePromo } = useCart();
   const [promoCode, setPromoCode] = useState("");
+  const [randomProducts, setRandomProducts] = useState([]);
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
-    setCart(
-      cart.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
+  // Derived state from cart context
+  const appliedPromo = cart?.appliedPromo || "";
+  const discount = cart?.discount || 0;
+
+  console.log("CartPage Render. Cart:", JSON.stringify(cart));
+  console.log("Derived State - Discount:", discount, "Applied:", appliedPromo);
+
+  useEffect(() => {
+    async function fetchRandomProducts() {
+      try {
+        const res = await fetch("/api/products?random=true&limit=3");
+        const data = await res.json();
+        if (data.success) {
+          setRandomProducts(data.products);
+        }
+      } catch (error) {
+        console.error("Failed to fetch random products:", error);
+      }
+    }
+    fetchRandomProducts();
+  }, []);
+
+  const handleAddToCart = async (product) => {
+    await addToCart(product, 1);
+    toast.success(`Added ${product.name} to cart`);
+  };
+
+  const handleRemovePromo = async () => {
+    const result = await removePromo();
+    if (result.success) {
+      toast.success("Promo code removed");
+    } else {
+      toast.error("Failed to remove promo");
+    }
+  };
+
+  const handleApplyPromo = async () => {
+    if (!promoCode) return;
+    const result = await applyPromo(promoCode);
+
+    if (result.success) {
+      toast.success(result.message);
+      setPromoCode("");
+    } else {
+      toast.error(result.message);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-black min-h-screen text-white font-sans flex items-center justify-center">
+        <Navbar />
+        <div className="animate-pulse">Loading Cart...</div>
+        <Footer />
+      </div>
     );
-  };
+  }
 
-  const removeFromCart = (id) => {
-    setCart(cart.filter((item) => item.id !== id));
-  };
+  const cartItems = cart.items || [];
 
-  const subtotal = cart.reduce(
+  const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
+
   const freeShippingThreshold = 150;
   const shipping = subtotal > freeShippingThreshold ? 0 : 15;
-  const total = subtotal + shipping;
+  const discountAmount = (subtotal * discount) / 100;
+  // Use context's total if available, otherwise calculate locally
+  const total = cart.totalAmount || (subtotal + shipping - discountAmount);
   const progress = Math.min((subtotal / freeShippingThreshold) * 100, 100);
 
   return (
@@ -86,7 +119,7 @@ export default function CartPage() {
       </div>
 
       <main className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-24">
-        {cart.length > 0 ? (
+        {cartItems.length > 0 ? (
           <div className="flex flex-col lg:flex-row gap-12">
             {/* Main Cart Section */}
             <div className="lg:w-2/3">
@@ -96,9 +129,8 @@ export default function CartPage() {
                   <span className="text-sm font-bold uppercase tracking-wide text-gray-300">
                     {subtotal >= freeShippingThreshold
                       ? "You've unlocked Free Shipping!"
-                      : `Add $${
-                          freeShippingThreshold - subtotal
-                        } more for Free Shipping`}
+                      : `Add $${freeShippingThreshold - subtotal
+                      } more for Free Shipping`}
                   </span>
                   <span className="text-sm font-bold text-primary">
                     {Math.round(progress)}%
@@ -122,100 +154,105 @@ export default function CartPage() {
 
               {/* Cart Items List */}
               <div className="space-y-6">
-                {cart.map((item) => (
-                  <div
-                    key={item.id}
-                    className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center bg-gray-900/30 border border-gray-800 p-4 rounded-lg sm:bg-transparent sm:border-0 sm:p-0 sm:rounded-none sm:border-b sm:border-gray-800 sm:pb-6"
-                  >
-                    {/* Product Info */}
-                    <div className="col-span-1 sm:col-span-6 flex items-center gap-4">
-                      <div className="relative w-24 h-24 flex-shrink-0 bg-gray-800 rounded-md overflow-hidden border border-gray-700">
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold uppercase tracking-wide text-white mb-1">
-                          <Link
-                            href={`/product/${item.id}`}
-                            className="hover:text-primary transition-colors"
-                          >
-                            {item.name}
-                          </Link>
-                        </h3>
-                        <p className="text-sm text-gray-400 mb-2">
+                {cartItems.map((item) => {
+                  const productId = item.product._id || item.product.id || item.product;
+                  return (
+                    <div
+                      key={productId}
+                      className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center bg-gray-900/30 border border-gray-800 p-4 rounded-lg sm:bg-transparent sm:border-0 sm:p-0 sm:rounded-none sm:border-b sm:border-gray-800 sm:pb-6"
+                    >
+                      {/* Product Info */}
+                      <div className="col-span-1 sm:col-span-6 flex items-center gap-4">
+                        <div className="relative w-24 h-24 flex-shrink-0 bg-gray-800 rounded-md overflow-hidden border border-gray-700">
+                          <Image
+                            src={item.image || "/placeholder.png"}
+                            alt={item.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold uppercase tracking-wide text-white mb-1">
+                            <Link
+                              href={`/product/${item.slug}`}
+                              className="hover:text-primary transition-colors"
+                            >
+                              {item.name}
+                            </Link>
+                          </h3>
+                          {/* 
+                         <p className="text-sm text-gray-400 mb-2">
                           {item.category}
-                        </p>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-xs text-red-500 hover:text-red-400 uppercase tracking-wider font-bold flex items-center gap-1"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-3 w-3"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
+                        </p> 
+                        */}
+                          <button
+                            onClick={() => removeFromCart(productId)}
+                            className="text-xs text-red-500 hover:text-red-400 uppercase tracking-wider font-bold flex items-center gap-1"
                           >
-                            <path
-                              fillRule="evenodd"
-                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          Remove
-                        </button>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-3 w-3"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            Remove
+                          </button>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Price */}
-                    <div className="col-span-1 sm:col-span-2 text-left sm:text-center">
-                      <span className="sm:hidden text-gray-500 text-xs uppercase font-bold mr-2">
-                        Price:
-                      </span>
-                      <span className="text-white font-bold">
-                        ${item.price}
-                      </span>
-                    </div>
-
-                    {/* Quantity */}
-                    <div className="col-span-1 sm:col-span-2 flex justify-start sm:justify-center">
-                      <div className="flex items-center border border-gray-700 rounded-md bg-gray-900">
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity - 1)
-                          }
-                          className="px-3 py-1 text-gray-400 hover:text-white transition-colors hover:bg-gray-800"
-                        >
-                          -
-                        </button>
-                        <span className="px-3 py-1 text-white font-bold w-8 text-center text-sm">
-                          {item.quantity}
+                      {/* Price */}
+                      <div className="col-span-1 sm:col-span-2 text-left sm:text-center">
+                        <span className="sm:hidden text-gray-500 text-xs uppercase font-bold mr-2">
+                          Price:
                         </span>
-                        <button
-                          onClick={() =>
-                            updateQuantity(item.id, item.quantity + 1)
-                          }
-                          className="px-3 py-1 text-gray-400 hover:text-white transition-colors hover:bg-gray-800"
-                        >
-                          +
-                        </button>
+                        <span className="text-white font-bold">
+                          ${item.price.toFixed(2)}
+                        </span>
+                      </div>
+
+                      {/* Quantity */}
+                      <div className="col-span-1 sm:col-span-2 flex justify-start sm:justify-center">
+                        <div className="flex items-center border border-gray-700 rounded-md bg-gray-900">
+                          <button
+                            onClick={() =>
+                              updateQuantity(productId, item.quantity - 1)
+                            }
+                            className="px-3 py-1 text-gray-400 hover:text-white transition-colors hover:bg-gray-800"
+                          >
+                            -
+                          </button>
+                          <span className="px-3 py-1 text-white font-bold w-8 text-center text-sm">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() =>
+                              updateQuantity(productId, item.quantity + 1)
+                            }
+                            className="px-3 py-1 text-gray-400 hover:text-white transition-colors hover:bg-gray-800"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Total */}
+                      <div className="col-span-1 sm:col-span-2 text-left sm:text-right">
+                        <span className="sm:hidden text-gray-500 text-xs uppercase font-bold mr-2">
+                          Total:
+                        </span>
+                        <span className="text-primary font-bold text-lg">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </span>
                       </div>
                     </div>
-
-                    {/* Total */}
-                    <div className="col-span-1 sm:col-span-2 text-left sm:text-right">
-                      <span className="sm:hidden text-gray-500 text-xs uppercase font-bold mr-2">
-                        Total:
-                      </span>
-                      <span className="text-primary font-bold text-lg">
-                        ${item.price * item.quantity}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* You Might Also Like */}
@@ -224,33 +261,14 @@ export default function CartPage() {
                   You Might Also Like
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  {[
-                    {
-                      id: 101,
-                      name: "Sharpening Stone",
-                      price: 45,
-                      image: "/hero-knife.png",
-                    },
-                    {
-                      id: 102,
-                      name: "Leather Sheath",
-                      price: 30,
-                      image: "/hero-tactical.png",
-                    },
-                    {
-                      id: 103,
-                      name: "Maintenance Kit",
-                      price: 25,
-                      image: "/hero-kitchen.png",
-                    },
-                  ].map((product) => (
+                  {randomProducts.map((product) => (
                     <div
-                      key={product.id}
+                      key={product._id}
                       className="group bg-gray-900/30 border border-gray-800 rounded-lg p-4 hover:border-primary transition-colors"
                     >
                       <div className="relative h-40 mb-4 bg-gray-800 rounded overflow-hidden">
                         <Image
-                          src={product.image}
+                          src={product.mainImage || "/placeholder.png"}
                           alt={product.name}
                           fill
                           className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -263,7 +281,10 @@ export default function CartPage() {
                         <span className="text-primary font-bold">
                           ${product.price}
                         </span>
-                        <button className="text-xs uppercase font-bold text-gray-400 hover:text-white border-b border-gray-600 hover:border-white transition-all">
+                        <button
+                          onClick={() => handleAddToCart(product)}
+                          className="text-xs uppercase font-bold text-gray-400 hover:text-white border-b border-gray-600 hover:border-white transition-all"
+                        >
                           Add to Cart
                         </button>
                       </div>
@@ -283,7 +304,7 @@ export default function CartPage() {
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between text-gray-400">
                     <span>Subtotal</span>
-                    <span className="text-white font-bold">${subtotal}</span>
+                    <span className="text-white font-bold">${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-gray-400">
                     <span>Shipping</span>
@@ -291,7 +312,7 @@ export default function CartPage() {
                       {shipping === 0 ? (
                         <span className="text-green-500">Free</span>
                       ) : (
-                        `$${shipping}`
+                        `$${shipping.toFixed(2)}`
                       )}
                     </span>
                   </div>
@@ -299,6 +320,12 @@ export default function CartPage() {
                     <span>Tax (Estimated)</span>
                     <span className="text-white font-bold">$0.00</span>
                   </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-green-500">
+                      <span>Discount ({discount}%)</span>
+                      <span className="font-bold">-${discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="border-t border-gray-800 pt-4 mb-8">
@@ -306,7 +333,7 @@ export default function CartPage() {
                     <span className="text-lg font-bold text-white">Total</span>
                     <div className="text-right">
                       <span className="text-3xl font-black text-primary block leading-none">
-                        ${total}
+                        ${total.toFixed(2)}
                       </span>
                       <span className="text-xs text-gray-500">USD</span>
                     </div>
@@ -318,18 +345,38 @@ export default function CartPage() {
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
                     Promo Code
                   </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
-                      placeholder="Enter code"
-                      className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-primary text-white placeholder-gray-600"
-                    />
-                    <button className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded text-xs font-bold uppercase tracking-wider transition-colors">
-                      Apply
-                    </button>
-                  </div>
+                  {appliedPromo ? (
+                    <div className="bg-gray-800 border border-green-500/30 rounded p-3 flex justify-between items-center">
+                      <div>
+                        <span className="block text-green-500 font-bold uppercase tracking-wider text-sm">{appliedPromo}</span>
+                        <span className="text-xs text-gray-400">Discount Applied</span>
+                      </div>
+                      <button
+                        onClick={handleRemovePromo}
+                        className="text-gray-400 hover:text-white transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={promoCode}
+                        onChange={(e) => setPromoCode(e.target.value)}
+                        placeholder="Enter code"
+                        className="flex-1 bg-black border border-gray-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-primary text-white placeholder-gray-600"
+                      />
+                      <button
+                        onClick={handleApplyPromo}
+                        className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded text-xs font-bold uppercase tracking-wider transition-colors"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <Link href="/checkout">

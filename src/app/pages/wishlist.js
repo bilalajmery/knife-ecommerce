@@ -1,52 +1,25 @@
 "use client";
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import ProductCard from "@/app/components/ProductCard";
-
-// Mock Data for Wishlist
-const initialWishlist = [
-  {
-    id: 1,
-    name: "Damascus Hunter",
-    price: 129,
-    category: "Hunting",
-    image: "/hero-knife.png",
-    hoverImage: "/hero-tactical.png",
-    badge: "Best Seller",
-    originalPrice: 150,
-    inStock: true,
-  },
-  {
-    id: 3,
-    name: "Tactical Ops",
-    price: 89,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-kitchen.png",
-    badge: "New",
-    inStock: true,
-  },
-  {
-    id: 6,
-    name: "Stealth Fighter",
-    price: 210,
-    category: "Tactical",
-    image: "/hero-tactical.png",
-    hoverImage: "/hero-knife.png",
-    badge: "New Arrival",
-    inStock: false,
-  },
-];
+import { useWishlist } from "@/context/WishlistContext";
 
 export default function WishlistPage() {
-  const [wishlist, setWishlist] = useState(initialWishlist);
+  const { wishlist, removeFromWishlist, loading } = useWishlist();
 
-  const removeFromWishlist = (id) => {
-    setWishlist(wishlist.filter((item) => item.id !== id));
-  };
+  if (loading) {
+    return (
+      <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-pulse text-xl">Loading wishlist...</div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
@@ -78,14 +51,17 @@ export default function WishlistPage() {
       <main className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-24">
         {wishlist.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {wishlist.map((product) => (
-              <div key={product.id} className="relative group">
-                <ProductCard
-                  product={product}
-                  onRemove={() => removeFromWishlist(product.id)}
-                />
-              </div>
-            ))}
+            {wishlist.map((product) => {
+              const productId = product._id || product.id;
+              return (
+                <div key={productId} className="relative group">
+                  <ProductCard
+                    product={product}
+                    onRemove={() => removeFromWishlist(productId)}
+                  />
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-20 bg-gray-900/50 rounded-lg border border-gray-800">

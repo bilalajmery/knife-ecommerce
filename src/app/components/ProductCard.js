@@ -1,28 +1,59 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 export default function ProductCard({ product, className = "", onRemove }) {
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
   // Calculate discount percentage if not provided but original price exists
   const discountPercentage =
     product.discount ||
     (product.originalPrice && product.price
       ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) *
-            100
-        )
+        ((product.originalPrice - product.price) / product.originalPrice) *
+        100
+      )
       : 0);
+
+  // Calculate prices based on discount
+  const originalPrice = product.originalPrice || (product.discount > 0 ? product.price : null);
+  const finalPrice = product.discount > 0
+    ? product.price * (1 - product.discount / 100)
+    : product.price;
+
+  const productId = product._id || product.id;
+  const inWishlist = isInWishlist(productId);
+
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await addToCart(product, 1);
+  };
+
+  const handleWishlistToggle = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (inWishlist) {
+      await removeFromWishlist(productId);
+    } else {
+      await addToWishlist(product);
+    }
+  };
 
   return (
     <div className={`group/card relative ${className}`}>
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg mb-4">
-        <Link href={`/product/${product.id}`} className="block h-full w-full">
+        <Link href={`/product/${product.slug}`} className="block h-full w-full">
           {/* Main Image */}
           <div className="absolute inset-0 transition-opacity duration-500 z-10 group-hover/card:opacity-0">
-            {product.image ? (
+            {(product.mainImage || product.image) ? (
               <Image
-                src={product.image}
+                src={product.mainImage || product.image}
                 alt={product.name}
                 fill
                 className="object-cover"
@@ -38,7 +69,7 @@ export default function ProductCard({ product, className = "", onRemove }) {
           {/* Hover Image */}
           <div className="absolute inset-0 transition-opacity duration-500 opacity-0 group-hover/card:opacity-100 z-10">
             <Image
-              src={product.hoverImage || product.image || "/placeholder.png"}
+              src={product.hoverImage || product.mainImage || product.image || "/placeholder.png"}
               alt={`${product.name} hover`}
               fill
               className="object-cover scale-105 transition-transform duration-700"
@@ -95,12 +126,16 @@ export default function ProductCard({ product, className = "", onRemove }) {
             </button>
           ) : (
             <button
-              className="p-2 rounded-full bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-red-50 hover:text-red-600 transition-all duration-300 opacity-0 group-hover/card:opacity-100 translate-x-4 group-hover/card:translate-x-0 shadow-sm"
-              title="Add to Wishlist"
+              onClick={handleWishlistToggle}
+              className={`p-2 rounded-full backdrop-blur-sm transition-all duration-300 opacity-0 group-hover/card:opacity-100 translate-x-4 group-hover/card:translate-x-0 shadow-sm ${inWishlist
+                  ? 'bg-red-600 text-white hover:bg-red-700'
+                  : 'bg-white/90 text-gray-800 hover:bg-red-50 hover:text-red-600'
+                }`}
+              title={inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                fill="none"
+                fill={inWishlist ? "currentColor" : "none"}
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
@@ -117,6 +152,7 @@ export default function ProductCard({ product, className = "", onRemove }) {
 
           {/* Add to Cart Button */}
           <button
+            onClick={handleAddToCart}
             className="p-2 rounded-full bg-white/90 backdrop-blur-sm text-gray-800 hover:bg-primary hover:text-white transition-all duration-300 opacity-0 group-hover/card:opacity-100 translate-x-4 group-hover/card:translate-x-0 shadow-sm delay-75"
             title="Add to Cart"
           >
@@ -143,21 +179,21 @@ export default function ProductCard({ product, className = "", onRemove }) {
         <div className="flex justify-between items-start">
           <div className="flex-1 min-w-0">
             <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-              {product.category || "Knives"}
+              {product.category?.name || product.category || "Knives"}
             </p>
             <h3 className="text-sm font-medium text-gray-200 truncate group-hover/card:text-primary transition-colors">
-              <Link href={`/product/${product.id}`}>{product.name}</Link>
+              <Link href={`/product/${product.slug}`}>{product.name}</Link>
             </h3>
           </div>
         </div>
 
         <div className="flex items-center gap-2 mt-1">
           <span className="text-sm font-bold text-gray-200 group-hover/card:text-primary transition-colors">
-            ${product.price}
+            ${finalPrice.toFixed(2)}
           </span>
-          {product.originalPrice && product.originalPrice > product.price && (
-            <span className="text-xs text-gray-200 line-through group-hover/card:text-primary transition-colors">
-              ${product.originalPrice}
+          {originalPrice && (
+            <span className="text-xs text-gray-500 line-through group-hover/card:text-primary transition-colors">
+              ${Number(originalPrice).toFixed(2)}
             </span>
           )}
         </div>

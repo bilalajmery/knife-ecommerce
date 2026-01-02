@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
+import Loader from "@/app/components/Loader";
 import {
   MagnifyingGlassIcon,
   TruckIcon,
@@ -42,12 +43,13 @@ export default function TrackOrder() {
           { status: "Delivered", date: "Est. Oct 24, 2025", completed: false },
         ],
       });
-    }, 1500);
+    }, 1000);
   };
 
   return (
     <React.Fragment>
       <Navbar />
+      {isTracking && <Loader />}
       <div className="min-h-screen bg-black text-gray-300 font-sans selection:bg-primary/30">
         {/* Header */}
         <div className="relative py-32 mb-12 bg-gray-900 overflow-hidden">
@@ -108,6 +110,52 @@ export default function TrackOrder() {
             </form>
           </div>
         </div>
+
+        {/* Default State */}
+        {!result && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-gray-900/40 border border-gray-800 p-8 rounded-3xl backdrop-blur-sm hover:bg-gray-900/60 transition-colors group">
+                <div className="w-14 h-14 bg-black border border-gray-800 rounded-2xl flex items-center justify-center mb-6 group-hover:border-primary/50 transition-colors">
+                  <MapPinIcon className="w-7 h-7 text-gray-400 group-hover:text-primary transition-colors" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">
+                  Real-Time Tracking
+                </h3>
+                <p className="text-gray-400 leading-relaxed">
+                  Monitor your package's journey from our warehouse to your
+                  doorstep with live status updates.
+                </p>
+              </div>
+
+              <div className="bg-gray-900/40 border border-gray-800 p-8 rounded-3xl backdrop-blur-sm hover:bg-gray-900/60 transition-colors group">
+                <div className="w-14 h-14 bg-black border border-gray-800 rounded-2xl flex items-center justify-center mb-6 group-hover:border-primary/50 transition-colors">
+                  <TruckIcon className="w-7 h-7 text-gray-400 group-hover:text-primary transition-colors" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">
+                  Global Logistics
+                </h3>
+                <p className="text-gray-400 leading-relaxed">
+                  Our advanced logistics network ensures your tactical gear
+                  reaches you wherever you are.
+                </p>
+              </div>
+
+              <div className="bg-gray-900/40 border border-gray-800 p-8 rounded-3xl backdrop-blur-sm hover:bg-gray-900/60 transition-colors group">
+                <div className="w-14 h-14 bg-black border border-gray-800 rounded-2xl flex items-center justify-center mb-6 group-hover:border-primary/50 transition-colors">
+                  <CheckCircleIcon className="w-7 h-7 text-gray-400 group-hover:text-primary transition-colors" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">
+                  Verified Delivery
+                </h3>
+                <p className="text-gray-400 leading-relaxed">
+                  Secure handling and verified delivery confirmation for your
+                  peace of mind.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Results Section */}
         {result && (

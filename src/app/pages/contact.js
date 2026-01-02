@@ -1,10 +1,58 @@
 "use client";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
+import { toast } from "sonner";
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "General Inquiry",
+    message: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const res = await fetch("/api/contact/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success(data.message);
+        setFormData({
+          name: "",
+          email: "",
+          subject: "General Inquiry",
+          message: "",
+        });
+      } else {
+        toast.error(data.message || "Failed to send message");
+      }
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
       <Navbar />
@@ -47,7 +95,7 @@ export default function ContactPage() {
             <h2 className="text-2xl font-black uppercase tracking-wider mb-8">
               Send us a Message
             </h2>
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">
@@ -55,6 +103,10 @@ export default function ContactPage() {
                   </label>
                   <input
                     type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
                     className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
                     placeholder="John Doe"
                   />
@@ -65,6 +117,10 @@ export default function ContactPage() {
                   </label>
                   <input
                     type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
                     className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
                     placeholder="john@example.com"
                   />
@@ -74,7 +130,12 @@ export default function ContactPage() {
                 <label className="block text-sm font-bold uppercase tracking-wider text-gray-400 mb-2">
                   Subject
                 </label>
-                <select className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors">
+                <select
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
+                >
                   <option>General Inquiry</option>
                   <option>Order Status</option>
                   <option>Custom Order</option>
@@ -86,6 +147,10 @@ export default function ContactPage() {
                   Message
                 </label>
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
                   rows="6"
                   className="w-full bg-gray-900 border border-gray-800 rounded-md px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors"
                   placeholder="How can we help you?"
@@ -93,9 +158,10 @@ export default function ContactPage() {
               </div>
               <button
                 type="submit"
-                className="w-full bg-primary text-white font-bold uppercase tracking-widest py-4 rounded-md hover:bg-red-700 transition-colors shadow-lg shadow-primary/20"
+                disabled={submitting}
+                className="w-full bg-primary text-white font-bold uppercase tracking-widest py-4 rounded-md hover:bg-red-700 transition-colors shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Send Message
+                {submitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>
@@ -167,9 +233,9 @@ export default function ContactPage() {
                       Email Us
                     </h3>
                     <p className="text-gray-400">
-                      support@blademaster.com
+                      support@KnifeMaster.com
                       <br />
-                      custom@blademaster.com
+                      custom@KnifeMaster.com
                     </p>
                   </div>
                 </div>
