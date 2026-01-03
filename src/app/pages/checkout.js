@@ -51,8 +51,14 @@ function CheckoutForm() {
   const discountAmount = (subtotal * appliedDiscount) / 100;
   const total = subtotal + shipping - discountAmount;
 
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!termsAccepted) {
+      toast.error("Please accept the Terms and Conditions to proceed.");
+      return;
+    }
     if (!stripe || !elements) return;
 
     setSubmitting(true);
@@ -400,10 +406,18 @@ function CheckoutForm() {
               </svg>
             </button>
 
-            <p className="text-xs text-gray-500 text-center mt-4">
-              By placing your order, you agree to our Terms of Service and
-              Privacy Policy.
-            </p>
+            <div className="flex items-start gap-2 mt-4">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="mt-1 w-4 h-4 rounded border-gray-700 bg-gray-900 text-primary focus:ring-primary focus:ring-offset-gray-900"
+              />
+              <label htmlFor="terms" className="text-xs text-gray-400">
+                I agree to the <Link href="/terms-of-service" className="text-primary hover:underline">Terms of Service</Link> and <Link href="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>.
+              </label>
+            </div>
           </div>
         </div>
       </form>
