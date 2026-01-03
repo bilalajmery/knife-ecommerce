@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
 export default function Footer() {
@@ -299,17 +300,14 @@ export default function Footer() {
               <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">
                 Secure Payment Methods
               </h4>
-              <div className="flex items-center space-x-4 flex-wrap justify-center md:justify-start gap-2">
-                {["Visa", "Mastercard", "PayPal", "Amex", "Apple Pay"].map(
-                  (method) => (
-                    <div
-                      key={method}
-                      className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 px-4 py-2 rounded-md text-xs font-semibold text-gray-400 hover:border-primary hover:text-white transition-all duration-200"
-                    >
-                      {method}
-                    </div>
-                  )
-                )}
+              <div className="relative h-12 w-full max-w-[300px] group flex justify-center md:justify-start">
+                <Image
+                  src="/paymentOption.png"
+                  alt="Secure Payment Methods"
+                  width={350}
+                  height={40}
+                  className="object-contain filter grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
+                />
               </div>
             </div>
 
