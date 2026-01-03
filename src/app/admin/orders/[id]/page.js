@@ -470,6 +470,10 @@ export default function OrderDetailPage({ params }) {
                                         <span className="text-primary font-bold">{order.shippingAddress?.email}</span>
                                     </div>
                                     <div>
+                                        <span className="text-gray-500 text-xs uppercase font-bold block mb-1">Phone Number</span>
+                                        <span className="text-white font-bold">{order.shippingAddress?.phone || "N/A"}</span>
+                                    </div>
+                                    <div>
                                         <span className="text-gray-500 text-xs uppercase font-bold block mb-1">Street Address</span>
                                         <p className="text-white font-medium leading-relaxed underline decoration-gray-800 underline-offset-4">
                                             {order.shippingAddress?.address}
@@ -478,16 +482,20 @@ export default function OrderDetailPage({ params }) {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <span className="text-gray-500 text-xs uppercase font-bold block mb-1">City</span>
-                                            <span className="text-white font-bold">{order.shippingAddress?.city}</span>
+                                            <span className="text-white font-bold">{order.shippingAddress?.city?.name || order.shippingAddress?.city}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-gray-500 text-xs uppercase font-bold block mb-1">State / Province</span>
+                                            <span className="text-white font-bold">{order.shippingAddress?.state?.name || order.shippingAddress?.state || "N/A"}</span>
                                         </div>
                                         <div>
                                             <span className="text-gray-500 text-xs uppercase font-bold block mb-1">ZIP Code</span>
                                             <span className="text-white font-bold">{order.shippingAddress?.zip}</span>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 text-xs uppercase font-bold block mb-1">Country</span>
-                                        <span className="text-white font-bold">{order.shippingAddress?.country || "N/A"}</span>
+                                        <div>
+                                            <span className="text-gray-500 text-xs uppercase font-bold block mb-1">Country</span>
+                                            <span className="text-white font-bold">{order.shippingAddress?.country?.name || order.shippingAddress?.country || "N/A"}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

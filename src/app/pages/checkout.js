@@ -29,15 +29,84 @@ function CheckoutForm() {
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
     address: "",
+    country: "",
+    state: "",
     city: "",
     zip: "",
-    country: "",
   });
+
+  // Location Data States
+  const [availableCountries, setAvailableCountries] = useState([]);
+  const [availableStates, setAvailableStates] = useState([]);
+  const [availableCities, setAvailableCities] = useState([]);
+
+  // Fetch Countries on Mount
+  useEffect(() => {
+    async function fetchCountries() {
+      try {
+        const res = await fetch("/api/admin/countries");
+        const data = await res.json();
+        if (data.countries) setAvailableCountries(data.countries);
+      } catch (err) {
+        console.error("Failed to fetch countries", err);
+      }
+    }
+    fetchCountries();
+  }, []);
+
+  // Fetch States when Country changes
+  useEffect(() => {
+    async function fetchStates() {
+      if (!formData.country) {
+        setAvailableStates([]);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/admin/states?country=${formData.country}`);
+        const data = await res.json();
+        if (data.states) setAvailableStates(data.states);
+      } catch (err) {
+        console.error("Failed to fetch states", err);
+      }
+    }
+    fetchStates();
+  }, [formData.country]);
+
+  // Fetch Cities when State changes
+  useEffect(() => {
+    async function fetchCities() {
+      if (!formData.state) {
+        setAvailableCities([]);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/admin/cities?state=${formData.state}`);
+        const data = await res.json();
+        if (data.cities) setAvailableCities(data.cities);
+      } catch (err) {
+        console.error("Failed to fetch cities", err);
+      }
+    }
+    fetchCities();
+  }, [formData.state]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const next = { ...prev, [name]: value };
+
+      // Reset dependent fields
+      if (name === "country") {
+        next.state = "";
+        next.city = "";
+      }
+      if (name === "state") {
+        next.city = "";
+      }
+      return next;
+    });
   };
 
   const cartItems = cart.items || [];
@@ -70,6 +139,39 @@ function CheckoutForm() {
         return;
       }
 
+      // Resolve Names/Codes for STRIPE (Database will store IDs)
+      const selectedCountry = availableCountries.find(c => c._id === formData.country);
+      const selectedState = availableStates.find(s => s._id === formData.state);
+      const selectedCity = availableCities.find(c => c._id === formData.city);
+
+      if (!selectedCountry || !selectedState || !selectedCity) {
+        toast.error("Invalid address selection");
+        setSubmitting(false);
+        return;
+      }
+
+      // Address Object for Database (Uses IDs)
+      const shippingAddressForDb = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city, // ID
+        state: formData.state, // ID
+        zip: formData.zip,
+        country: formData.country, // ID
+      };
+
+      // Address Object for Stripe (Uses Names/Codes)
+      const shippingAddressForStripe = {
+        line1: formData.address,
+        city: selectedCity.name,
+        state: selectedState.name,
+        postal_code: formData.zip,
+        country: selectedCountry.code, // ISO Code
+      };
+
       // 1. Create Payment Intent on the server
       const intentRes = await fetch("/api/payment/create-intent", {
         method: "POST",
@@ -79,6 +181,8 @@ function CheckoutForm() {
           metadata: {
             email: formData.email,
             customerName: `${formData.firstName} ${formData.lastName}`,
+            country: shippingAddressForStripe.country,
+            orderType: "knife-ecommerce"
           },
         }),
       });
@@ -101,11 +205,7 @@ function CheckoutForm() {
             billing_details: {
               name: `${formData.firstName} ${formData.lastName}`,
               email: formData.email,
-              address: {
-                line1: formData.address,
-                city: formData.city,
-                postal_code: formData.zip,
-              },
+              address: shippingAddressForStripe,
             },
           },
         }
@@ -128,7 +228,7 @@ function CheckoutForm() {
             quantity: item.quantity,
             image: item.image,
           })),
-          shippingAddress: { ...formData },
+          shippingAddress: shippingAddressForDb,
           paymentMethod: "stripe",
           paymentId: paymentIntent.id,
           total,
@@ -224,6 +324,20 @@ function CheckoutForm() {
               </div>
               <div className="space-y-2 md:col-span-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="+1 (555) 000-0000"
+                  className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors"
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
                   Street Address
                 </label>
                 <input
@@ -235,20 +349,73 @@ function CheckoutForm() {
                   className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                  City
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  required
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors"
-                />
+
+              {/* Country - State - City Row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:col-span-2">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    Country
+                  </label>
+                  <select
+                    name="country"
+                    required
+                    value={formData.country}
+                    onChange={handleInputChange}
+                    className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white"
+                  >
+                    <option value="">Select Country</option>
+                    {availableCountries.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    State / Province
+                  </label>
+                  <select
+                    name="state"
+                    required
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    disabled={!formData.country}
+                    className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="">Select State</option>
+                    {availableStates.map((s) => (
+                      <option key={s._id} value={s._id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                    City
+                  </label>
+                  <select
+                    name="city"
+                    required
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    disabled={!formData.state}
+                    className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <option value="">Select City</option>
+                    {availableCities.map((c) => (
+                      <option key={c._id} value={c._id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <div className="space-y-2">
+
+              <div className="space-y-2 md:col-span-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
                   ZIP Code
                 </label>
@@ -420,8 +587,8 @@ function CheckoutForm() {
             </div>
           </div>
         </div>
-      </form>
-    </main>
+      </form >
+    </main >
   );
 }
 

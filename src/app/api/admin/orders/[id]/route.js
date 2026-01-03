@@ -9,7 +9,11 @@ export async function GET(req, { params }) {
         await dbConnect();
         const { id } = await params;
 
-        const order = await Order.findById(id).populate("user", "name email");
+        const order = await Order.findById(id)
+            .populate("user", "name email")
+            .populate("shippingAddress.country", "name")
+            .populate("shippingAddress.state", "name")
+            .populate("shippingAddress.city", "name");
 
         if (!order) {
             return NextResponse.json({ message: "Order not found" }, { status: 404 });
