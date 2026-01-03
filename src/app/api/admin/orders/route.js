@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import User from "@/models/User";
+import Country from "@/models/Country";
+import State from "@/models/State";
+import City from "@/models/City";
 
 export async function GET(req) {
     try {

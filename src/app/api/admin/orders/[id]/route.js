@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import User from "@/models/User";
+import Country from "@/models/Country";
+import State from "@/models/State";
+import City from "@/models/City";
 import { startAgenda } from "@/lib/agenda";
 
 export async function GET(req, { params }) {
@@ -33,17 +36,29 @@ export async function PUT(req, { params }) {
     try {
         await dbConnect();
         const { id } = await params;
-        const { status } = await req.json();
+        const { status, shippingDetails } = await req.json();
 
         if (!status) {
             return NextResponse.json({ message: "Status is required" }, { status: 400 });
         }
 
+        const updateData = { status };
+
+        if (status === "shipped" && shippingDetails) {
+            updateData.shippingDetails = {
+                ...shippingDetails,
+                shippedAt: new Date()
+            };
+        }
+
         const order = await Order.findByIdAndUpdate(
             id,
-            { status },
+            updateData,
             { new: true }
-        );
+        ).populate("user", "name email")
+            .populate("shippingAddress.country", "name")
+            .populate("shippingAddress.state", "name")
+            .populate("shippingAddress.city", "name");
 
         if (!order) {
             return NextResponse.json({ message: "Order not found" }, { status: 404 });

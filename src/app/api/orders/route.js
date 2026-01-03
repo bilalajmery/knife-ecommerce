@@ -10,7 +10,6 @@ export async function POST(req) {
     try {
         await dbConnect();
         const body = await req.json();
-        console.log("Order Received Body:", JSON.stringify(body, null, 2));
         const {
             userId,
             items,
