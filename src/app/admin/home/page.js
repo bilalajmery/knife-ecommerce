@@ -282,6 +282,73 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Global Market Stats (Orders by Country) */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
+          <div className="lg:col-span-1 bg-[#111] border border-gray-900 rounded-2xl p-6 shadow-xl overflow-hidden relative group">
+            <div className="absolute -right-8 -bottom-8 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+              <ShoppingBagIcon className="h-48 w-48 text-white" />
+            </div>
+            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-primary rounded-full" />
+              Global Reach
+            </h3>
+            <div className="space-y-5">
+              {analytics?.ordersByCountry?.slice(0, 5).map((country, idx) => (
+                <div key={idx} className="flex items-center justify-between group/item">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={`https://flagcdn.com/w40/${country.code.toLowerCase()}.png`}
+                      alt={country.name}
+                      className="w-6 h-4 object-cover rounded shadow-sm border border-gray-800"
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
+                    <span className="text-sm font-medium text-gray-300 group-hover/item:text-white transition-colors">{country.name}</span>
+                  </div>
+                  <span className="text-xs font-black text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">{country.count}</span>
+                </div>
+              ))}
+              {(!analytics?.ordersByCountry || analytics.ordersByCountry.length === 0) && (
+                <p className="text-xs text-gray-500 italic py-4 text-center">No international data available</p>
+              )}
+            </div>
+          </div>
+
+          <div className="lg:col-span-3 bg-[#111] border border-gray-900 rounded-2xl p-6 shadow-xl">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-lg font-bold text-white">Top 10 Markets by Revenue</h3>
+              <span className="text-[10px] font-black uppercase tracking-tighter text-gray-500">Real-time Performance Metrics</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+              {analytics?.ordersByCountry?.map((country, idx) => (
+                <div key={idx} className="bg-black/40 border border-gray-800/50 rounded-xl p-4 hover:border-primary/40 transition-all group/card">
+                  <div className="flex justify-between items-start mb-3">
+                    <img
+                      src={`https://flagcdn.com/w80/${country.code.toLowerCase()}.png`}
+                      alt={country.name}
+                      className="w-10 h-7 object-cover rounded-md shadow-lg border border-gray-900 group-hover/card:scale-110 transition-transform"
+                      onError={(e) => e.target.style.display = 'none'}
+                    />
+                    <div className="text-right">
+                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-tighter">Orders</p>
+                      <p className="text-xs font-bold text-white">{country.count}</p>
+                    </div>
+                  </div>
+                  <h4 className="text-xs font-bold text-gray-300 truncate mb-2 group-hover/card:text-primary transition-colors">{country.name}</h4>
+                  <div className="pt-2 border-t border-gray-800/50 mt-2">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-tighter">Revenue</p>
+                    <p className="text-sm font-black text-primary">${country.revenue?.toLocaleString()}</p>
+                  </div>
+                </div>
+              ))}
+              {(!analytics?.ordersByCountry || analytics.ordersByCountry.length === 0) && (
+                <div className="col-span-full py-12 text-center">
+                  <p className="text-gray-500 italic">Expand your reach to see global statistics here.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Recent Orders & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recent Orders Table */}
@@ -323,8 +390,8 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${order.status === 'delivered' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                            order.status === 'cancelled' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                              'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+                          order.status === 'cancelled' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                            'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
                           }`}>
                           {order.status}
                         </span>

@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
 import User from "@/models/User";
+import Country from "@/models/Country";
 
 export async function GET() {
     try {
@@ -79,6 +80,37 @@ export async function GET() {
             { $sort: { _id: 1 } }
         ]);
 
+        // 7. Orders by Country
+        const ordersByCountry = await Order.aggregate([
+            {
+                $group: {
+                    _id: "$shippingAddress.country",
+                    count: { $sum: 1 },
+                    revenue: { $sum: "$total" }
+                }
+            },
+            {
+                $lookup: {
+                    from: "countries",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "countryData"
+                }
+            },
+            { $unwind: "$countryData" },
+            {
+                $project: {
+                    _id: 0,
+                    name: "$countryData.name",
+                    code: "$countryData.code",
+                    count: 1,
+                    revenue: 1
+                }
+            },
+            { $sort: { count: -1 } },
+            { $limit: 10 }
+        ]);
+
         const totalRevenueValue = totalRevenue[0]?.total || 0;
         const aov = totalOrders > 0 ? totalRevenueValue / totalOrders : 0;
 
@@ -95,7 +127,8 @@ export async function GET() {
             statusDistribution: statusDistribution.map(s => ({ name: s._id, value: s.value })),
             topProducts: topProducts.map(p => ({ name: p._id, sales: p.sales, revenue: p.revenue })),
             paymentDistribution: paymentDistribution.map(p => ({ name: p._id?.toUpperCase(), value: p.value })),
-            userGrowth
+            userGrowth,
+            ordersByCountry
         });
     } catch (error) {
         console.error("Analytics Error:", error);
