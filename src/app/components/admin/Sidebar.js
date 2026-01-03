@@ -13,6 +13,7 @@ import {
   TicketIcon,
   EnvelopeIcon,
   ChatBubbleLeftRightIcon,
+  GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Sidebar() {
@@ -57,6 +58,13 @@ export default function Sidebar() {
           active={pathname === "/admin/categories"}
         >
           Collections
+        </NavItem>
+        <NavItem
+          href="/admin/countries"
+          icon={GlobeAltIcon}
+          active={pathname === "/admin/countries"}
+        >
+          Countries
         </NavItem>
         <NavItem
           href="/admin/products"
