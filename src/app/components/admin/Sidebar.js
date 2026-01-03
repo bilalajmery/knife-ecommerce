@@ -15,6 +15,7 @@ import {
   ChatBubbleLeftRightIcon,
   GlobeAltIcon,
   MapIcon,
+  BuildingOffice2Icon,
 } from "@heroicons/react/24/outline";
 
 export default function Sidebar() {
@@ -73,6 +74,13 @@ export default function Sidebar() {
           active={pathname === "/admin/states"}
         >
           States
+        </NavItem>
+        <NavItem
+          href="/admin/cities"
+          icon={BuildingOffice2Icon}
+          active={pathname === "/admin/cities"}
+        >
+          Cities
         </NavItem>
         <NavItem
           href="/admin/products"
