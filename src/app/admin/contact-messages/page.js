@@ -111,7 +111,7 @@ export default function ContactMessagesPage() {
             <Sidebar />
 
             {/* Main Content */}
-            <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen custom-scrollbar">
+            <main className="flex-1 lg:ml-64 p-4 md:p-8 overflow-y-auto min-h-screen">
                 <header className="mb-8">
                     <div>
                         <h2 className="text-3xl font-bold tracking-tight">
@@ -407,3 +407,8 @@ export default function ContactMessagesPage() {
         </div>
     );
 }
+
+
+
+
+

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   HomeIcon,
   ShoppingBagIcon,
@@ -16,150 +17,108 @@ import {
   GlobeAltIcon,
   MapIcon,
   BuildingOffice2Icon,
+  Bars3Icon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("adminUser");
     router.push("/admin/signin");
   };
 
+  const navItems = [
+    { href: "/admin/home", icon: HomeIcon, label: "Dashboard" },
+    { href: "/admin/admins", icon: UsersIcon, label: "Admins" },
+    { href: "/admin/categories", icon: TagIcon, label: "Collections" },
+    { href: "/admin/countries", icon: GlobeAltIcon, label: "Countries" },
+    { href: "/admin/states", icon: MapIcon, label: "States" },
+    { href: "/admin/cities", icon: BuildingOffice2Icon, label: "Cities" },
+    { href: "/admin/products", icon: ShoppingBagIcon, label: "Products" },
+    { href: "/admin/promos", icon: TicketIcon, label: "Promo Codes" },
+    { href: "/admin/orders", icon: CurrencyDollarIcon, label: "Orders" },
+    { href: "/admin/subscribers", icon: EnvelopeIcon, label: "Subscribers" },
+    { href: "/admin/contact-messages", icon: ChatBubbleLeftRightIcon, label: "Messages" },
+    { href: "/admin/users", icon: UsersIcon, label: "Users" },
+    { href: "/admin/analytics", icon: ChartBarIcon, label: "Analytics" },
+    { href: "/admin/settings", icon: Cog6ToothIcon, label: "Settings" },
+  ];
+
   return (
-    <aside className="w-64 bg-black border-r border-gray-900 flex flex-col fixed h-full z-20">
-      <div className="h-20 flex items-center px-8 border-b border-gray-900">
-        <Link href="/admin/home" className="block relative w-44">
-          <img
-            src="/logo.png"
-            alt="KnifeMasters Logo"
-            className="object-contain w-full h-full"
-          />
-        </Link>
-      </div>
-
-      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
-        <NavItem
-          href="/admin/home"
-          icon={HomeIcon}
-          active={pathname === "/admin/home"}
-        >
-          Dashboard
-        </NavItem>
-        <NavItem
-          href="/admin/admins"
-          icon={UsersIcon}
-          active={pathname === "/admin/admins"}
-        >
-          Admins
-        </NavItem>
-        <NavItem
-          href="/admin/categories"
-          icon={TagIcon}
-          active={pathname === "/admin/categories"}
-        >
-          Collections
-        </NavItem>
-        <NavItem
-          href="/admin/countries"
-          icon={GlobeAltIcon}
-          active={pathname === "/admin/countries"}
-        >
-          Countries
-        </NavItem>
-        <NavItem
-          href="/admin/states"
-          icon={MapIcon}
-          active={pathname === "/admin/states"}
-        >
-          States
-        </NavItem>
-        <NavItem
-          href="/admin/cities"
-          icon={BuildingOffice2Icon}
-          active={pathname === "/admin/cities"}
-        >
-          Cities
-        </NavItem>
-        <NavItem
-          href="/admin/products"
-          icon={ShoppingBagIcon}
-          active={pathname === "/admin/products"}
-        >
-          Products
-        </NavItem>
-        <NavItem
-          href="/admin/promos"
-          icon={TicketIcon}
-          active={pathname === "/admin/promos"}
-        >
-          Promo Codes
-        </NavItem>
-        <NavItem
-          href="/admin/orders"
-          icon={CurrencyDollarIcon}
-          active={pathname === "/admin/orders"}
-        >
-          Orders
-        </NavItem>
-        <NavItem
-          href="/admin/subscribers"
-          icon={EnvelopeIcon}
-          active={pathname === "/admin/subscribers"}
-        >
-          Subscribers
-        </NavItem>
-        <NavItem
-          href="/admin/contact-messages"
-          icon={ChatBubbleLeftRightIcon}
-          active={pathname === "/admin/contact-messages"}
-        >
-          Contact Messages
-        </NavItem>
-        <NavItem
-          href="/admin/users"
-          icon={UsersIcon}
-          active={pathname === "/admin/users"}
-        >
-          Users
-        </NavItem>
-
-        <NavItem
-          href="/admin/analytics"
-          icon={ChartBarIcon}
-          active={pathname === "/admin/analytics"}
-        >
-          Analytics
-        </NavItem>
-        <NavItem
-          href="/admin/settings"
-          icon={Cog6ToothIcon}
-          active={pathname === "/admin/settings"}
-        >
-          Settings
-        </NavItem>
-      </nav>
-
-      <div className="p-4 border-t border-gray-900">
+    <>
+      {/* Mobile Hamburger Button */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
-          onClick={handleLogout}
-          className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-900 rounded-lg transition-colors"
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-2 bg-primary rounded-lg shadow-lg text-white"
         >
-          <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" />
-          Sign Out
+          {isOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
         </button>
       </div>
-    </aside>
+
+      {/* Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar aside */}
+      <aside
+        className={`fixed top-0 left-0 h-full w-64 bg-black border-r border-gray-900 flex flex-col transition-transform duration-300 z-40
+          ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
+      >
+        <div className="h-20 flex items-center px-8 border-b border-gray-900">
+          <Link href="/admin/home" className="block relative w-44">
+            <img
+              src="/logo.png"
+              alt="KnifeMasters Logo"
+              className="object-contain w-full h-full"
+            />
+          </Link>
+        </div>
+
+        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+          {navItems.map((item) => (
+            <NavItem
+              key={item.href}
+              href={item.href}
+              icon={item.icon}
+              active={pathname === item.href}
+              onClick={() => setIsOpen(false)}
+            >
+              {item.label}
+            </NavItem>
+          ))}
+        </nav>
+
+        <div className="p-4 border-t border-gray-900">
+          <button
+            onClick={handleLogout}
+            className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-900 rounded-lg transition-colors"
+          >
+            <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" />
+            Sign Out
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
 
-function NavItem({ href, icon: Icon, children, active }) {
+function NavItem({ href, icon: Icon, children, active, onClick }) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${active
-        ? "bg-primary text-white shadow-lg shadow-primary/25"
+        ? "bg-primary text-white shadow-lg shadow-primary/25 font-bold"
         : "text-gray-400 hover:text-white hover:bg-gray-900"
         }`}
     >

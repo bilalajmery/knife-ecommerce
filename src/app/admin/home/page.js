@@ -103,10 +103,10 @@ export default function AdminDashboard() {
       <Sidebar />
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen custom-scrollbar">
-        <header className="flex justify-between items-center mb-8">
+      <main className="flex-1 lg:ml-64 min-h-screen p-4 md:p-8 overflow-y-auto">
+        <header className="mt-12 lg:mt-0 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard</h2>
             <p className="text-gray-400 mt-1">
               Overview of your store's performance.
             </p>
@@ -501,3 +501,8 @@ function StatCard({ title, value, change, trend, icon: Icon, color }) {
     </div>
   );
 }
+
+
+
+
+

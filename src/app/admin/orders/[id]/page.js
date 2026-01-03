@@ -157,28 +157,28 @@ export default function OrderDetailPage({ params }) {
             `}</style>
             <Sidebar />
 
-            <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen custom-scrollbar" id="print-content">
-                <button
-                    onClick={() => router.push("/admin/orders")}
-                    className="flex items-center text-gray-400 hover:text-white mb-6 transition-colors group back-button no-print"
-                >
-                    <ArrowLeftIcon className="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform" />
-                    Back to Orders
-                </button>
-
-                <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 invoice-header">
-                    <div>
-                        <div className="flex items-center gap-4 mb-2">
-                            <h2 className="text-3xl font-black uppercase tracking-tight text-white">
-                                Order <span className="text-primary">#{order.orderId}</span>
-                            </h2>
-                            <span className={`px-4 py-1.5 rounded-full text-xs font-bold border uppercase tracking-widest ${getStatusColor(order.status)}`}>
-                                {order.status}
-                            </span>
+            <main className="flex-1 lg:ml-64 p-4 md:p-8 overflow-y-auto min-h-screen" id="print-content">
+                <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-6 mt-12 lg:mt-0 px-4 sm:px-0 no-print">
+                    <div className="flex items-center">
+                        <button
+                            onClick={() => router.push("/admin/orders")}
+                            className="mr-5 p-3 rounded-2xl bg-[#111] border border-gray-800 text-gray-400 hover:text-white transition-all hover:border-gray-700 hover:shadow-lg no-print"
+                        >
+                            <ArrowLeftIcon className="h-6 w-6" />
+                        </button>
+                        <div>
+                            <div className="flex items-center gap-4 mb-2">
+                                <h2 className="text-3xl font-black uppercase tracking-tight text-white">
+                                    Order <span className="text-primary">#{order.orderId}</span>
+                                </h2>
+                                <span className={`px-4 py-1.5 rounded-full text-xs font-bold border uppercase tracking-widest ${getStatusColor(order.status)}`}>
+                                    {order.status}
+                                </span>
+                            </div>
+                            <p className="text-gray-400">
+                                Placed on {new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString()}
+                            </p>
                         </div>
-                        <p className="text-gray-400">
-                            Placed on {new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString()}
-                        </p>
                     </div>
 
                     <div className="flex flex-wrap gap-3 no-print">
@@ -214,7 +214,7 @@ export default function OrderDetailPage({ params }) {
                             </div>
                         )}
                     </div>
-                </header>
+                </header >
 
                 <div ref={invoiceRef} className="print-section">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -370,34 +370,36 @@ export default function OrderDetailPage({ params }) {
                 </div>
 
                 {/* Shipping Modal */}
-                {showShippingModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                        <div className="bg-[#111] border border-gray-800 rounded-2xl w-full max-w-md overflow-hidden">
-                            <div className="p-6 border-b border-gray-800 flex justify-between items-center">
-                                <h3 className="text-xl font-black uppercase tracking-wider text-white">Enter Shipment Details</h3>
-                                <button onClick={() => setShowShippingModal(false)} className="text-gray-500 hover:text-white"><XCircleIcon className="h-6 w-6" /></button>
-                            </div>
-                            <div className="p-6 space-y-6">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Shipping Company</label>
-                                    <select value={shippingData.carrier} onChange={(e) => setShippingData({ ...shippingData, carrier: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary">
-                                        <option value="Fedex">Fedex</option><option value="UPS">UPS</option><option value="DHL">DHL</option><option value="USPS">USPS</option>
-                                    </select>
+                {
+                    showShippingModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                            <div className="bg-[#111] border border-gray-800 rounded-2xl w-full max-w-md overflow-hidden">
+                                <div className="p-6 border-b border-gray-800 flex justify-between items-center">
+                                    <h3 className="text-xl font-black uppercase tracking-wider text-white">Enter Shipment Details</h3>
+                                    <button onClick={() => setShowShippingModal(false)} className="text-gray-500 hover:text-white"><XCircleIcon className="h-6 w-6" /></button>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Tracking ID</label>
-                                    <input type="text" placeholder="Enter Tracking Number" value={shippingData.trackingId} onChange={(e) => setShippingData({ ...shippingData, trackingId: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary" />
-                                </div>
-                                <div className="flex gap-4 pt-4">
-                                    <button onClick={() => setShowShippingModal(false)} className="flex-1 py-3 bg-gray-900 text-gray-400 rounded-xl font-bold uppercase text-xs">Cancel</button>
-                                    <button onClick={() => { if (!shippingData.trackingId) return showAlert("error", "Error", "Please enter tracking ID"); handleStatusUpdate("shipped", shippingData); }} className="flex-1 py-3 bg-primary text-white rounded-xl font-bold uppercase text-xs hover:bg-red-700">Confirm Shipment</button>
+                                <div className="p-6 space-y-6">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Shipping Company</label>
+                                        <select value={shippingData.carrier} onChange={(e) => setShippingData({ ...shippingData, carrier: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary">
+                                            <option value="Fedex">Fedex</option><option value="UPS">UPS</option><option value="DHL">DHL</option><option value="USPS">USPS</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Tracking ID</label>
+                                        <input type="text" placeholder="Enter Tracking Number" value={shippingData.trackingId} onChange={(e) => setShippingData({ ...shippingData, trackingId: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary" />
+                                    </div>
+                                    <div className="flex gap-4 pt-4">
+                                        <button onClick={() => setShowShippingModal(false)} className="flex-1 py-3 bg-gray-900 text-gray-400 rounded-xl font-bold uppercase text-xs">Cancel</button>
+                                        <button onClick={() => { if (!shippingData.trackingId) return showAlert("error", "Error", "Please enter tracking ID"); handleStatusUpdate("shipped", shippingData); }} className="flex-1 py-3 bg-primary text-white rounded-xl font-bold uppercase text-xs hover:bg-red-700">Confirm Shipment</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )}
-            </main>
-        </div>
+                    )
+                }
+            </main >
+        </div >
     );
 }
 

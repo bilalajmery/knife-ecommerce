@@ -80,8 +80,8 @@ export default function CreateCategoryPage() {
     <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex">
       <Sidebar />
 
-      <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen custom-scrollbar">
-        <header className="flex items-center mb-8">
+      <main className="flex-1 lg:ml-64 p-4 md:p-8 overflow-y-auto min-h-screen">
+        <header className="mt-12 lg:mt-0 flex items-center mb-8">
           <button
             onClick={() => router.back()}
             className="mr-4 p-2 rounded-full hover:bg-gray-900 transition-colors text-gray-400 hover:text-white group"
@@ -338,3 +338,8 @@ export default function CreateCategoryPage() {
     </div>
   );
 }
+
+
+
+
+

@@ -91,8 +91,8 @@ export default function OrdersPage() {
         <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex">
             <Sidebar />
 
-            <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen custom-scrollbar">
-                <header className="flex justify-between items-center mb-8">
+            <main className="flex-1 lg:ml-64 p-4 md:p-8 overflow-y-auto min-h-screen">
+                <header className="mt-12 lg:mt-0 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                     <div>
                         <h2 className="text-3xl font-bold tracking-tight">
                             Order Management
@@ -238,3 +238,8 @@ export default function OrdersPage() {
         </div>
     );
 }
+
+
+
+
+

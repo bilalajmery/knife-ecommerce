@@ -132,7 +132,7 @@ export default function SettingsPage() {
         <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex">
             <Sidebar />
 
-            <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen custom-scrollbar relative">
+            <main className="flex-1 lg:ml-64 p-4 md:p-8 overflow-y-auto min-h-screen relative">
                 {/* Background Decorations */}
                 <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10" />
                 <div className="absolute bottom-40 left-40 w-80 h-80 bg-blue-500/5 rounded-full blur-[120px] pointer-events-none -z-10" />
@@ -389,3 +389,8 @@ export default function SettingsPage() {
         </div>
     );
 }
+
+
+
+
+
