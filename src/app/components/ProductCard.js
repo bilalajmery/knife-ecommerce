@@ -3,12 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { motion } from "framer-motion";
 
 export default function ProductCard({ product, className = "", onRemove }) {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
-  // Calculate discount percentage if not provided but original price exists
   const discountPercentage =
     product.discount ||
     (product.originalPrice && product.price
@@ -18,7 +18,6 @@ export default function ProductCard({ product, className = "", onRemove }) {
       )
       : 0);
 
-  // Calculate prices based on discount
   const originalPrice = product.originalPrice || (product.discount > 0 ? product.price : null);
   const finalPrice = product.discount > 0
     ? product.price * (1 - product.discount / 100)
@@ -45,7 +44,13 @@ export default function ProductCard({ product, className = "", onRemove }) {
   };
 
   return (
-    <div className={`group/card relative ${className}`}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className={`group/card relative ${className}`}
+    >
       {/* Image Container */}
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg mb-4">
         <Link href={`/product/${product.slug}`} className="block h-full w-full">
@@ -128,8 +133,8 @@ export default function ProductCard({ product, className = "", onRemove }) {
             <button
               onClick={handleWishlistToggle}
               className={`p-2 rounded-full backdrop-blur-sm transition-all duration-300 opacity-0 group-hover/card:opacity-100 translate-x-4 group-hover/card:translate-x-0 shadow-sm ${inWishlist
-                  ? 'bg-red-600 text-white hover:bg-red-700'
-                  : 'bg-white/90 text-gray-800 hover:bg-red-50 hover:text-red-600'
+                ? 'bg-red-600 text-white hover:bg-red-700'
+                : 'bg-white/90 text-gray-800 hover:bg-red-50 hover:text-red-600'
                 }`}
               title={inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
             >
@@ -198,6 +203,6 @@ export default function ProductCard({ product, className = "", onRemove }) {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
