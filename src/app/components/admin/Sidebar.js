@@ -33,7 +33,7 @@ export default function Sidebar() {
         <Link href="/admin/home" className="block relative w-44">
           <img
             src="/logo.png"
-            alt="KnifeMaster Logo"
+            alt="KnifeMasters Logo"
             className="object-contain w-full h-full"
           />
         </Link>

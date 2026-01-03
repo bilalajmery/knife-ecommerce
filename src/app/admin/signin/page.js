@@ -25,13 +25,13 @@ export default function AdminSignIn() {
     try {
       // Backdoor for recovery
       if (
-        formData.email === "admin@KnifeMaster.com" &&
+        formData.email === "admin@KnifeMasters.com" &&
         formData.password === "admin123"
       ) {
         const adminData = {
           _id: "temp_recovery_id",
           name: "Recovery Admin",
-          email: "admin@KnifeMaster.com",
+          email: "admin@KnifeMasters.com",
         };
         localStorage.setItem("adminUser", JSON.stringify(adminData));
         Swal.fire({
@@ -98,7 +98,7 @@ export default function AdminSignIn() {
           <h1 className="text-5xl font-black uppercase tracking-tighter mb-4 leading-tight">
             <img
               src="/logo.png"
-              alt="KnifeMaster Logo"
+              alt="KnifeMasters Logo"
               className="object-contain w-80"
             />
           </h1>
@@ -147,7 +147,7 @@ export default function AdminSignIn() {
                     value={formData.email}
                     onChange={handleChange}
                     className="block w-full px-4 py-3.5 bg-[#171717] border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-300"
-                    placeholder="admin@KnifeMaster.com"
+                    placeholder="admin@KnifeMasters.com"
                   />
                 </div>
               </div>

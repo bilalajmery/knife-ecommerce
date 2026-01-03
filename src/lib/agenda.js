@@ -36,7 +36,7 @@ const createAgenda = () => {
             });
 
             const mailOptions = {
-                from: `"KnifeMaster" <${process.env.EMAIL_USER}>`,
+                from: `"KnifeMasters" <${process.env.EMAIL_USER}>`,
                 to: shippingAddress.email,
                 subject: `Order Confirmation - #${order.orderId}`,
                 html: generateOrderSuccessEmail(order),
@@ -84,7 +84,7 @@ const createAgenda = () => {
             };
 
             const mailOptions = {
-                from: `"KnifeMaster" <${process.env.EMAIL_USER}>`,
+                from: `"KnifeMasters" <${process.env.EMAIL_USER}>`,
                 to: shippingAddress.email,
                 subject: statusSubject[status] || `Update on your order #${order.orderId}`,
                 html: generateOrderStatusEmail(order, status),

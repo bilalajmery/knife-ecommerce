@@ -16,7 +16,7 @@ const Loader = () => {
         <div className="relative z-10 flex items-center justify-center">
           <Image
             src="/loader.png"
-            alt="KnifeMaster Logo"
+            alt="KnifeMasters Logo"
             width={80}
             height={80}
             className="object-contain"

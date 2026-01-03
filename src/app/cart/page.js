@@ -1,7 +1,7 @@
 import CartPage from "@/app/pages/cart";
 
 export const metadata = {
-  title: "Shopping Cart | KnifeMaster",
+  title: "Shopping Cart | KnifeMasters",
   description: "Review your selected items and proceed to checkout.",
 };
 

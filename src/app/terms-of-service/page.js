@@ -49,7 +49,7 @@ export default function TermsOfService() {
                                 1. Introduction
                             </h2>
                             <p className="leading-relaxed">
-                                Welcome to KnifeMaster. By accessing our website and purchasing our products, you agree to be bound by these Terms of Service. Please read them carefully before using our services.
+                                Welcome to KnifeMasters. By accessing our website and purchasing our products, you agree to be bound by these Terms of Service. Please read them carefully before using our services.
                             </p>
                         </section>
 
@@ -89,7 +89,7 @@ export default function TermsOfService() {
                                 5. Limitation of Liability
                             </h2>
                             <p className="leading-relaxed">
-                                In no case shall KnifeMaster, our directors, officers, employees, affiliates, agents, contractors, interns, suppliers, service providers or licensors be liable for any injury, loss, claim, or any direct, indirect, incidental, punitive, special, or consequential damages of any kind.
+                                In no case shall KnifeMasters, our directors, officers, employees, affiliates, agents, contractors, interns, suppliers, service providers or licensors be liable for any injury, loss, claim, or any direct, indirect, incidental, punitive, special, or consequential damages of any kind.
                             </p>
                         </section>
 

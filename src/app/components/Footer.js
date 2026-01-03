@@ -76,7 +76,7 @@ export default function Footer() {
             >
               <img
                 src="/logo.png"
-                alt="KnifeMaster Logo"
+                alt="KnifeMasters Logo"
                 className="object-contain w-full h-full"
               />
             </Link>
@@ -350,7 +350,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} KnifeMaster. All rights reserved.
+            &copy; {new Date().getFullYear()} KnifeMasters. All rights reserved.
             Crafted with precision and passion.
           </p>
           <div className="flex flex-wrap justify-center space-x-6">

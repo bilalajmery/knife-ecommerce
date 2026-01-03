@@ -56,10 +56,10 @@ export async function POST(req) {
     });
 
     const mailOptions = {
-      from: `"KnifeMaster" <${process.env.EMAIL_USER}>`,
+      from: `"KnifeMasters" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "Verify Your Account - KnifeMaster",
-      text: `Welcome to KnifeMaster, ${name}! Your verification code is: ${otp}. It expires in 10 minutes.`,
+      subject: "Verify Your Account - KnifeMasters",
+      text: `Welcome to KnifeMasters, ${name}! Your verification code is: ${otp}. It expires in 10 minutes.`,
       html: generateVerificationEmail(otp, name),
     };
 

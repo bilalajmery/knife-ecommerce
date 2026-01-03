@@ -49,7 +49,7 @@ export default function PrivacyPolicy() {
                                 1. Information We Collect
                             </h2>
                             <p className="leading-relaxed">
-                                At KnifeMaster, we collect information you provide directly to us, such as when you create an account, make a purchase, sign up for our newsletter, or contact us for support. This includes:
+                                At KnifeMasters, we collect information you provide directly to us, such as when you create an account, make a purchase, sign up for our newsletter, or contact us for support. This includes:
                             </p>
                             <ul className="list-disc list-inside space-y-2 ml-4 marker:text-primary">
                                 <li>Name, email address, phone number, and shipping/billing address.</li>

@@ -60,9 +60,9 @@ export async function POST(req) {
     });
 
     const mailOptions = {
-      from: `"KnifeMaster" <${process.env.EMAIL_USER}>`,
+      from: `"KnifeMasters" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "Reset Your Password - KnifeMaster",
+      subject: "Reset Your Password - KnifeMasters",
       html: generateResetPasswordEmail(resetUrl, user.name),
     };
 

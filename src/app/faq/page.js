@@ -33,7 +33,7 @@ const faqs = [
       },
       {
         q: "Do your knives come with a warranty?",
-        a: "Yes, all KnifeMaster knives come with a Lifetime Warranty against defects in material and workmanship. We stand behind the quality of our products.",
+        a: "Yes, all KnifeMasters knives come with a Lifetime Warranty against defects in material and workmanship. We stand behind the quality of our products.",
       },
     ],
   },
@@ -126,8 +126,8 @@ export default function FAQ() {
                           </span>
                           <span
                             className={`ml-4 flex-shrink-0 transition-transform duration-300 ${isOpen
-                                ? "rotate-180 text-primary"
-                                : "text-gray-500"
+                              ? "rotate-180 text-primary"
+                              : "text-gray-500"
                               }`}
                           >
                             {isOpen ? (
@@ -139,8 +139,8 @@ export default function FAQ() {
                         </button>
                         <div
                           className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen
-                              ? "max-h-96 opacity-100"
-                              : "max-h-0 opacity-0"
+                            ? "max-h-96 opacity-100"
+                            : "max-h-0 opacity-0"
                             }`}
                         >
                           <div className="p-6 pt-0 text-gray-400 leading-relaxed border-t border-gray-800/50 mt-2">

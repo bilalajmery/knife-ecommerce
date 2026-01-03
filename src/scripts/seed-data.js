@@ -90,7 +90,7 @@ const seedData = async () => {
                 hoverImage: "/hero-knife.png",
                 galleryImages: [category.image || "/hero-knife.png", "/hero-knife.png"],
                 status: "active",
-                metaTitle: `${name} | KnifeMaster`,
+                metaTitle: `${name} | KnifeMasters`,
                 metaDescription: `Buy the ${name} online at the best price. High quality ${category.name} available.`
             });
         }

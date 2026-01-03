@@ -74,7 +74,7 @@ export default function Sitemap() {
                             Site <span className="text-primary">Map</span>
                         </h1>
                         <p className="text-gray-300 max-w-2xl mx-auto text-lg">
-                            Navigate through all sections of KnifeMaster.
+                            Navigate through all sections of KnifeMasters.
                         </p>
                     </div>
                 </div>

@@ -13,12 +13,12 @@ export async function generateMetadata(props) {
 
     if (!product) {
       return {
-        title: "Product Not Found | KnifeMaster",
+        title: "Product Not Found | KnifeMasters",
         description: "The requested product could not be found.",
       };
     }
 
-    const title = product.metaTitle || `${product.name} | KnifeMaster`;
+    const title = product.metaTitle || `${product.name} | KnifeMasters`;
     const description = product.metaDescription || product.description?.substring(0, 160) || "Premium Hand-Forged Knives";
     const image = product.mainImage || "/hero-knife.png";
 
@@ -34,7 +34,7 @@ export async function generateMetadata(props) {
   } catch (error) {
     console.error("METADATA ERROR:", error);
     return {
-      title: "KnifeMaster | Premium Hand-Forged Knives",
+      title: "KnifeMasters | Premium Hand-Forged Knives",
       description: "Experience the pinnacle of craftsmanship.",
     };
   }

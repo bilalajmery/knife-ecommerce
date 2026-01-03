@@ -1,7 +1,7 @@
 import ShopPage from "@/app/pages/shop";
 
 export const metadata = {
-  title: "Shop Premium Knives | KnifeMaster",
+  title: "Shop Premium Knives | KnifeMasters",
   description:
     "Browse our extensive collection of hunting, tactical, and kitchen knives.",
 };

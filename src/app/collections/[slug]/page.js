@@ -44,7 +44,7 @@ export async function generateMetadata({ params }) {
 
   const title = category?.name || slug.charAt(0).toUpperCase() + slug.slice(1);
   return {
-    title: `${title} Collection | KnifeMaster`,
+    title: `${title} Collection | KnifeMasters`,
     description: category?.description || `Explore our premium ${title} knives.`,
   };
 }

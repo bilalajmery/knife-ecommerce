@@ -29,7 +29,7 @@ async function getAllCollections() {
 }
 
 export const metadata = {
-  title: "Collections | KnifeMaster",
+  title: "Collections | KnifeMasters",
   description: "Explore our premium knife collections.",
 };
 

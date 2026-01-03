@@ -291,7 +291,7 @@ const AnalyticsPage = () => {
 
                 <footer className="pt-10 pb-4 text-center border-t border-white/5">
                     <p className="text-xs text-gray-700 font-mono tracking-widest uppercase italic">
-                        KnifeMaster Data Analytics Engine v2.0 // Dark Ops Execution
+                        KnifeMasters Data Analytics Engine v2.0 // Dark Ops Execution
                     </p>
                 </footer>
             </main>

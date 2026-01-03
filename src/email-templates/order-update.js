@@ -66,7 +66,7 @@ export const generateOrderStatusEmail = (order, status) => {
 <body>
   <div class="container">
     <div class="header">
-      <img src="cid:logo" alt="KnifeMaster" style="width: 60px; height: 60px; margin-bottom: 10px;">
+      <img src="cid:logo" alt="KnifeMasters" style="width: 60px; height: 60px; margin-bottom: 10px;">
       <div class="logo-text">Blade<span>Master</span></div>
     </div>
     
@@ -95,7 +95,7 @@ export const generateOrderStatusEmail = (order, status) => {
     
     <div class="footer">
       <p style="color: #9ca3af; font-size: 14px;">If you have any questions, simply reply to this email.</p>
-      <div style="color: #4b5563; font-size: 12px; margin-top: 20px;">&copy; ${new Date().getFullYear()} KnifeMaster Industries.</div>
+      <div style="color: #4b5563; font-size: 12px; margin-top: 20px;">&copy; ${new Date().getFullYear()} KnifeMasters Industries.</div>
     </div>
   </div>
 </body>

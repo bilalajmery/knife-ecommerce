@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "KnifeMaster | Premium Hand-Forged Knives",
+  title: "KnifeMasters | Premium Hand-Forged Knives",
   description:
     "Experience the pinnacle of craftsmanship with our premium collection of hand-forged knives.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),

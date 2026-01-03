@@ -233,9 +233,9 @@ export default function ContactPage() {
                       Email Us
                     </h3>
                     <p className="text-gray-400">
-                      support@KnifeMaster.com
+                      support@KnifeMasters.com
                       <br />
-                      custom@KnifeMaster.com
+                      custom@KnifeMasters.com
                     </p>
                   </div>
                 </div>

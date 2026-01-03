@@ -115,7 +115,7 @@ export const generateResetPasswordEmail = (resetUrl, name) => {
     </div>
     
     <div class="footer">
-      <p>&copy; ${new Date().getFullYear()} KnifeMaster. All rights reserved.</p>
+      <p>&copy; ${new Date().getFullYear()} KnifeMasters. All rights reserved.</p>
       <p>Premium Hand-Forged Knives & Tactical Gear</p>
       <div class="social-links">
         <a href="#" class="social-link">Instagram</a>

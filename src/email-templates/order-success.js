@@ -20,7 +20,7 @@ export const generateOrderSuccessEmail = (order) => {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your KnifeMaster Order - #${orderId}</title>
+  <title>Your KnifeMasters Order - #${orderId}</title>
   <style>
     body {
       margin: 0;
@@ -146,7 +146,7 @@ export const generateOrderSuccessEmail = (order) => {
   <div class="container">
     <div class="header">
       <div class="logo-container">
-        <img src="cid:logo" alt="KnifeMaster" style="width: 60px; height: 60px; margin-bottom: 10px;">
+        <img src="cid:logo" alt="KnifeMasters" style="width: 60px; height: 60px; margin-bottom: 10px;">
         <div class="logo-text">Blade<span>Master</span></div>
       </div>
     </div>
@@ -219,7 +219,7 @@ export const generateOrderSuccessEmail = (order) => {
         <a href="#" class="social-link">Youtube</a>
       </div>
       <p style="color: #9ca3af; font-size: 14px;">Questions? Reply to this email or visit our Help Center.</p>
-      <div class="tagline">&copy; ${new Date().getFullYear()} KnifeMaster Industries. Excellence in Every Edge.</div>
+      <div class="tagline">&copy; ${new Date().getFullYear()} KnifeMasters Industries. Excellence in Every Edge.</div>
     </div>
   </div>
 </body>

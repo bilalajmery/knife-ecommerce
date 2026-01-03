@@ -153,7 +153,7 @@ export default function ShippingPolicy() {
                   Customs & Duties
                 </h3>
                 <p className="text-gray-400 leading-relaxed">
-                  KnifeMaster is not responsible for any customs and taxes
+                  KnifeMasters is not responsible for any customs and taxes
                   applied to your order. All fees imposed during or after
                   shipping are the responsibility of the customer (tariffs,
                   taxes, etc.).

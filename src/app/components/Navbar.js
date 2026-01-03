@@ -59,7 +59,7 @@ export default function Navbar() {
             <Link href="/" className="block relative w-38 md:w-50 z-50">
               <img
                 src="/logo.png"
-                alt="KnifeMaster Logo"
+                alt="KnifeMasters Logo"
                 className="object-contain w-full h-full"
               />
             </Link>
