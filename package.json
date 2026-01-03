@@ -23,8 +23,8 @@
     "mongoose": "^9.0.1",
     "next": "16.0.10",
     "nodemailer": "^7.0.11",
-    "react": "19.2.1",
-    "react-dom": "19.2.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "react-is": "^19.2.3",
     "react-quill-new": "^3.7.0",
     "recharts": "^3.6.0",
@@ -38,5 +38,8 @@
     "patch-package": "^8.0.1",
     "postinstall-postinstall": "^2.1.0",
     "tailwindcss": "^4"
+  },
+  "overrides": {
+    "whatwg-url": "^14.0.0"
   }
 }

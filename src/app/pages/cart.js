@@ -129,7 +129,7 @@ export default function CartPage() {
                   <span className="text-sm font-bold uppercase tracking-wide text-gray-300">
                     {subtotal >= freeShippingThreshold
                       ? "You've unlocked Free Shipping!"
-                      : `Add $${freeShippingThreshold - subtotal
+                      : `Add $${(freeShippingThreshold - subtotal).toFixed(2)
                       } more for Free Shipping`}
                   </span>
                   <span className="text-sm font-bold text-primary">
@@ -335,7 +335,6 @@ export default function CartPage() {
                       <span className="text-3xl font-black text-primary block leading-none">
                         ${total.toFixed(2)}
                       </span>
-                      <span className="text-xs text-gray-500">USD</span>
                     </div>
                   </div>
                 </div>
@@ -396,22 +395,6 @@ export default function CartPage() {
                     </svg>
                   </button>
                 </Link>
-
-                <div className="flex justify-center gap-4 mb-6 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-                  {/* Payment Icons Placeholders - Using text for simplicity, ideally SVGs */}
-                  <span className="text-xs font-bold border border-gray-600 rounded px-2 py-1">
-                    VISA
-                  </span>
-                  <span className="text-xs font-bold border border-gray-600 rounded px-2 py-1">
-                    MC
-                  </span>
-                  <span className="text-xs font-bold border border-gray-600 rounded px-2 py-1">
-                    AMEX
-                  </span>
-                  <span className="text-xs font-bold border border-gray-600 rounded px-2 py-1">
-                    PAYPAL
-                  </span>
-                </div>
 
                 <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
                   <svg

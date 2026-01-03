@@ -269,14 +269,14 @@ function CheckoutForm() {
                   <span className="block font-bold uppercase tracking-wide">
                     Credit / Debit Card
                   </span>
-                  <div className="flex gap-2">
+                  {/* <div className="flex gap-2">
                     <span className="text-xs font-bold bg-white text-black px-1 rounded">
                       VISA
                     </span>
                     <span className="text-xs font-bold bg-white text-black px-1 rounded">
                       MC
                     </span>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="p-4 bg-black border border-gray-800 rounded-md">
