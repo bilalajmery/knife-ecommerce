@@ -87,6 +87,12 @@ const ProductSchema = new mongoose.Schema(
             type: String,
             required: false,
         },
+        bannedStates: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "State",
+            },
+        ],
     },
     { timestamps: true }
 );

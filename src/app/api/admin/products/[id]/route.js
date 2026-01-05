@@ -65,6 +65,12 @@ export async function PUT(req, { params }) {
             }
         });
 
+        if (formData.has("bannedStates")) {
+            const bannedStates = JSON.parse(formData.get("bannedStates"));
+            product.bannedStates = bannedStates;
+            product.markModified("bannedStates");
+        }
+
         // Handle Images
         const mainImageFile = formData.get("mainImage");
         if (mainImageFile && mainImageFile instanceof File) {

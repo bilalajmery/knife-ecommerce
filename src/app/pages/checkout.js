@@ -22,7 +22,7 @@ function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
-  const { cart, loading: cartLoading, clearCart } = useCart();
+  const { cart, loading: cartLoading, clearCart, removeFromCart } = useCart();
   const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -125,12 +125,25 @@ function CheckoutForm() {
 
   const total = subtotal + shipping - discountAmount + taxAmount;
 
+  // Check for banned products in selected state
+  const bannedProductsInSelectedState = cartItems.filter(item => {
+    const product = item.product;
+    if (product && product.bannedStates && formData.state) {
+      return product.bannedStates.some(id => id.toString() === formData.state.toString());
+    }
+    return false;
+  });
+
   const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!termsAccepted) {
       toast.error("Please accept the Terms and Conditions to proceed.");
+      return;
+    }
+    if (bannedProductsInSelectedState.length > 0) {
+      toast.error("Some products in your cart cannot be delivered to your selected state.");
       return;
     }
     if (!stripe || !elements) return;
@@ -272,15 +285,74 @@ function CheckoutForm() {
   if (cartLoading) {
     return (
       <div className="bg-black min-h-screen text-white font-sans flex items-center justify-center">
-        <Navbar />
-        <div className="animate-pulse">Loading Checkout...</div>
-        <Footer />
+        <div className="animate-pulse text-primary font-black uppercase tracking-widest text-xl">Loading Checkout...</div>
+      </div>
+    );
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="max-w-4xl mx-auto py-20 px-4 text-center">
+        <div className="mb-8 flex justify-center">
+          <div className="w-24 h-24 bg-gray-900 rounded-full flex items-center justify-center border border-gray-800 shadow-2xl shadow-primary/10">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+        </div>
+        <h2 className="text-3xl font-black uppercase tracking-tighter mb-4 text-white">Your Cart is Empty</h2>
+        <p className="text-gray-400 mb-10 max-w-md mx-auto leading-relaxed">
+          Looks like you haven't added any legendary edges to your arsenal yet. Head back to our shop to explore our latest collections.
+        </p>
+        <Link
+          href="/shop"
+          className="inline-block bg-primary text-white font-black uppercase tracking-widest px-10 py-4 rounded-md hover:bg-red-700 transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-95"
+        >
+          Explore Shop
+        </Link>
       </div>
     );
   }
 
   return (
     <main className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto pb-24">
+      {/* Moved Banned Products Warning to Top */}
+      {formData.state && bannedProductsInSelectedState.length > 0 && (
+        <section className="bg-red-500/10 border border-red-500/50 rounded-lg p-6 mb-12 space-y-4">
+          <div className="flex items-center gap-3 text-red-500">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <h3 className="text-xl font-black uppercase tracking-wider">Delivery Restriction</h3>
+          </div>
+          <p className="text-sm text-gray-300">
+            The following products in your cart <span className="text-red-500 font-bold uppercase">cannot be delivered</span> to <strong>{selectedStateForTax?.name}</strong> due to local regulations.
+          </p>
+          <div className="space-y-3">
+            {bannedProductsInSelectedState.map((item) => (
+              <div key={item.product._id || item.product} className="flex items-center justify-between bg-black/40 p-3 rounded-md border border-red-500/20">
+                <div className="flex items-center gap-3">
+                  <div className="relative w-10 h-10 rounded overflow-hidden border border-gray-800">
+                    <Image src={item.image || "/placeholder.png"} alt={item.name} fill className="object-cover" />
+                  </div>
+                  <span className="text-sm font-bold uppercase tracking-wide">{item.name}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeFromCart(item.product._id || item.product)}
+                  className="text-xs font-black text-red-500 hover:text-red-400 uppercase tracking-widest border-b border-red-500/50 pb-0.5 transition-colors"
+                >
+                  Remove Item
+                </button>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-400 italic">
+            You must remove these items or change your delivery state to proceed with your order.
+          </p>
+        </section>
+      )}
+
       <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-12">
         {/* Left Column: Billing & Payment */}
         <div className="lg:w-2/3 space-y-12">
@@ -508,7 +580,16 @@ function CheckoutForm() {
                     />
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-sm font-bold text-white">{item.name}</h4>
+                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                      {item.name}
+                      {formData.state && item.product?.bannedStates && item.product.bannedStates.some(id => id.toString() === formData.state.toString()) && (
+                        <span className="text-red-500" title="Cannot be delivered to your state">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                        </span>
+                      )}
+                    </h4>
                     <p className="text-xs text-gray-400">Qty: {item.quantity}</p>
                   </div>
                   <span className="text-sm font-bold text-primary">
@@ -570,7 +651,7 @@ function CheckoutForm() {
 
             <button
               type="submit"
-              disabled={submitting || !stripe}
+              disabled={submitting || !stripe || bannedProductsInSelectedState.length > 0}
               className="w-full bg-primary text-white font-bold uppercase tracking-widest py-4 rounded-md hover:bg-red-700 transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 flex justify-center items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>{submitting ? "Processing..." : "Pay Now"}</span>
@@ -602,8 +683,8 @@ function CheckoutForm() {
             </div>
           </div>
         </div>
-      </form >
-    </main >
+      </form>
+    </main>
   );
 }
 

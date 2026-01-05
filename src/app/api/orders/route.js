@@ -57,6 +57,23 @@ export async function POST(req) {
             }
         }
 
+        // BANNED PRODUCTS CHECK (Backend Safety)
+        const Product = (await import("@/models/Product")).default;
+        for (const item of items) {
+            const product = await Product.findById(item.product);
+            if (product && product.bannedStates && shippingAddress.state) {
+                const isBanned = product.bannedStates.some(
+                    (id) => id.toString() === shippingAddress.state.toString()
+                );
+                if (isBanned) {
+                    return NextResponse.json(
+                        { message: `Product "${product.name}" cannot be delivered to your selected state.` },
+                        { status: 400 }
+                    );
+                }
+            }
+        }
+
         // Generate Random 10-digit Order ID
         const orderId = Math.floor(1000000000 + Math.random() * 9000000000).toString();
 
