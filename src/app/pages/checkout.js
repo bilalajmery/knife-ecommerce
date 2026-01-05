@@ -549,7 +549,7 @@ function CheckoutForm() {
                   </span>
                 </div>
               )}
-              {taxAmount > 0 && (
+              {formData.state && (
                 <div className="flex justify-between text-gray-400 text-sm">
                   <span>Tax ({taxPercentage}%)</span>
                   <span className="text-white font-bold">

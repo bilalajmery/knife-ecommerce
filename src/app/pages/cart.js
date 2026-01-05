@@ -316,10 +316,8 @@ export default function CartPage() {
                       )}
                     </span>
                   </div>
-                  <div className="flex justify-between text-gray-400">
-                    <span>Tax (Estimated)</span>
-                    <span className="text-white font-bold">$0.00</span>
-                  </div>
+                  {/* Tax line removed as per request */}
+
                   {discount > 0 && (
                     <div className="flex justify-between text-green-500">
                       <span>Discount ({discount}%)</span>
