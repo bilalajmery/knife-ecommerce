@@ -255,8 +255,14 @@ export default function OrderDetailPage({ params }) {
                                 <div className="p-6 bg-black/50 space-y-3">
                                     <div className="flex justify-between text-gray-400 text-sm">
                                         <span>Subtotal</span>
-                                        <span className="text-white font-bold">${(order.total + (order.discount || 0)).toFixed(2)}</span>
+                                        <span className="text-white font-bold">${(order.total + (order.discount || 0) - (order.tax || 0)).toFixed(2)}</span>
                                     </div>
+                                    {order.tax > 0 && (
+                                        <div className="flex justify-between text-gray-400 text-sm">
+                                            <span>Tax ({order.taxPercentage || 0}%)</span>
+                                            <span className="text-white font-bold">+${order.tax.toFixed(2)}</span>
+                                        </div>
+                                    )}
                                     {order.discount > 0 && (
                                         <div className="flex justify-between text-green-500 text-sm">
                                             <span>Discount</span>

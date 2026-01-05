@@ -23,11 +23,14 @@ const StateSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        taxPercentage: {
+            type: Number,
+            default: 0,
+        },
     },
     { timestamps: true }
 );
 
-// Compound index to ensure unique state codes per country
 StateSchema.index({ country: 1, code: 1 }, { unique: true });
 
 export default mongoose.models.State || mongoose.model("State", StateSchema);

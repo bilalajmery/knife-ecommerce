@@ -25,6 +25,7 @@ export default function StatesPage() {
         code: "",
         country: "",
         isActive: true,
+        taxPercentage: 0,
     });
 
     const fetchData = async () => {
@@ -64,6 +65,7 @@ export default function StatesPage() {
                 code: state.code,
                 country: state.country?._id || state.country, // Handle populated or raw ID
                 isActive: state.isActive,
+                taxPercentage: state.taxPercentage || 0,
             });
         } else {
             setCurrentState(null);
@@ -72,6 +74,7 @@ export default function StatesPage() {
                 code: "",
                 country: "",
                 isActive: true,
+                taxPercentage: 0,
             });
         }
         setIsModalOpen(true);
@@ -205,6 +208,7 @@ export default function StatesPage() {
                                     <th className="px-6 py-5">Name</th>
                                     <th className="px-6 py-5">Code</th>
                                     <th className="px-6 py-5">Country</th>
+                                    <th className="px-6 py-5">Tax (%)</th>
                                     <th className="px-6 py-5">Status</th>
                                     <th className="px-8 py-5 text-right">Actions</th>
                                 </tr>
@@ -231,11 +235,14 @@ export default function StatesPage() {
                                             <td className="px-6 py-5 text-gray-300">
                                                 {state.country?.name || "N/A"}
                                             </td>
+                                            <td className="px-6 py-5 text-gray-300 font-bold">
+                                                {state.taxPercentage || 0}%
+                                            </td>
                                             <td className="px-6 py-5">
                                                 <span
                                                     className={`px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${state.isActive
-                                                            ? "bg-green-500/10 text-green-500 border-green-500/20"
-                                                            : "bg-red-500/10 text-red-500 border-red-500/20"
+                                                        ? "bg-green-500/10 text-green-500 border-green-500/20"
+                                                        : "bg-red-500/10 text-red-500 border-red-500/20"
                                                         }`}
                                                 >
                                                     {state.isActive ? "Active" : "Inactive"}
@@ -347,6 +354,22 @@ export default function StatesPage() {
                                     maxLength={10}
                                     placeholder="e.g. CA"
                                     className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors uppercase font-mono"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                                    Tax Percentage (%)
+                                </label>
+                                <input
+                                    type="number"
+                                    name="taxPercentage"
+                                    value={formData.taxPercentage}
+                                    onChange={handleInputChange}
+                                    step="0.01"
+                                    min="0"
+                                    max="100"
+                                    placeholder="e.g. 5.5"
+                                    className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
                                 />
                             </div>
                             <div className="flex items-center gap-3 pt-2">

@@ -118,7 +118,12 @@ function CheckoutForm() {
   const freeShippingThreshold = 150;
   const shipping = subtotal > freeShippingThreshold ? 0 : 15;
   const discountAmount = (subtotal * appliedDiscount) / 100;
-  const total = subtotal + shipping - discountAmount;
+
+  const selectedStateForTax = availableStates.find(s => s._id === formData.state);
+  const taxPercentage = selectedStateForTax?.taxPercentage || 0;
+  const taxAmount = ((subtotal - discountAmount) * taxPercentage) / 100;
+
+  const total = subtotal + shipping - discountAmount + taxAmount;
 
   const [termsAccepted, setTermsAccepted] = useState(false);
 
@@ -233,6 +238,8 @@ function CheckoutForm() {
           paymentId: paymentIntent.id,
           total,
           discount: appliedDiscount,
+          tax: taxAmount,
+          taxPercentage: taxPercentage,
           appliedPromo: cart.appliedPromo,
         };
 
@@ -539,6 +546,14 @@ function CheckoutForm() {
                   </span>
                   <span className="font-bold">
                     -${discountAmount.toFixed(2)}
+                  </span>
+                </div>
+              )}
+              {taxAmount > 0 && (
+                <div className="flex justify-between text-gray-400 text-sm">
+                  <span>Tax ({taxPercentage}%)</span>
+                  <span className="text-white font-bold">
+                    +${taxAmount.toFixed(2)}
                   </span>
                 </div>
               )}

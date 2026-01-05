@@ -56,6 +56,14 @@ const OrderSchema = new mongoose.Schema(
             type: Number,
             default: 0
         },
+        tax: {
+            type: Number,
+            default: 0
+        },
+        taxPercentage: {
+            type: Number,
+            default: 0
+        },
         status: {
             type: String,
             enum: ["pending", "processing", "shipped", "delivered", "cancelled"],

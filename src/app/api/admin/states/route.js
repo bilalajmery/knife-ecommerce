@@ -28,7 +28,7 @@ export async function POST(req) {
     try {
         await dbConnect();
         const body = await req.json();
-        const { name, code, country } = body;
+        const { name, code, country, taxPercentage } = body;
 
         // Validation
         if (!name || !code || !country) {
@@ -51,6 +51,7 @@ export async function POST(req) {
             name,
             code,
             country,
+            taxPercentage: taxPercentage || 0,
         });
 
         return NextResponse.json(

@@ -17,6 +17,8 @@ export async function POST(req) {
             paymentMethod,
             total,
             discount,
+            tax,
+            taxPercentage,
             appliedPromo,
             paymentId
         } = body;
@@ -68,6 +70,8 @@ export async function POST(req) {
             paymentId,
             total,
             discount: discount || 0,
+            tax: tax || 0,
+            taxPercentage: taxPercentage || 0,
             status: "pending",
         });
 
