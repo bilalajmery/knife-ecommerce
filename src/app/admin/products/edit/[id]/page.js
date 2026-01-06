@@ -11,7 +11,6 @@ import {
     TrashIcon,
     GlobeAltIcon,
     PlusIcon,
-    NoSymbolIcon,
 } from "@heroicons/react/24/outline";
 import { showAlert, showConfirm } from "../../../../../utils/sweetAlert";
 import Sidebar from "../../../../components/admin/Sidebar";
@@ -60,26 +59,10 @@ export default function EditProductPage({ params }) {
         metaDescription: "",
     });
 
-    const [availableStates, setAvailableStates] = useState([]);
-    const [bannedStates, setBannedStates] = useState([]); // Array of IDs
-
     useEffect(() => {
-        fetchStates();
         fetchCategories();
         fetchProduct();
     }, [id]);
-
-    const fetchStates = async () => {
-        try {
-            const res = await fetch("/api/admin/states");
-            const data = await res.json();
-            if (res.ok) {
-                setAvailableStates(data.states);
-            }
-        } catch (error) {
-            console.error("Failed to fetch states");
-        }
-    };
 
     const fetchCategories = async () => {
         try {
@@ -115,7 +98,6 @@ export default function EditProductPage({ params }) {
                 setMainImagePreview(p.mainImage);
                 setHoverImagePreview(p.hoverImage);
                 setExistingGallery(p.galleryImages || []);
-                setBannedStates((p.bannedStates || []).map(id => typeof id === 'object' ? id._id || id.toString() : id));
             } else {
                 showAlert("error", "Error", "Product not found");
                 router.push("/admin/products");
@@ -178,16 +160,6 @@ export default function EditProductPage({ params }) {
         }
     };
 
-    const toggleBannedState = (stateId) => {
-        const id = stateId.toString();
-        setBannedStates(prev => {
-            const normalized = prev.map(p => p.toString());
-            return normalized.includes(id)
-                ? normalized.filter(p => p !== id)
-                : [...normalized, id];
-        });
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -215,7 +187,6 @@ export default function EditProductPage({ params }) {
             data.append("usage", formData.usage);
             data.append("metaTitle", formData.metaTitle);
             data.append("metaDescription", formData.metaDescription);
-            data.append("bannedStates", JSON.stringify(bannedStates));
 
             if (resetGallery) {
                 data.append("resetGallery", "true");
@@ -471,45 +442,6 @@ export default function EditProductPage({ params }) {
                                 </div>
 
                                 <TextEditor label="Usage" value={formData.usage} onChange={(val) => handleEditorChange('usage', val)} placeholder="Usage instructions..." />
-                            </div>
-                        </div>
-
-                        <div className="bg-[#111] border border-gray-900 rounded-2xl p-8 shadow-xl">
-                            <div className="flex items-center space-x-4 mb-8 pb-8 border-b border-gray-900">
-                                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                    <NoSymbolIcon className="h-6 w-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-bold text-white">Delivery Restrictions</h3>
-                                    <p className="text-sm text-gray-400">Ban this product in specific states</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <p className="text-sm text-gray-400 mb-4">
-                                    Select the states where this product <span className="text-red-500 font-bold uppercase">cannot</span> be delivered. By default, it is allowed everywhere.
-                                </p>
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                    {availableStates.map((state) => (
-                                        <button
-                                            key={state._id}
-                                            type="button"
-                                            onClick={() => toggleBannedState(state._id)}
-                                            className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-sm font-medium ${bannedStates.includes(state._id)
-                                                ? "bg-red-500/10 border-red-500 text-red-500 shadow-lg shadow-red-500/10"
-                                                : "bg-black border-gray-800 text-gray-400 hover:border-gray-700 hover:text-gray-300"
-                                                }`}
-                                        >
-                                            <span>{state.name}</span>
-                                            {bannedStates.includes(state._id) && (
-                                                <NoSymbolIcon className="h-4 w-4 ml-2" />
-                                            )}
-                                        </button>
-                                    ))}
-                                </div>
-                                {availableStates.length === 0 && (
-                                    <p className="text-center py-4 text-gray-600 italic">No states found. Please add states first.</p>
-                                )}
                             </div>
                         </div>
 

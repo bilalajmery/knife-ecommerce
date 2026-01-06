@@ -96,8 +96,6 @@ export async function POST(req) {
         const status = formData.get("status");
         const metaTitle = formData.get("metaTitle");
         const metaDescription = formData.get("metaDescription");
-        const bannedStatesRaw = formData.get("bannedStates");
-        const bannedStates = bannedStatesRaw ? JSON.parse(bannedStatesRaw) : [];
 
         // Extract files
         const mainImageFile = formData.get("mainImage");
@@ -146,7 +144,6 @@ export async function POST(req) {
             mainImage: mainImageUrl,
             hoverImage: hoverImageUrl,
             galleryImages: galleryImages,
-            bannedStates: bannedStates,
         });
 
         return NextResponse.json(
