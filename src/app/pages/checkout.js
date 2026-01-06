@@ -41,6 +41,7 @@ function CheckoutForm() {
   const [availableCountries, setAvailableCountries] = useState([]);
   const [availableStates, setAvailableStates] = useState([]);
   const [availableCities, setAvailableCities] = useState([]);
+  const [taxInfo, setTaxInfo] = useState({ amount: 0, percentage: 0, loading: false });
 
   // Fetch Countries on Mount
   useEffect(() => {
@@ -119,9 +120,62 @@ function CheckoutForm() {
   const shipping = subtotal > freeShippingThreshold ? 0 : 15;
   const discountAmount = (subtotal * appliedDiscount) / 100;
 
-  const selectedStateForTax = availableStates.find(s => s._id === formData.state);
-  const taxPercentage = selectedStateForTax?.taxPercentage || 0;
-  const taxAmount = ((subtotal - discountAmount) * taxPercentage) / 100;
+  // Fetch Tax Calculation
+  useEffect(() => {
+    async function calculateTax() {
+      const discountedSubtotal = subtotal - discountAmount;
+      if (!formData.country || !formData.state || !formData.zip || discountedSubtotal <= 0) {
+        setTaxInfo({ amount: 0, percentage: 0, loading: false });
+        return;
+      }
+
+      setTaxInfo(prev => ({ ...prev, loading: true }));
+
+      try {
+        const selectedCountry = availableCountries.find(c => c._id === formData.country);
+        const selectedState = availableStates.find(s => s._id === formData.state);
+        const selectedCity = availableCities.find(c => c._id === formData.city);
+
+        const res = await fetch("/api/tax/calculate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount: discountedSubtotal,
+            shipping: shipping,
+            to_country: selectedCountry?.code || "US",
+            to_state: selectedState?.code || "",
+            to_city: selectedCity?.name || "",
+            to_zip: formData.zip,
+            stateId: formData.state
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          setTaxInfo({
+            amount: data.taxAmount,
+            percentage: data.taxPercentage,
+            loading: false
+          });
+        } else {
+          throw new Error("Tax calculation failed");
+        }
+      } catch (err) {
+        console.error("Tax calculation error:", err);
+        setTaxInfo(prev => ({ ...prev, loading: false }));
+      }
+    }
+
+    const timer = setTimeout(() => {
+      calculateTax();
+    }, 500); // Debounce to avoid too many API calls
+
+    return () => clearTimeout(timer);
+  }, [formData.country, formData.state, formData.city, formData.zip, subtotal, discountAmount, shipping, availableCountries, availableStates, availableCities]);
+
+
+  const taxAmount = taxInfo.amount;
+  const taxPercentage = taxInfo.percentage;
 
   const total = subtotal + shipping - discountAmount + taxAmount;
 
@@ -552,8 +606,8 @@ function CheckoutForm() {
               {formData.state && (
                 <div className="flex justify-between text-gray-400 text-sm">
                   <span>Tax ({taxPercentage}%)</span>
-                  <span className="text-white font-bold">
-                    +${taxAmount.toFixed(2)}
+                  <span className={`text-white font-bold ${taxInfo.loading ? 'animate-pulse opacity-50' : ''}`}>
+                    {taxInfo.loading ? 'Calculating...' : `+$${taxAmount.toFixed(2)}`}
                   </span>
                 </div>
               )}
