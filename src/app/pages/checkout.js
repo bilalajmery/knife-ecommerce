@@ -95,6 +95,16 @@ function CheckoutForm() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Restrict ZIP code to 5 digits only
+    if (name === "zip") {
+      const numericValue = value.replace(/\D/g, ""); // Keep only digits
+      if (numericValue.length <= 5) {
+        setFormData((prev) => ({ ...prev, zip: numericValue }));
+      }
+      return;
+    }
+
     setFormData((prev) => {
       const next = { ...prev, [name]: value };
 
@@ -484,6 +494,9 @@ function CheckoutForm() {
                   type="text"
                   name="zip"
                   required
+                  maxLength="5"
+                  pattern="\d*"
+                  inputMode="numeric"
                   value={formData.zip}
                   onChange={handleInputChange}
                   className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors"
