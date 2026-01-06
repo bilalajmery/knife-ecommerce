@@ -43,13 +43,18 @@ function CheckoutForm() {
   const [availableCities, setAvailableCities] = useState([]);
   const [taxInfo, setTaxInfo] = useState({ amount: 0, percentage: 0, loading: false });
 
-  // Fetch Countries on Mount
   useEffect(() => {
     async function fetchCountries() {
       try {
         const res = await fetch("/api/admin/countries");
         const data = await res.json();
-        if (data.countries) setAvailableCountries(data.countries);
+        if (data.countries) {
+          setAvailableCountries(data.countries);
+          // NEW: Auto-select if only 1 country exists
+          if (data.countries.length === 1) {
+            setFormData(prev => ({ ...prev, country: data.countries[0]._id }));
+          }
+        }
       } catch (err) {
         console.error("Failed to fetch countries", err);
       }
@@ -423,27 +428,29 @@ function CheckoutForm() {
 
               {/* Country - State - City Row */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:col-span-2">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
-                    Country
-                  </label>
-                  <select
-                    name="country"
-                    required
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white"
-                  >
-                    <option value="">Select Country</option>
-                    {availableCountries.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {availableCountries.length > 1 && (
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                      Country
+                    </label>
+                    <select
+                      name="country"
+                      required
+                      value={formData.country}
+                      onChange={handleInputChange}
+                      className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white"
+                    >
+                      <option value="">Select Country</option>
+                      {availableCountries.map((c) => (
+                        <option key={c._id} value={c._id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
-                <div className="space-y-2">
+                <div className={`space-y-2 ${availableCountries.length <= 1 ? 'md:col-span-2' : ''}`}>
                   <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
                     State / Province
                   </label>
