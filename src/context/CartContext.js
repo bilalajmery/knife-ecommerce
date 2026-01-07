@@ -97,7 +97,6 @@ export function CartProvider({ children }) {
 
                 if (data.success) {
                     setCart(data.cart);
-                    toast.success("Item added to cart successfully!");
                 } else {
                     console.error("CONTEXT: API returned failure:", data);
                     toast.error(`Failed to add to cart: ${data.message}`);
@@ -115,7 +114,11 @@ export function CartProvider({ children }) {
                 );
 
                 if (existingIndex > -1) {
-                    items[existingIndex].quantity += quantity;
+                    // Fix: Avoid mutation for Strict Mode / React state
+                    items[existingIndex] = {
+                        ...items[existingIndex],
+                        quantity: items[existingIndex].quantity + quantity
+                    };
                 } else {
                     items.push(newItem);
                 }
