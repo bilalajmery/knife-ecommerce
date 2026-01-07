@@ -11,7 +11,7 @@ export async function GET(req) {
         const stateId = searchParams.get("state");
         const countryId = searchParams.get("country");
         const page = parseInt(searchParams.get("page")) || 1;
-        const limit = parseInt(searchParams.get("limit")) || 10;
+        const limit = parseInt(searchParams.get("limit")) || 1000; // Increased default limit for cities
         const skip = (page - 1) * limit;
         const search = searchParams.get("search") || "";
 

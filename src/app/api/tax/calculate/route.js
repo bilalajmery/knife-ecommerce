@@ -1,15 +1,23 @@
 import { NextResponse } from "next/server";
 import Taxjar from "taxjar";
-import dbConnect from "@/lib/db";
-import State from "@/models/State";
+
+// Determine environment: check explicit env var first, then auto-detect from key prefix
+const explicitEnv = process.env.TAXJAR_API_ENVIRONMENT?.toLowerCase();
+const isSandbox = explicitEnv === "sandbox" ||
+    (explicitEnv !== "production" && process.env.TAXJAR_API_KEY?.startsWith("sbx_"));
 
 const client = new Taxjar({
-    apiKey: process.env.TAXJAR_API_KEY
+    apiKey: process.env.TAXJAR_API_KEY,
+    apiUrl: isSandbox ? Taxjar.SANDBOX_API_URL : Taxjar.DEFAULT_API_URL
 });
+
+console.log(`[TaxJar] Environment: ${isSandbox ? "SANDBOX" : "PRODUCTION"}`);
+console.log(`[TaxJar] API URL: ${isSandbox ? Taxjar.SANDBOX_API_URL : Taxjar.DEFAULT_API_URL}`);
+console.log(`[TaxJar] API Key configured: ${process.env.TAXJAR_API_KEY ? "Yes" : "No"}`);
 
 export async function POST(req) {
     try {
-        const { amount, shipping, to_country, to_state, to_city, to_zip, stateId } = await req.json();
+        const { amount, shipping, to_country, to_state, to_city, to_zip } = await req.json();
 
         console.log("--- Tax Calculation Request ---");
         console.log("To:", { to_country, to_state, to_city, to_zip });
@@ -17,13 +25,16 @@ export async function POST(req) {
 
         // 1. Validation
         if (!amount || !to_country || !to_state || !to_zip) {
-            return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+            return NextResponse.json({ message: "Missing required fields for tax calculation" }, { status: 400 });
         }
 
         // 2. Check for TaxJar API Key
-        if (!process.env.TAXJAR_API_KEY || process.env.TAXJAR_API_KEY === "YOUR_TAXJAR_API_KEY") {
-            console.warn("TaxJar API Key not configured. Using fallback database tax.");
-            return await handleFallback(stateId, amount);
+        if (!process.env.TAXJAR_API_KEY || process.env.TAXJAR_API_KEY === "YOUR_TAXJAR_API_KEY" || process.env.TAXJAR_API_KEY === "") {
+            console.error("TaxJar API Key not configured.");
+            return NextResponse.json({
+                message: "Tax service is not configured. Please contact support.",
+                error: "TAXJAR_NOT_CONFIGURED"
+            }, { status: 500 });
         }
 
         try {
@@ -49,7 +60,7 @@ export async function POST(req) {
             });
 
             console.log("TaxJar API Success Response:", {
-                amount: response.tax.amount_to_collect,
+                total_tax: response.tax.amount_to_collect,
                 rate: response.tax.rate
             });
 
@@ -61,33 +72,26 @@ export async function POST(req) {
 
         } catch (apiError) {
             console.error("TaxJar API Error:", apiError.message);
-            // 4. Fallback to DB
-            return await handleFallback(stateId, amount);
+
+            let userMessage = `Tax calculation failed: ${apiError.message}`;
+
+            // Provide specific guidance for common errors
+            if (apiError.message.includes("Unauthorized")) {
+                userMessage = "Tax service authentication failed. Common causes:\n" +
+                    "1. Invalid or expired API token\n" +
+                    "2. Using a sandbox token in production (or vice versa)\n" +
+                    "3. Account permissions - only Administrators can use API tokens\n" +
+                    "4. API token not enabled for tax calculations\n\n" +
+                    "Please verify your TAXJAR_API_KEY in your environment variables.";
+            }
+
+            return NextResponse.json({
+                message: userMessage,
+                error: apiError.message
+            }, { status: 500 });
         }
     } catch (error) {
         console.error("Tax Calculation Route Error:", error);
-        return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
-    }
-}
-
-async function handleFallback(stateId, amount) {
-    try {
-        await dbConnect();
-        const state = await State.findById(stateId);
-        if (!state) {
-            return NextResponse.json({ taxAmount: 0, taxPercentage: 0, source: "none" });
-        }
-
-        const taxAmount = (amount * state.taxPercentage) / 100;
-        console.log(`Fallback Database Tax: ${state.name} (${state.taxPercentage}%) -> $${taxAmount}`);
-
-        return NextResponse.json({
-            taxAmount: taxAmount,
-            taxPercentage: state.taxPercentage,
-            source: "database"
-        });
-    } catch (dbError) {
-        console.error("Database Fallback Error:", dbError);
-        return NextResponse.json({ taxAmount: 0, taxPercentage: 0, source: "none" });
+        return NextResponse.json({ message: "Internal Server Error during tax calculation" }, { status: 500 });
     }
 }

@@ -43,7 +43,7 @@ function CheckoutForm() {
   const [availableCountries, setAvailableCountries] = useState([]);
   const [availableStates, setAvailableStates] = useState([]);
   const [availableCities, setAvailableCities] = useState([]);
-  const [taxInfo, setTaxInfo] = useState({ amount: 0, percentage: 0, loading: false });
+  const [taxInfo, setTaxInfo] = useState({ amount: 0, percentage: 0, loading: false, error: null });
 
   useEffect(() => {
     async function fetchCountries() {
@@ -172,14 +172,18 @@ function CheckoutForm() {
           setTaxInfo({
             amount: data.taxAmount,
             percentage: data.taxPercentage,
-            loading: false
+            loading: false,
+            error: null
           });
         } else {
-          throw new Error("Tax calculation failed");
+          setTaxInfo({ amount: 0, percentage: 0, loading: false, error: data.message });
+          toast.error(data.message || "Tax calculation failed. Please check your address.");
         }
       } catch (err) {
         console.error("Tax calculation error:", err);
-        setTaxInfo(prev => ({ ...prev, loading: false }));
+        const errorMessage = "System error calculating tax. Please try again.";
+        setTaxInfo(prev => ({ ...prev, loading: false, error: errorMessage }));
+        toast.error(errorMessage);
       }
     }
 
@@ -207,6 +211,12 @@ function CheckoutForm() {
     if (!stripe || !elements) return;
 
     setSubmitting(true);
+
+    if (taxInfo.error) {
+      toast.error(`Please resolve tax calculation error: ${taxInfo.error}`);
+      setSubmitting(false);
+      return;
+    }
 
     try {
       if (cartItems.length === 0) {
@@ -424,7 +434,7 @@ function CheckoutForm() {
 
               {/* Country - State - City Row */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:col-span-2">
-                {availableCountries.length > 1 && (
+                {(availableCountries?.length || 0) > 1 && (
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
                       Country
@@ -439,7 +449,7 @@ function CheckoutForm() {
                   </div>
                 )}
 
-                <div className={`space-y-2 ${availableCountries.length <= 1 ? 'md:col-span-2' : ''}`}>
+                <div className={`space-y-2 ${(availableCountries?.length || 0) <= 1 ? 'md:col-span-2' : ''}`}>
                   <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
                     State / Province
                   </label>
@@ -543,9 +553,9 @@ function CheckoutForm() {
 
             {/* Cart Items List */}
             <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-              {cartItems.map((item) => (
+              {(cartItems || []).map((item) => (
                 <div
-                  key={item.product._id || item.product}
+                  key={item?.product?._id || item?.product || Math.random()}
                   className="flex gap-4 items-center"
                 >
                   <div className="relative w-16 h-16 bg-gray-800 rounded overflow-hidden flex-shrink-0">
@@ -599,11 +609,18 @@ function CheckoutForm() {
                 </div>
               )}
               {formData.state && (
-                <div className="flex justify-between text-gray-400 text-sm">
-                  <span>Tax ({taxPercentage}%)</span>
-                  <span className={`text-white font-bold ${taxInfo.loading ? 'animate-pulse opacity-50' : ''}`}>
-                    {taxInfo.loading ? 'Calculating...' : `+$${taxAmount.toFixed(2)}`}
-                  </span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-gray-400 text-sm">
+                    <span>Tax ({taxPercentage || 0}%)</span>
+                    <span className={`text-white font-bold ${taxInfo.loading ? 'animate-pulse opacity-50' : ''}`}>
+                      {taxInfo.loading ? 'Calculating...' : `+$${Number(taxAmount || 0).toFixed(2)}`}
+                    </span>
+                  </div>
+                  {taxInfo.error && (
+                    <p className="text-[10px] text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20 animate-pulse">
+                      Error: {taxInfo.error}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -612,7 +629,7 @@ function CheckoutForm() {
               <div className="flex justify-between items-end">
                 <span className="text-lg font-bold text-white">Total</span>
                 <span className="text-3xl font-black text-primary leading-none">
-                  ${total.toFixed(2)}
+                  ${Number(total || 0).toFixed(2)}
                 </span>
               </div>
             </div>

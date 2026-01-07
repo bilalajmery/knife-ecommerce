@@ -1,6 +1,5 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 export default function SearchableSelect({
     options = [],
@@ -14,12 +13,13 @@ export default function SearchableSelect({
     const [search, setSearch] = useState("");
     const containerRef = useRef(null);
     const searchRef = useRef(null);
+    const safeOptions = Array.isArray(options) ? options : [];
 
-    const filteredOptions = options.filter(option =>
-        option.name.toLowerCase().includes(search.toLowerCase())
+    const filteredOptions = safeOptions.filter(option =>
+        option?.name?.toString()?.toLowerCase()?.includes(search.toLowerCase())
     );
 
-    const selectedOption = options.find(opt => opt._id === value);
+    const selectedOption = safeOptions.find(opt => opt?._id === value);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -55,14 +55,32 @@ export default function SearchableSelect({
                 <span className={selectedOption ? "text-white" : "text-gray-500"}>
                     {selectedOption ? selectedOption.name : placeholder}
                 </span>
-                <ChevronDownIcon className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
             </button>
 
             {isOpen && (
                 <div className="absolute z-50 w-full mt-2 bg-gray-900/95 backdrop-blur-xl border border-gray-800 rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in duration-200">
                     <div className="p-3 border-b border-gray-800 bg-black/50">
                         <div className="relative group">
-                            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-primary transition-colors" />
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                                stroke="currentColor"
+                                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 group-focus-within:text-primary transition-colors"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                            </svg>
                             <input
                                 ref={searchRef}
                                 type="text"
@@ -81,8 +99,8 @@ export default function SearchableSelect({
                                     key={option._id}
                                     type="button"
                                     className={`w-full px-4 py-3 text-left text-sm transition-all flex items-center justify-between group ${value === option._id
-                                            ? "bg-primary text-white font-bold"
-                                            : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                                        ? "bg-primary text-white font-bold"
+                                        : "text-gray-400 hover:bg-gray-800 hover:text-white"
                                         }`}
                                     onClick={() => handleSelect(option)}
                                 >
