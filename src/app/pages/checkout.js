@@ -15,6 +15,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import Loader from "@/app/components/Loader";
+import SearchableSelect from "@/app/components/SearchableSelect";
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
@@ -428,20 +429,13 @@ function CheckoutForm() {
                     <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
                       Country
                     </label>
-                    <select
+                    <SearchableSelect
                       name="country"
-                      required
+                      options={availableCountries}
                       value={formData.country}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white"
-                    >
-                      <option value="">Select Country</option>
-                      {availableCountries.map((c) => (
-                        <option key={c._id} value={c._id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="Select Country"
+                    />
                   </div>
                 )}
 
@@ -449,42 +443,28 @@ function CheckoutForm() {
                   <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
                     State / Province
                   </label>
-                  <select
+                  <SearchableSelect
                     name="state"
-                    required
+                    options={availableStates}
                     value={formData.state}
                     onChange={handleInputChange}
+                    placeholder="Select State"
                     disabled={!formData.country}
-                    className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <option value="">Select State</option>
-                    {availableStates.map((s) => (
-                      <option key={s._id} value={s._id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-gray-400">
                     City
                   </label>
-                  <select
+                  <SearchableSelect
                     name="city"
-                    required
+                    options={availableCities}
                     value={formData.city}
                     onChange={handleInputChange}
+                    placeholder="Select City"
                     disabled={!formData.state}
-                    className="w-full bg-gray-900 border border-gray-800 rounded px-4 py-3 focus:outline-none focus:border-primary transition-colors text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <option value="">Select City</option>
-                    {availableCities.map((c) => (
-                      <option key={c._id} value={c._id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
               </div>
 
