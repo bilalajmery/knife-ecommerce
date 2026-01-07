@@ -12,6 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { showAlert, showConfirm } from "../../../utils/sweetAlert";
 import Sidebar from "../../components/admin/Sidebar";
+import Pagination from "../../components/admin/Pagination";
 
 export default function CategoriesPage() {
   const router = useRouter();
@@ -194,8 +195,8 @@ export default function CategoriesPage() {
                       <td className="px-6 py-5">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${category.status === "active"
-                              ? "bg-green-500/10 text-green-500 border-green-500/20"
-                              : "bg-red-500/10 text-red-500 border-red-500/20"
+                            ? "bg-green-500/10 text-green-500 border-green-500/20"
+                            : "bg-red-500/10 text-red-500 border-red-500/20"
                             }`}
                         >
                           {category.status}
@@ -247,46 +248,13 @@ export default function CategoriesPage() {
             </table>
           </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="px-8 py-5 border-t border-gray-900 flex items-center justify-between bg-[#111]">
-              <span className="text-sm text-gray-400">
-                Showing{" "}
-                <span className="font-bold text-white">
-                  {indexOfFirstItem + 1}
-                </span>{" "}
-                to{" "}
-                <span className="font-bold text-white">
-                  {Math.min(indexOfLastItem, filteredCategories.length)}
-                </span>{" "}
-                of{" "}
-                <span className="font-bold text-white">
-                  {filteredCategories.length}
-                </span>{" "}
-                results
-              </span>
-              <div className="flex gap-2">
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  disabled={currentPage === 1}
-                  className="p-2.5 rounded-xl border border-gray-800 hover:bg-gray-800 hover:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-gray-400 hover:text-white"
-                >
-                  <ChevronLeftIcon className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="p-2.5 rounded-xl border border-gray-800 hover:bg-gray-800 hover:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-gray-400 hover:text-white"
-                >
-                  <ChevronRightIcon className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-          )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            totalResults={filteredCategories.length}
+            showingCount={currentCategories.length}
+          />
         </div>
       </main>
     </div>

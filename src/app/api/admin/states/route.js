@@ -8,17 +8,37 @@ export async function GET(req) {
         await dbConnect();
         const { searchParams } = new URL(req.url);
         const countryId = searchParams.get("country");
+        const page = parseInt(searchParams.get("page")) || 1;
+        const limit = parseInt(searchParams.get("limit")) || 10;
+        const skip = (page - 1) * limit;
+        const search = searchParams.get("search") || "";
 
         let query = {};
         if (countryId) {
             query.country = countryId;
         }
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: "i" } },
+                { code: { $regex: search, $options: "i" } }
+            ];
+        }
 
-        const states = await State.find(query)
-            .populate("country", "name")
-            .sort({ name: 1 });
+        const [states, total] = await Promise.all([
+            State.find(query)
+                .populate("country", "name")
+                .sort({ name: 1 })
+                .skip(skip)
+                .limit(limit),
+            State.countDocuments(query)
+        ]);
 
-        return NextResponse.json({ states }, { status: 200 });
+        return NextResponse.json({
+            states,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page,
+            total
+        }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }
@@ -28,7 +48,7 @@ export async function POST(req) {
     try {
         await dbConnect();
         const body = await req.json();
-        const { name, code, country, taxPercentage } = body;
+        const { name, code, country } = body;
 
         // Validation
         if (!name || !code || !country) {
@@ -51,7 +71,6 @@ export async function POST(req) {
             name,
             code,
             country,
-            taxPercentage: taxPercentage || 0,
         });
 
         return NextResponse.json(

@@ -10,6 +10,10 @@ export async function GET(req) {
         const { searchParams } = new URL(req.url);
         const stateId = searchParams.get("state");
         const countryId = searchParams.get("country");
+        const page = parseInt(searchParams.get("page")) || 1;
+        const limit = parseInt(searchParams.get("limit")) || 10;
+        const skip = (page - 1) * limit;
+        const search = searchParams.get("search") || "";
 
         let query = {};
         if (stateId) {
@@ -18,13 +22,26 @@ export async function GET(req) {
         if (countryId) {
             query.country = countryId;
         }
+        if (search) {
+            query.name = { $regex: search, $options: "i" };
+        }
 
-        const cities = await City.find(query)
-            .populate("country", "name")
-            .populate("state", "name")
-            .sort({ name: 1 });
+        const [cities, total] = await Promise.all([
+            City.find(query)
+                .populate("country", "name")
+                .populate("state", "name")
+                .sort({ name: 1 })
+                .skip(skip)
+                .limit(limit),
+            City.countDocuments(query)
+        ]);
 
-        return NextResponse.json({ cities }, { status: 200 });
+        return NextResponse.json({
+            cities,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page,
+            total
+        }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ message: error.message }, { status: 500 });
     }

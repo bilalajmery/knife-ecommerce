@@ -6,18 +6,29 @@ import {
     TrashIcon,
     MagnifyingGlassIcon,
     XMarkIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import { showAlert, showConfirm } from "../../../utils/sweetAlert";
 import Sidebar from "../../components/admin/Sidebar";
+import Pagination from "../../components/admin/Pagination";
 import { toast } from "sonner";
 
 export default function CitiesPage() {
     const [cities, setCities] = useState([]);
     const [countries, setCountries] = useState([]);
-    const [allStates, setAllStates] = useState([]); // Store all states
-    const [filteredStates, setFilteredStates] = useState([]); // States filtered by selected country
+    const [allStates, setAllStates] = useState([]); // All states for modal
+    const [filterStates, setFilterStates] = useState([]); // States for filter dropdown
+    const [modalStates, setModalStates] = useState([]); // States for modal dropdown
     const [loading, setLoading] = useState(true);
+
+    // Filters and Pagination
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedCountry, setSelectedCountry] = useState("");
+    const [selectedState, setSelectedState] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalResults, setTotalResults] = useState(0);
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,40 +43,75 @@ export default function CitiesPage() {
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [citiesRes, countriesRes, statesRes] = await Promise.all([
-                fetch("/api/admin/cities"),
-                fetch("/api/admin/countries"),
-                fetch("/api/admin/states"),
-            ]);
-
+            const queryParams = new URLSearchParams({
+                page,
+                limit: 10,
+                search: searchTerm,
+                country: selectedCountry,
+                state: selectedState,
+            });
+            const citiesRes = await fetch(`/api/admin/cities?${queryParams.toString()}`);
             const citiesData = await citiesRes.json();
-            const countriesData = await countriesRes.json();
-            const statesData = await statesRes.json();
 
-            if (citiesRes.ok) setCities(citiesData.cities);
-            if (countriesRes.ok) setCountries(countriesData.countries);
-            if (statesRes.ok) setAllStates(statesData.states);
+            if (citiesRes.ok) {
+                setCities(citiesData.cities);
+                setTotalPages(citiesData.totalPages);
+                setTotalResults(citiesData.total);
+            }
         } catch (error) {
-            console.error("Error fetching data:", error);
-            toast.error("Error fetching data");
+            console.error("Error fetching cities:", error);
+            toast.error("Error fetching cities");
         } finally {
             setLoading(false);
         }
     };
 
+    const fetchDropdownData = async () => {
+        try {
+            const [countriesRes, statesRes] = await Promise.all([
+                fetch("/api/admin/countries"),
+                fetch("/api/admin/states?limit=1000"), // Get more states for dropdowns
+            ]);
+
+            const countriesData = await countriesRes.json();
+            const statesData = await statesRes.json();
+
+            if (countriesRes.ok) setCountries(countriesData.countries);
+            if (statesRes.ok) setAllStates(statesData.states);
+        } catch (error) {
+            console.error("Error fetching dropdown data:", error);
+        }
+    };
+
     useEffect(() => {
-        fetchData();
+        fetchDropdownData();
     }, []);
 
-    // Filter states when country changes in form
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            fetchData();
+        }, 500);
+        return () => clearTimeout(timeoutId);
+    }, [page, searchTerm, selectedCountry, selectedState]);
+
+    // Update filter states when filter country changes
+    useEffect(() => {
+        if (selectedCountry) {
+            const related = allStates.filter(s => (s.country?._id || s.country) === selectedCountry);
+            setFilterStates(related);
+        } else {
+            setFilterStates([]);
+            setSelectedState("");
+        }
+    }, [selectedCountry, allStates]);
+
+    // Update modal states when modal country changes
     useEffect(() => {
         if (formData.country) {
-            const relatedStates = allStates.filter(
-                (s) => (s.country._id || s.country) === formData.country
-            );
-            setFilteredStates(relatedStates);
+            const related = allStates.filter(s => (s.country?._id || s.country) === formData.country);
+            setModalStates(related);
         } else {
-            setFilteredStates([]);
+            setModalStates([]);
         }
     }, [formData.country, allStates]);
 
@@ -102,12 +148,7 @@ export default function CitiesPage() {
                 ...prev,
                 [name]: type === "checkbox" ? checked : value,
             };
-
-            // Reset state selection if country changes
-            if (name === 'country') {
-                newData.state = "";
-            }
-
+            if (name === 'country') newData.state = "";
             return newData;
         });
     };
@@ -131,17 +172,12 @@ export default function CitiesPage() {
                 body: JSON.stringify(formData),
             });
 
-            const data = await res.json();
-
             if (res.ok) {
-                toast.success(
-                    currentCity
-                        ? "City updated successfully"
-                        : "City added successfully"
-                );
+                toast.success(currentCity ? "City updated" : "City added");
                 handleCloseModal();
                 fetchData();
             } else {
+                const data = await res.json();
                 toast.error(data.message || "Operation failed");
             }
         } catch (error) {
@@ -151,17 +187,10 @@ export default function CitiesPage() {
     };
 
     const handleDelete = async (id) => {
-        const result = await showConfirm(
-            "Are you sure?",
-            "You won't be able to revert this!"
-        );
-
+        const result = await showConfirm("Are you sure?", "This action cannot be undone.");
         if (result.isConfirmed) {
             try {
-                const res = await fetch(`/api/admin/cities/${id}`, {
-                    method: "DELETE",
-                });
-
+                const res = await fetch(`/api/admin/cities/${id}`, { method: "DELETE" });
                 if (res.ok) {
                     fetchData();
                     showAlert("success", "Deleted!", "City has been deleted.");
@@ -175,13 +204,6 @@ export default function CitiesPage() {
         }
     };
 
-    const filteredCities = cities.filter(
-        (c) =>
-            c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            c.country?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            c.state?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex">
             <Sidebar />
@@ -191,7 +213,7 @@ export default function CitiesPage() {
                     <div>
                         <h2 className="text-3xl font-bold tracking-tight">Cities</h2>
                         <p className="text-gray-400 mt-1">
-                            Manage cities for shipping destinations
+                            Manage cities ({totalResults} total)
                         </p>
                     </div>
                     <button
@@ -204,8 +226,8 @@ export default function CitiesPage() {
                 </header>
 
                 {/* Filters */}
-                <div className="flex flex-col md:flex-row gap-4 mb-8 justify-between items-center bg-[#111] p-6 rounded-2xl border border-gray-900 shadow-xl">
-                    <div className="relative w-full md:w-96 group">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-[#111] p-6 rounded-2xl border border-gray-900 shadow-xl">
+                    <div className="relative group col-span-1 md:col-span-1">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 group-focus-within:text-primary transition-colors" />
                         </div>
@@ -213,14 +235,40 @@ export default function CitiesPage() {
                             type="text"
                             placeholder="Search cities..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
                             className="block w-full pl-11 pr-4 py-3 bg-black border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                         />
                     </div>
+
+                    <select
+                        value={selectedCountry}
+                        onChange={(e) => { setSelectedCountry(e.target.value); setPage(1); }}
+                        className="bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    >
+                        <option value="">All Countries</option>
+                        {countries.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                    </select>
+
+                    <select
+                        value={selectedState}
+                        onChange={(e) => { setSelectedState(e.target.value); setPage(1); }}
+                        disabled={!selectedCountry}
+                        className="bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all disabled:opacity-50"
+                    >
+                        <option value="">All States</option>
+                        {filterStates.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+                    </select>
+
+                    <button
+                        onClick={() => { setSearchTerm(""); setSelectedCountry(""); setSelectedState(""); setPage(1); }}
+                        className="px-4 py-3 bg-gray-900 text-gray-400 rounded-xl hover:text-white transition-colors border border-gray-800"
+                    >
+                        Reset Filters
+                    </button>
                 </div>
 
                 {/* Table */}
-                <div className="bg-[#111] border border-gray-900 rounded-2xl overflow-hidden shadow-xl">
+                <div className="bg-[#111] border border-gray-900 rounded-2xl overflow-hidden shadow-xl mb-6">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm text-gray-400">
                             <thead className="bg-black text-gray-200 uppercase font-bold text-xs tracking-wider border-b border-gray-900">
@@ -236,15 +284,16 @@ export default function CitiesPage() {
                                 {loading ? (
                                     <tr>
                                         <td colSpan="5" className="px-8 py-12 text-center text-gray-500">
-                                            Loading...
+                                            <div className="flex items-center justify-center gap-2">
+                                                <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                                <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                                <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                                            </div>
                                         </td>
                                     </tr>
-                                ) : filteredCities.length > 0 ? (
-                                    filteredCities.map((city) => (
-                                        <tr
-                                            key={city._id}
-                                            className="hover:bg-gray-900/50 transition-colors group"
-                                        >
+                                ) : cities.length > 0 ? (
+                                    cities.map((city) => (
+                                        <tr key={city._id} className="hover:bg-gray-900/50 transition-colors group">
                                             <td className="px-6 py-5 font-bold text-white group-hover:text-primary transition-colors">
                                                 {city.name}
                                             </td>
@@ -255,46 +304,24 @@ export default function CitiesPage() {
                                                 {city.country?.name || "N/A"}
                                             </td>
                                             <td className="px-6 py-5">
-                                                <span
-                                                    className={`px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${city.isActive
-                                                        ? "bg-green-500/10 text-green-500 border-green-500/20"
-                                                        : "bg-red-500/10 text-red-500 border-red-500/20"
-                                                        }`}
-                                                >
+                                                <span className={`px-3 py-1 rounded-full text-xs font-bold border uppercase tracking-wider ${city.isActive ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-red-500/10 text-red-500 border-red-500/20"}`}>
                                                     {city.isActive ? "Active" : "Inactive"}
                                                 </span>
                                             </td>
                                             <td className="px-8 py-5 text-right">
                                                 <div className="flex justify-end gap-3">
-                                                    <button
-                                                        onClick={() => handleOpenModal(city)}
-                                                        className="p-2 rounded-lg hover:bg-blue-500/10 text-gray-500 hover:text-blue-500 transition-colors"
-                                                        title="Edit"
-                                                    >
-                                                        <PencilSquareIcon className="h-5 w-5" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(city._id)}
-                                                        className="p-2 rounded-lg hover:bg-red-500/10 text-gray-500 hover:text-red-500 transition-colors"
-                                                        title="Delete"
-                                                    >
-                                                        <TrashIcon className="h-5 w-5" />
-                                                    </button>
+                                                    <button onClick={() => handleOpenModal(city)} className="p-2 rounded-lg hover:bg-blue-500/10 text-gray-500 hover:text-blue-500 transition-colors"><PencilSquareIcon className="h-5 w-5" /></button>
+                                                    <button onClick={() => handleDelete(city._id)} className="p-2 rounded-lg hover:bg-red-500/10 text-gray-500 hover:text-red-500 transition-colors"><TrashIcon className="h-5 w-5" /></button>
                                                 </div>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td
-                                            colSpan="5"
-                                            className="px-8 py-12 text-center text-gray-500"
-                                        >
+                                        <td colSpan="5" className="px-8 py-12 text-center text-gray-500">
                                             <div className="flex flex-col items-center justify-center">
                                                 <MagnifyingGlassIcon className="h-12 w-12 text-gray-700 mb-4" />
-                                                <p className="text-lg font-medium text-gray-400">
-                                                    No cities found
-                                                </p>
+                                                <p className="text-lg font-medium text-gray-400">No cities found</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -303,108 +330,50 @@ export default function CitiesPage() {
                         </table>
                     </div>
                 </div>
+
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                    totalResults={totalResults}
+                    showingCount={cities.length}
+                />
             </main>
 
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                    <div className="bg-[#111] border border-gray-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                    <div className="bg-[#111] border border-gray-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
                         <div className="px-6 py-4 border-b border-gray-800 flex justify-between items-center bg-black">
-                            <h3 className="text-lg font-bold text-white uppercase tracking-wider">
-                                {currentCity ? "Edit City" : "Add City"}
-                            </h3>
-                            <button
-                                onClick={handleCloseModal}
-                                className="text-gray-500 hover:text-white transition-colors"
-                            >
-                                <XMarkIcon className="h-6 w-6" />
-                            </button>
+                            <h3 className="text-lg font-bold text-white uppercase tracking-wider">{currentCity ? "Edit City" : "Add City"}</h3>
+                            <button onClick={handleCloseModal} className="text-gray-500 hover:text-white transition-colors"><XMarkIcon className="h-6 w-6" /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                                    Country
-                                </label>
-                                <select
-                                    name="country"
-                                    value={formData.country}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
-                                >
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Country</label>
+                                <select name="country" value={formData.country} onChange={handleInputChange} required className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-primary outline-none transition-colors">
                                     <option value="" disabled>Select a Country</option>
-                                    {countries.map(c => (
-                                        <option key={c._id} value={c._id}>{c.name}</option>
-                                    ))}
+                                    {countries.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
                                 </select>
                             </div>
-
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                                    State / Province
-                                </label>
-                                <select
-                                    name="state"
-                                    value={formData.state}
-                                    onChange={handleInputChange}
-                                    required
-                                    disabled={!formData.country}
-                                    className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">State / Province</label>
+                                <select name="state" value={formData.state} onChange={handleInputChange} required disabled={!formData.country} className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-primary outline-none transition-colors disabled:opacity-50">
                                     <option value="" disabled>Select a State</option>
-                                    {filteredStates.map(s => (
-                                        <option key={s._id} value={s._id}>{s.name}</option>
-                                    ))}
+                                    {modalStates.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
                                 </select>
                             </div>
-
-
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                                    City Name
-                                </label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    required
-                                    placeholder="e.g. Los Angeles"
-                                    className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
-                                />
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">City Name</label>
+                                <input type="text" name="name" value={formData.name} onChange={handleInputChange} required placeholder="e.g. Los Angeles" className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-primary outline-none transition-colors" />
                             </div>
-
                             <div className="flex items-center gap-3 pt-2">
-                                <input
-                                    type="checkbox"
-                                    id="isActive"
-                                    name="isActive"
-                                    checked={formData.isActive}
-                                    onChange={handleInputChange}
-                                    className="w-5 h-5 rounded border-gray-700 bg-gray-900 text-primary focus:ring-primary focus:ring-offset-gray-900"
-                                />
-                                <label
-                                    htmlFor="isActive"
-                                    className="text-sm font-medium text-gray-300"
-                                >
-                                    Active
-                                </label>
+                                <input type="checkbox" id="isActive" name="isActive" checked={formData.isActive} onChange={handleInputChange} className="w-5 h-5 rounded border-gray-700 bg-gray-900 text-primary" />
+                                <label htmlFor="isActive" className="text-sm font-medium text-gray-300">Active</label>
                             </div>
-
                             <div className="pt-4 flex gap-3">
-                                <button
-                                    type="button"
-                                    onClick={handleCloseModal}
-                                    className="flex-1 px-4 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-bold text-sm uppercase tracking-wider"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-red-700 transition-colors font-bold text-sm uppercase tracking-wider shadow-lg shadow-primary/20"
-                                >
-                                    {currentCity ? "Update" : "Create"}
-                                </button>
+                                <button type="button" onClick={handleCloseModal} className="flex-1 px-4 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-bold text-sm uppercase tracking-wider">Cancel</button>
+                                <button type="submit" className="flex-1 px-4 py-3 bg-primary text-white rounded-xl hover:bg-red-700 transition-colors font-bold text-sm uppercase tracking-wider shadow-lg shadow-primary/20">{currentCity ? "Update" : "Create"}</button>
                             </div>
                         </form>
                     </div>
@@ -413,8 +382,3 @@ export default function CitiesPage() {
         </div>
     );
 }
-
-
-
-
-

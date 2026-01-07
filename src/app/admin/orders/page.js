@@ -9,6 +9,7 @@ import {
     EyeIcon
 } from "@heroicons/react/24/outline";
 import Sidebar from "@/app/components/admin/Sidebar";
+import Pagination from "@/app/components/admin/Pagination";
 
 export default function OrdersPage() {
     const router = useRouter();
@@ -208,38 +209,19 @@ export default function OrdersPage() {
                             </tbody>
                         </table>
                     </div>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className="px-8 py-5 border-t border-gray-900 flex items-center justify-between bg-[#111]">
-                            <span className="text-sm text-gray-400">
-                                Showing <span className="font-bold text-white">{indexOfFirstItem + 1}</span> to <span className="font-bold text-white">{Math.min(indexOfLastItem, filteredOrders.length)}</span> of <span className="font-bold text-white">{filteredOrders.length}</span> results
-                            </span>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                                    disabled={currentPage === 1}
-                                    className="p-2.5 rounded-xl border border-gray-800 hover:bg-gray-800 hover:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-gray-400 hover:text-white"
-                                >
-                                    <ChevronLeftIcon className="h-5 w-5" />
-                                </button>
-                                <button
-                                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                                    disabled={currentPage === totalPages}
-                                    className="p-2.5 rounded-xl border border-gray-800 hover:bg-gray-800 hover:border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-gray-400 hover:text-white"
-                                >
-                                    <ChevronRightIcon className="h-5 w-5" />
-                                </button>
-                            </div>
-                        </div>
-                    )}
                 </div>
+
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    totalResults={filteredOrders.length}
+                    showingCount={currentOrders.length}
+                />
             </main>
         </div>
     );
 }
-
-
 
 
 

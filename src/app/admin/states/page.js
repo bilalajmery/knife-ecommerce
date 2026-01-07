@@ -6,9 +6,12 @@ import {
     TrashIcon,
     MagnifyingGlassIcon,
     XMarkIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
 } from "@heroicons/react/24/outline";
 import { showAlert, showConfirm } from "../../../utils/sweetAlert";
 import Sidebar from "../../components/admin/Sidebar";
+import Pagination from "../../components/admin/Pagination";
 import { toast } from "sonner";
 
 export default function StatesPage() {
@@ -16,6 +19,10 @@ export default function StatesPage() {
     const [countries, setCountries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalResults, setTotalResults] = useState(0);
+    const [selectedCountry, setSelectedCountry] = useState("");
 
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,25 +32,24 @@ export default function StatesPage() {
         code: "",
         country: "",
         isActive: true,
-        taxPercentage: 0,
     });
 
     const fetchData = async () => {
         try {
             setLoading(true);
-            const [statesRes, countriesRes] = await Promise.all([
-                fetch("/api/admin/states"),
-                fetch("/api/admin/countries"),
-            ]);
-
+            const queryParams = new URLSearchParams({
+                page,
+                limit: 10,
+                search: searchTerm,
+                country: selectedCountry
+            });
+            const statesRes = await fetch(`/api/admin/states?${queryParams.toString()}`);
             const statesData = await statesRes.json();
-            const countriesData = await countriesRes.json();
 
             if (statesRes.ok) {
                 setStates(statesData.states);
-            }
-            if (countriesRes.ok) {
-                setCountries(countriesData.countries);
+                setTotalPages(statesData.totalPages);
+                setTotalResults(statesData.total);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -53,9 +59,28 @@ export default function StatesPage() {
         }
     };
 
+    const fetchCountries = async () => {
+        try {
+            const countriesRes = await fetch("/api/admin/countries");
+            const countriesData = await countriesRes.json();
+            if (countriesRes.ok) {
+                setCountries(countriesData.countries);
+            }
+        } catch (error) {
+            console.error("Error fetching countries:", error);
+        }
+    };
+
     useEffect(() => {
-        fetchData();
+        fetchCountries();
     }, []);
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            fetchData();
+        }, 500); // Debounce search
+        return () => clearTimeout(timeoutId);
+    }, [page, searchTerm, selectedCountry]);
 
     const handleOpenModal = (state = null) => {
         if (state) {
@@ -65,7 +90,6 @@ export default function StatesPage() {
                 code: state.code,
                 country: state.country?._id || state.country, // Handle populated or raw ID
                 isActive: state.isActive,
-                taxPercentage: state.taxPercentage || 0,
             });
         } else {
             setCurrentState(null);
@@ -74,7 +98,6 @@ export default function StatesPage() {
                 code: "",
                 country: "",
                 isActive: true,
-                taxPercentage: 0,
             });
         }
         setIsModalOpen(true);
@@ -155,13 +178,6 @@ export default function StatesPage() {
         }
     };
 
-    const filteredStates = states.filter(
-        (s) =>
-            s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            s.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            s.country?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white font-sans flex">
             <Sidebar />
@@ -171,7 +187,7 @@ export default function StatesPage() {
                     <div>
                         <h2 className="text-3xl font-bold tracking-tight">States</h2>
                         <p className="text-gray-400 mt-1">
-                            Manage states/provinces for shipping
+                            Manage states/provinces for shipping ({totalResults} total)
                         </p>
                     </div>
                     <button
@@ -185,22 +201,54 @@ export default function StatesPage() {
 
                 {/* Filters */}
                 <div className="flex flex-col md:flex-row gap-4 mb-8 justify-between items-center bg-[#111] p-6 rounded-2xl border border-gray-900 shadow-xl">
-                    <div className="relative w-full md:w-96 group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 group-focus-within:text-primary transition-colors" />
+                    <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                        <div className="relative w-full md:w-96 group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <MagnifyingGlassIcon className="h-5 w-5 text-gray-500 group-focus-within:text-primary transition-colors" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Search states..."
+                                value={searchTerm}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setPage(1); // Reset to first page on search
+                                }}
+                                className="block w-full pl-11 pr-4 py-3 bg-black border border-gray-900 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                            />
                         </div>
-                        <input
-                            type="text"
-                            placeholder="Search states..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="block w-full pl-11 pr-4 py-3 bg-black border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                        />
+
+                        <select
+                            value={selectedCountry}
+                            onChange={(e) => {
+                                setSelectedCountry(e.target.value);
+                                setPage(1);
+                            }}
+                            className="bg-black border border-gray-900 text-white rounded-xl px-4 py-3 min-w-[200px] outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer"
+                        >
+                            <option value="">All Countries</option>
+                            {countries.map(c => (
+                                <option key={c._id} value={c._id}>{c.name}</option>
+                            ))}
+                        </select>
+
+                        {(searchTerm || selectedCountry) && (
+                            <button
+                                onClick={() => {
+                                    setSearchTerm("");
+                                    setSelectedCountry("");
+                                    setPage(1);
+                                }}
+                                className="px-6 py-3 bg-gray-900 text-gray-400 hover:text-white rounded-xl border border-gray-800 hover:border-gray-600 transition-all font-bold text-xs uppercase tracking-wider"
+                            >
+                                Reset Filters
+                            </button>
+                        )}
                     </div>
                 </div>
 
                 {/* Table */}
-                <div className="bg-[#111] border border-gray-900 rounded-2xl overflow-hidden shadow-xl">
+                <div className="bg-[#111] border border-gray-900 rounded-2xl overflow-hidden shadow-xl mb-6">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm text-gray-400">
                             <thead className="bg-black text-gray-200 uppercase font-bold text-xs tracking-wider border-b border-gray-900">
@@ -208,7 +256,6 @@ export default function StatesPage() {
                                     <th className="px-6 py-5">Name</th>
                                     <th className="px-6 py-5">Code</th>
                                     <th className="px-6 py-5">Country</th>
-                                    <th className="px-6 py-5">Tax (%)</th>
                                     <th className="px-6 py-5">Status</th>
                                     <th className="px-8 py-5 text-right">Actions</th>
                                 </tr>
@@ -217,11 +264,15 @@ export default function StatesPage() {
                                 {loading ? (
                                     <tr>
                                         <td colSpan="5" className="px-8 py-12 text-center text-gray-500">
-                                            Loading...
+                                            <div className="flex items-center justify-center gap-2">
+                                                <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                                                <div className="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                                                <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                                            </div>
                                         </td>
                                     </tr>
-                                ) : filteredStates.length > 0 ? (
-                                    filteredStates.map((state) => (
+                                ) : states.length > 0 ? (
+                                    states.map((state) => (
                                         <tr
                                             key={state._id}
                                             className="hover:bg-gray-900/50 transition-colors group"
@@ -234,9 +285,6 @@ export default function StatesPage() {
                                             </td>
                                             <td className="px-6 py-5 text-gray-300">
                                                 {state.country?.name || "N/A"}
-                                            </td>
-                                            <td className="px-6 py-5 text-gray-300 font-bold">
-                                                {state.taxPercentage || 0}%
                                             </td>
                                             <td className="px-6 py-5">
                                                 <span
@@ -287,6 +335,14 @@ export default function StatesPage() {
                         </table>
                     </div>
                 </div>
+
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                    totalResults={totalResults}
+                    showingCount={states.length}
+                />
             </main>
 
             {/* Modal */}
@@ -356,22 +412,6 @@ export default function StatesPage() {
                                     className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors uppercase font-mono"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                                    Tax Percentage (%)
-                                </label>
-                                <input
-                                    type="number"
-                                    name="taxPercentage"
-                                    value={formData.taxPercentage}
-                                    onChange={handleInputChange}
-                                    step="0.01"
-                                    min="0"
-                                    max="100"
-                                    placeholder="e.g. 5.5"
-                                    className="w-full bg-black border border-gray-800 rounded-lg px-4 py-3 text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
-                                />
-                            </div>
                             <div className="flex items-center gap-3 pt-2">
                                 <input
                                     type="checkbox"
@@ -411,8 +451,3 @@ export default function StatesPage() {
         </div>
     );
 }
-
-
-
-
-
