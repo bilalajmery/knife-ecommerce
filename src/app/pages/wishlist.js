@@ -5,20 +5,13 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import ProductCard from "@/app/components/ProductCard";
 import { useWishlist } from "@/context/WishlistContext";
+import Loader from "@/app/components/Loader";
 
 export default function WishlistPage() {
   const { wishlist, removeFromWishlist, loading } = useWishlist();
 
   if (loading) {
-    return (
-      <div className="bg-black min-h-screen text-white font-sans selection:bg-primary selection:text-white">
-        <Navbar />
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-pulse text-xl">Loading wishlist...</div>
-        </div>
-        <Footer />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (

@@ -6,6 +6,7 @@ import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
+import Loader from "@/app/components/Loader";
 
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, addToCart, loading, applyPromo, removePromo } = useCart();
@@ -61,13 +62,7 @@ export default function CartPage() {
   };
 
   if (loading) {
-    return (
-      <div className="bg-black min-h-screen text-white font-sans flex items-center justify-center">
-        <Navbar />
-        <div className="animate-pulse">Loading Cart...</div>
-        <Footer />
-      </div>
-    );
+    return <Loader />;
   }
 
   const cartItems = cart.items || [];

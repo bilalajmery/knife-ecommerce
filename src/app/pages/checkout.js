@@ -14,6 +14,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import Loader from "@/app/components/Loader";
 
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
@@ -339,13 +340,7 @@ function CheckoutForm() {
   };
 
   if (cartLoading) {
-    return (
-      <div className="bg-black min-h-screen text-white font-sans flex items-center justify-center">
-        <Navbar />
-        <div className="animate-pulse">Loading Checkout...</div>
-        <Footer />
-      </div>
-    );
+    return <Loader />;
   }
 
   return (

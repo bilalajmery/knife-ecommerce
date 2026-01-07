@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export default function ProductCard({ product, className = "", onRemove }) {
   const { addToCart } = useCart();
@@ -30,6 +31,7 @@ export default function ProductCard({ product, className = "", onRemove }) {
     e.preventDefault();
     e.stopPropagation();
     await addToCart(product, 1);
+    toast.success(`Success! ${product.name} added to your arsenal.`);
   };
 
   const handleWishlistToggle = async (e) => {
@@ -38,8 +40,10 @@ export default function ProductCard({ product, className = "", onRemove }) {
 
     if (inWishlist) {
       await removeFromWishlist(productId);
+      toast.success(`${product.name} removed from wishlist.`);
     } else {
       await addToWishlist(product);
+      toast.success(`${product.name} added to wishlist.`);
     }
   };
 

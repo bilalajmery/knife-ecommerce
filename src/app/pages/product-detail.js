@@ -5,9 +5,11 @@ import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import ProductCard from "@/app/components/ProductCard";
+import Loader from "@/app/components/Loader";
 
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { toast } from "sonner";
 
 export default function ProductDetailPage({ params }) {
   const [product, setProduct] = useState(null);
@@ -22,6 +24,7 @@ export default function ProductDetailPage({ params }) {
   const handleAddToCart = async () => {
     if (product) {
       await addToCart(product, quantity);
+      toast.success(`Success! ${product.name} added to your arsenal.`);
     }
   };
 
@@ -121,13 +124,7 @@ export default function ProductDetailPage({ params }) {
   const [relatedProducts, setRelatedProducts] = useState([]);
 
   if (loading) {
-    return (
-      <div className="bg-black min-h-screen text-white font-sans flex items-center justify-center">
-        <Navbar />
-        <div className="animate-pulse">Loading...</div>
-        <Footer />
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error || !product) {
@@ -331,8 +328,8 @@ export default function ProductDetailPage({ params }) {
               <button
                 onClick={handleWishlistToggle}
                 className={`p-4 border rounded-md transition-all ${isInWishlist(product._id || product.id)
-                    ? 'border-primary text-primary bg-primary/10'
-                    : 'border-gray-700 text-gray-400 hover:border-primary hover:text-primary'
+                  ? 'border-primary text-primary bg-primary/10'
+                  : 'border-gray-700 text-gray-400 hover:border-primary hover:text-primary'
                   }`}
                 title={isInWishlist(product._id || product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
               >
