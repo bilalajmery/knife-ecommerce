@@ -8,19 +8,36 @@ import { PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 
 const faqs = [
   {
-    category: "Orders & Shipping",
+    category: "Ordering & Payments",
     questions: [
       {
+        q: "How do I place an order?",
+        a: "Simply browse our website, select the knife or product you want, choose any available options (such as size or finish), and click Add to Cart. Then proceed to checkout and complete your payment.",
+      },
+      {
+        q: "What payment methods do you accept?",
+        a: "We accept major credit and debit cards, PayPal, and other secure payment methods available at checkout.",
+      },
+      {
+        q: "Can I cancel or change my order?",
+        a: "Orders are processed quickly, usually within 1–3 business days. If you need to cancel or change your order, contact us as soon as possible at support@knifemasters.com. We cannot guarantee changes once an order has been processed.",
+      },
+    ],
+  },
+  {
+    category: "Shipping & Delivery",
+    questions: [
+      {
+        q: "Do you ship nationwide?",
+        a: "Yes! We ship to all U.S. addresses where knives are legally allowed. Customers are responsible for ensuring compliance with local laws.",
+      },
+      {
         q: "How long does shipping take?",
-        a: "Standard shipping typically takes 3-5 business days within the continental US. International shipping can take 7-14 business days depending on the destination and customs processing.",
+        a: "Orders are processed within 1–3 business days. Shipping times depend on your location and the carrier selected at checkout. Transit times are provided by the carrier and are not guaranteed.",
       },
       {
-        q: "Do you ship internationally?",
-        a: "Yes, we ship to most countries worldwide. Please note that customers are responsible for any customs duties or taxes imposed by their country.",
-      },
-      {
-        q: "Can I track my order?",
-        a: "Absolutely. Once your order ships, you'll receive a confirmation email with a tracking number that you can use on our Track Order page.",
+        q: "How much does shipping cost?",
+        a: "Shipping rates are calculated at checkout based on package weight, destination, and selected shipping method. Any applicable taxes, duties, or customs fees are the responsibility of the customer.",
       },
     ],
   },
@@ -28,29 +45,47 @@ const faqs = [
     category: "Returns & Warranty",
     questions: [
       {
-        q: "What is your return policy?",
-        a: "We offer a 30-day hassle-free return policy for all unused items in their original packaging. Simply contact our support team to initiate a return.",
+        q: "Do you offer returns or exchanges?",
+        a: "Yes! You may return a product within 7 days of delivery if you are not fully satisfied. Customers are responsible for return shipping unless the item was damaged, defective, missing parts, or incorrectly shipped by KnifeMasters.",
       },
       {
-        q: "Do your knives come with a warranty?",
-        a: "Yes, all KnifeMasters knives come with a Lifetime Warranty against defects in material and workmanship. We stand behind the quality of our products.",
+        q: "What if my knife arrives damaged or defective?",
+        a: "Please contact us within 48 hours of delivery with photo or video evidence. We will provide a replacement, exchange, or refund at no additional cost.",
+      },
+      {
+        q: "Do you offer a warranty?",
+        a: "Yes! All KnifeMasters products include a limited 30-day warranty covering manufacturing defects in materials or workmanship present at delivery. The warranty does not cover normal wear, misuse, or damage after delivery.",
       },
     ],
   },
   {
-    category: "Product Care",
+    category: "Product Care & Legal",
     questions: [
       {
-        q: "How should I sharpen my knife?",
-        a: "We recommend using a whetstone or a high-quality sharpening system. Avoid pull-through sharpeners as they can damage the blade edge over time. We also offer professional sharpening services.",
+        q: "How do I care for my knife?",
+        a: "Keep your knife clean and dry, store it safely away from children, avoid dropping or misuse, and sharpen only with proper tools. Proper care helps extend the life of your knife and keeps your warranty valid.",
       },
       {
-        q: "Are your knives dishwasher safe?",
-        a: "No. We strongly recommend hand washing your knives with mild soap and warm water, then drying them immediately to prevent rust and handle damage.",
+        q: "Are knives shipped legally?",
+        a: "Yes. KnifeMasters ships all products in compliance with U.S. federal law. Customers are responsible for knowing and following their local state and city knife laws.",
+      },
+    ],
+  },
+  {
+    category: "Privacy & Support",
+    questions: [
+      {
+        q: "Is my personal information safe?",
+        a: "Yes. We take privacy seriously. Personal and payment information is used only to process orders and provide support. Payments are handled securely through trusted third-party providers.",
+      },
+      {
+        q: "Can I contact you with questions?",
+        a: "Absolutely! You can email us anytime at support@knifemasters.com, and our team will respond as quickly as possible.",
       },
     ],
   },
 ];
+
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState("0-0");
@@ -143,7 +178,7 @@ export default function FAQ() {
                             : "max-h-0 opacity-0"
                             }`}
                         >
-                          <div className="p-6 pt-0 text-gray-400 leading-relaxed border-t border-gray-800/50 mt-2">
+                          <div className="p-6 pt-3 text-gray-400 leading-relaxed border-t border-gray-800/50">
                             {item.a}
                           </div>
                         </div>
