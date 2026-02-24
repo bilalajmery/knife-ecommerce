@@ -9,6 +9,7 @@ import {
     XCircleIcon,
     ClockIcon,
     ArrowDownTrayIcon,
+    ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import Sidebar from "@/app/components/admin/Sidebar";
 import { showAlert } from "@/utils/sweetAlert";
@@ -31,6 +32,24 @@ export default function OrderDetailPage({ params }) {
     const [shippingData, setShippingData] = useState({
         carrier: "Fedex",
         trackingId: ""
+    });
+
+    // USPS Modal State
+    const [showUspsModal, setShowUspsModal] = useState(false);
+    const [uspsData, setUspsData] = useState({
+        weight: "1.0",
+        length: "10",
+        width: "5",
+        height: "5",
+        serviceType: "USPS_GROUND_ADVANTAGE",
+        senderAddress: {
+            firstName: "Knife",
+            lastName: "Ecommerce",
+            address: "123 Main St",
+            city: "New York",
+            state: "NY",
+            zip: "10001"
+        }
     });
 
     const fetchOrder = async () => {
@@ -71,6 +90,7 @@ export default function OrderDetailPage({ params }) {
             if (res.ok) {
                 setOrder(data.order);
                 setShowShippingModal(false);
+                setShowUspsModal(false);
                 showAlert("success", "Success", `Order marked as ${newStatus}`);
             } else {
                 showAlert("error", "Error", data.message || "Failed to update status");
@@ -78,6 +98,38 @@ export default function OrderDetailPage({ params }) {
         } catch (error) {
             console.error("Update status failed", error);
             showAlert("error", "Error", "Something went wrong");
+        } finally {
+            setUpdating(false);
+        }
+    };
+
+    const handleUspsBooking = async () => {
+        try {
+            setUpdating(true);
+            const res = await fetch(`/api/admin/orders/${id}/usps-booking`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(uspsData),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setOrder(data.order);
+                setShowUspsModal(false);
+                showAlert("success", "USPS Booked", `Label generated for ${data.trackingId}`);
+
+                // Trigger label download
+                if (data.labelBase64) {
+                    const link = document.createElement("a");
+                    link.href = `data:application/pdf;base64,${data.labelBase64}`;
+                    link.download = `USPS-Label-${data.trackingId}.pdf`;
+                    link.click();
+                }
+            } else {
+                showAlert("error", "Booking Failed", data.message || "USPS error");
+            }
+        } catch (error) {
+            console.error("USPS booking failed", error);
+            showAlert("error", "Error", "Something went wrong during USPS booking");
         } finally {
             setUpdating(false);
         }
@@ -205,10 +257,28 @@ export default function OrderDetailPage({ params }) {
                                     <button onClick={() => handleStatusUpdate("processing")} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm uppercase">Mark Processing</button>
                                 )}
                                 {order.status === "processing" && (
-                                    <button onClick={() => setShowShippingModal(true)} className="px-6 py-3 bg-purple-600 text-white rounded-xl font-bold text-sm uppercase">Mark Shipped</button>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => setShowShippingModal(true)} className="px-6 py-3 bg-purple-600 text-white rounded-xl font-bold text-sm uppercase">Mark Shipped</button>
+                                        <button onClick={() => setShowUspsModal(true)} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm uppercase flex items-center gap-2">
+                                            <TruckIcon className="h-4 w-4" />
+                                            Book USPS
+                                        </button>
+                                    </div>
                                 )}
                                 {order.status === "shipped" && (
-                                    <button onClick={() => handleStatusUpdate("delivered")} className="px-6 py-3 bg-green-600 text-white rounded-xl font-bold text-sm uppercase">Mark Delivered</button>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => handleStatusUpdate("delivered")} className="px-6 py-3 bg-green-600 text-white rounded-xl font-bold text-sm uppercase">Mark Delivered</button>
+                                        {order.shippingDetails?.labelUrl && (
+                                            <a
+                                                href={order.shippingDetails.labelUrl}
+                                                download={`USPS-Label-${order.shippingDetails.trackingId}.pdf`}
+                                                className="px-6 py-3 bg-gray-800 text-white rounded-xl font-bold text-sm uppercase flex items-center gap-2"
+                                            >
+                                                <ArrowDownTrayIcon className="h-4 w-4" />
+                                                Download Label
+                                            </a>
+                                        )}
+                                    </div>
                                 )}
                                 <button onClick={() => handleStatusUpdate("cancelled")} className="px-6 py-3 bg-red-600/10 border border-red-600/30 text-red-500 rounded-xl font-bold text-sm uppercase">Cancel</button>
                             </div>
@@ -375,29 +445,90 @@ export default function OrderDetailPage({ params }) {
                     </div>
                 </div>
 
-                {/* Shipping Modal */}
+                {/* USPS Booking Modal */}
                 {
-                    showShippingModal && (
+                    showUspsModal && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                            <div className="bg-[#111] border border-gray-800 rounded-2xl w-full max-w-md overflow-hidden">
-                                <div className="p-6 border-b border-gray-800 flex justify-between items-center">
-                                    <h3 className="text-xl font-black uppercase tracking-wider text-white">Enter Shipment Details</h3>
-                                    <button onClick={() => setShowShippingModal(false)} className="text-gray-500 hover:text-white"><XCircleIcon className="h-6 w-6" /></button>
+                            <div className="bg-[#111] border border-gray-800 rounded-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+                                <div className="p-6 border-b border-gray-800 flex justify-between items-center bg-black/50 sticky top-0 z-10">
+                                    <h3 className="text-xl font-black uppercase tracking-wider text-white">USPS Shipping Booking</h3>
+                                    <button onClick={() => setShowUspsModal(false)} className="text-gray-500 hover:text-white"><XCircleIcon className="h-6 w-6" /></button>
                                 </div>
-                                <div className="p-6 space-y-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Shipping Company</label>
-                                        <select value={shippingData.carrier} onChange={(e) => setShippingData({ ...shippingData, carrier: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary">
-                                            <option value="Fedex">Fedex</option><option value="UPS">UPS</option><option value="DHL">DHL</option><option value="USPS">USPS</option>
-                                        </select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Tracking ID</label>
-                                        <input type="text" placeholder="Enter Tracking Number" value={shippingData.trackingId} onChange={(e) => setShippingData({ ...shippingData, trackingId: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary" />
-                                    </div>
-                                    <div className="flex gap-4 pt-4">
-                                        <button onClick={() => setShowShippingModal(false)} className="flex-1 py-3 bg-gray-900 text-gray-400 rounded-xl font-bold uppercase text-xs">Cancel</button>
-                                        <button onClick={() => { if (!shippingData.trackingId) return showAlert("error", "Error", "Please enter tracking ID"); handleStatusUpdate("shipped", shippingData); }} className="flex-1 py-3 bg-primary text-white rounded-xl font-bold uppercase text-xs hover:bg-red-700">Confirm Shipment</button>
+                                <div className="p-8 space-y-8">
+                                    {/* Package Info */}
+                                    <section className="space-y-4">
+                                        <h4 className="text-xs font-black uppercase text-primary tracking-widest border-l-4 border-primary pl-3">Package Details</h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase text-gray-500">Weight (lbs)</label>
+                                                <input type="number" step="0.1" value={uspsData.weight} onChange={(e) => setUspsData({ ...uspsData, weight: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase text-gray-500">Length (in)</label>
+                                                <input type="number" value={uspsData.length} onChange={(e) => setUspsData({ ...uspsData, length: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase text-gray-500">Width (in)</label>
+                                                <input type="number" value={uspsData.width} onChange={(e) => setUspsData({ ...uspsData, width: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase text-gray-500">Height (in)</label>
+                                                <input type="number" value={uspsData.height} onChange={(e) => setUspsData({ ...uspsData, height: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase text-gray-500">Service Type</label>
+                                            <select value={uspsData.serviceType} onChange={(e) => setUspsData({ ...uspsData, serviceType: e.target.value })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary">
+                                                <option value="USPS_GROUND_ADVANTAGE">USPS Ground Advantage</option>
+                                                <option value="PRIORITY_MAIL">Priority Mail</option>
+                                                <option value="PRIORITY_MAIL_EXPRESS">Priority Mail Express</option>
+                                            </select>
+                                        </div>
+                                    </section>
+
+                                    {/* Sender Info */}
+                                    <section className="space-y-4">
+                                        <h4 className="text-xs font-black uppercase text-primary tracking-widest border-l-4 border-primary pl-3">Sender Address (Warehouse)</h4>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase text-gray-500">First Name</label>
+                                                <input type="text" value={uspsData.senderAddress.firstName} onChange={(e) => setUspsData({ ...uspsData, senderAddress: { ...uspsData.senderAddress, firstName: e.target.value } })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase text-gray-500">Last Name</label>
+                                                <input type="text" value={uspsData.senderAddress.lastName} onChange={(e) => setUspsData({ ...uspsData, senderAddress: { ...uspsData.senderAddress, lastName: e.target.value } })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase text-gray-500">Street Address</label>
+                                            <input type="text" value={uspsData.senderAddress.address} onChange={(e) => setUspsData({ ...uspsData, senderAddress: { ...uspsData.senderAddress, address: e.target.value } })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary" />
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase text-gray-500">City</label>
+                                                <input type="text" value={uspsData.senderAddress.city} onChange={(e) => setUspsData({ ...uspsData, senderAddress: { ...uspsData.senderAddress, city: e.target.value } })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase text-gray-500">State (Code)</label>
+                                                <input type="text" placeholder="NY" value={uspsData.senderAddress.state} onChange={(e) => setUspsData({ ...uspsData, senderAddress: { ...uspsData.senderAddress, state: e.target.value } })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary" />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-bold uppercase text-gray-500">ZIP Code</label>
+                                                <input type="text" value={uspsData.senderAddress.zip} onChange={(e) => setUspsData({ ...uspsData, senderAddress: { ...uspsData.senderAddress, zip: e.target.value } })} className="w-full bg-black border border-gray-800 rounded-xl px-4 py-3 text-white focus:border-primary" />
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                    <div className="flex gap-4 pt-6 border-t border-gray-800 sticky bottom-0 bg-[#111] py-4">
+                                        <button onClick={() => setShowUspsModal(false)} className="flex-1 py-4 bg-gray-900 text-gray-400 rounded-2xl font-black uppercase text-xs">Cancel</button>
+                                        <button
+                                            onClick={handleUspsBooking}
+                                            disabled={updating}
+                                            className="flex-1 py-4 bg-primary text-white rounded-2xl font-black uppercase text-xs hover:bg-red-700 shadow-xl shadow-primary/20 flex items-center justify-center gap-3 disabled:opacity-50"
+                                        >
+                                            {updating ? <ArrowPathIcon className="h-4 w-4 animate-spin" /> : <TruckIcon className="h-4 w-4" />}
+                                            {updating ? "Processing..." : "Confirm & Book USPS"}
+                                        </button>
                                     </div>
                                 </div>
                             </div>

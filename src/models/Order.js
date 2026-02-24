@@ -72,7 +72,8 @@ const OrderSchema = new mongoose.Schema(
         shippingDetails: {
             carrier: String,
             trackingId: String,
-            shippedAt: Date
+            shippedAt: Date,
+            labelUrl: String
         }
     },
     { timestamps: true }
