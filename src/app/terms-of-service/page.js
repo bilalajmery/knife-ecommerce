@@ -5,6 +5,117 @@ import Image from "next/image";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 
+const termsSections = [
+  {
+    title: "Introduction",
+    description: [
+      "Welcome to KnifeMasters. These Terms of Service (“Terms”) govern your access to and use of our website and the purchase of products from KnifeMasters (“we,” “us,” or “our”).",
+      "By accessing our website or placing an order, you agree to be bound by these Terms. If you do not agree, you may not use our website or services.",
+    ],
+  },
+  {
+    title: "Eligibility & Legal Compliance",
+    content: [
+      "You must be at least 18 years old to purchase products from KnifeMasters.",
+      "By placing an order, you represent that knife ownership and shipment are legal in your jurisdiction.",
+      "KnifeMasters is not responsible for violations of local, state, or federal laws related to knife possession or use.",
+    ],
+  },
+  {
+    title: "Product Information & Availability",
+    content: [
+      "We make reasonable efforts to ensure product descriptions, pricing, and images are accurate.",
+      "Colors, materials, and finishes may vary due to natural materials or display settings.",
+      "KnifeMasters reserves the right to modify or discontinue products at any time without notice.",
+    ],
+  },
+  {
+    title: "Orders & Payments",
+    content: [
+      "All orders are subject to acceptance and availability.",
+      "We reserve the right to refuse or cancel any order for any reason.",
+      "Prices are listed in U.S. dollars.",
+      "Payment must be received in full before shipment.",
+    ],
+  },
+  {
+    title: "Shipping & Risk of Loss",
+    content: [
+      "Shipping is governed by our Shipping Policy.",
+      "Title and risk of loss pass to the customer upon delivery to the carrier.",
+    ],
+  },
+  {
+    title: "Returns, Refunds & Exchanges",
+    content: [
+      "Returns and exchanges are governed by our Returns & Exchange Policy.",
+      "Customers are responsible for return shipping unless due to our error.",
+    ],
+  },
+  {
+    title: "Use of Products & Safety Disclaimer",
+    content: [
+      "Knives are inherently sharp and potentially dangerous tools.",
+      "Products must be used responsibly and for their intended purpose.",
+      "KnifeMasters is not responsible for misuse or improper handling.",
+    ],
+  },
+  {
+    title: "Intellectual Property",
+    content: [
+      "All website content is the property of KnifeMasters.",
+      "Content may not be used without written permission.",
+    ],
+  },
+  {
+    title: "Prohibited Use",
+    content: [
+      "Using the website for unlawful purposes.",
+      "Attempting unauthorized access.",
+      "Interfering with website functionality.",
+      "Submitting false information.",
+    ],
+  },
+  {
+    title: "Limitation of Liability",
+    content: [
+      "KnifeMasters shall not be liable for indirect or consequential damages.",
+      "Damages exceeding the product purchase price.",
+    ],
+  },
+  {
+    title: "Indemnification",
+    description:
+      "You agree to indemnify and hold harmless KnifeMasters from claims arising from:",
+    content: [
+      "Your misuse of products.",
+      "Violation of these Terms.",
+      "Violation of applicable laws.",
+    ],
+  },
+  {
+    title: "Third-Party Services",
+    description:
+      "We may use third-party services such as payment processors or shipping carriers. KnifeMasters is not responsible for their actions or policies.",
+  },
+  {
+    title: "Termination",
+    description:
+      "We reserve the right to terminate or restrict access for violations of these Terms.",
+  },
+  {
+    title: "Governing Law",
+    description:
+      "These Terms are governed by the laws of the State of New York.",
+  },
+  {
+    title: "Changes to These Terms",
+    description:
+      "KnifeMasters may update these Terms at any time. Changes take effect immediately upon posting.",
+  },
+];
+
+
 export default function TermsOfService() {
     return (
         <React.Fragment>
@@ -35,74 +146,47 @@ export default function TermsOfService() {
                             Terms of <span className="text-primary">Service</span>
                         </h1>
                         <p className="text-gray-300 max-w-2xl mx-auto text-lg">
-                            Last Updated: {new Date().toLocaleDateString()}
+                            Last Updated: 01/01/2024
+                            {/* {new Date().toLocaleDateString()} */}
                         </p>
                     </div>
                 </div>
 
                 {/* Content */}
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
-                    <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-8 space-y-8">
-                        <section className="space-y-4">
-                            <h2 className="text-2xl font-bold text-white flex items-center">
-                                <span className="w-1.5 h-6 bg-primary mr-3 rounded-full"></span>
-                                1. Introduction
-                            </h2>
-                            <p className="leading-relaxed">
-                                Welcome to KnifeMasters. By accessing our website and purchasing our products, you agree to be bound by these Terms of Service. Please read them carefully before using our services.
-                            </p>
-                        </section>
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+                    <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-2xl p-8 space-y-10">
+  {termsSections.map((section, idx) => (
+  <section key={idx} className="space-y-4">
+    <h2 className="text-2xl font-bold text-white flex items-center">
+      <span className="w-1.5 h-6 bg-primary mr-3 rounded-full"></span>
+      {idx + 1}. {section.title}
+    </h2>
 
-                        <section className="space-y-4">
-                            <h2 className="text-2xl font-bold text-white flex items-center">
-                                <span className="w-1.5 h-6 bg-primary mr-3 rounded-full"></span>
-                                2. Age Restriction
-                            </h2>
-                            <p className="leading-relaxed">
-                                You must be at least 18 years of age to purchase knives or other bladed products from this site. By placing an order, you certify that you are of legal age and that the purchase complies with all local, state, and federal laws.
-                            </p>
-                        </section>
+    {/* Description */}
+    {Array.isArray(section.description) ? (
+      section.description.map((text, i) => (
+        <p key={i} className="text-gray-400 leading-relaxed">
+          {text}
+        </p>
+      ))
+    ) : section.description ? (
+      <p className="text-gray-400 leading-relaxed">
+        {section.description}
+      </p>
+    ) : null}
 
-                        <section className="space-y-4">
-                            <h2 className="text-2xl font-bold text-white flex items-center">
-                                <span className="w-1.5 h-6 bg-primary mr-3 rounded-full"></span>
-                                3. Products and Pricing
-                            </h2>
-                            <p className="leading-relaxed">
-                                We strive to display our products as accurately as possible. However, we cannot guarantee that your monitor's display of any color will be accurate. Prices for our products are subject to change without notice. We reserve the right at any time to modify or discontinue the Service (or any part thereof) without notice at any time.
-                            </p>
-                        </section>
+    {/* Bullet content */}
+    {section.content && (
+      <ul className="space-y-3 text-gray-400 leading-relaxed list-disc list-inside">
+        {section.content.map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
+      </ul>
+    )}
+  </section>
+))}
+</div>
 
-                        <section className="space-y-4">
-                            <h2 className="text-2xl font-bold text-white flex items-center">
-                                <span className="w-1.5 h-6 bg-primary mr-3 rounded-full"></span>
-                                4. Shipping and Returns
-                            </h2>
-                            <p className="leading-relaxed">
-                                Shipping times are estimates and not guarantees. We are not responsible for delays caused by the carrier. Please review our Return Policy for information about returns and exchanges.
-                            </p>
-                        </section>
-
-                        <section className="space-y-4">
-                            <h2 className="text-2xl font-bold text-white flex items-center">
-                                <span className="w-1.5 h-6 bg-primary mr-3 rounded-full"></span>
-                                5. Limitation of Liability
-                            </h2>
-                            <p className="leading-relaxed">
-                                In no case shall KnifeMasters, our directors, officers, employees, affiliates, agents, contractors, interns, suppliers, service providers or licensors be liable for any injury, loss, claim, or any direct, indirect, incidental, punitive, special, or consequential damages of any kind.
-                            </p>
-                        </section>
-
-                        <section className="space-y-4">
-                            <h2 className="text-2xl font-bold text-white flex items-center">
-                                <span className="w-1.5 h-6 bg-primary mr-3 rounded-full"></span>
-                                6. Governing Law
-                            </h2>
-                            <p className="leading-relaxed">
-                                These Terms of Service and any separate agreements whereby we provide you Services shall be governed by and construed in accordance with the laws of the United States.
-                            </p>
-                        </section>
-                    </div>
                 </div>
             </div>
             <Footer />

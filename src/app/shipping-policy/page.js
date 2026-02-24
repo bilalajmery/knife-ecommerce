@@ -11,6 +11,90 @@ import {
   CurrencyDollarIcon,
 } from "@heroicons/react/24/outline";
 
+const shippingPolicySections = [
+  {
+    title: "Order Processing",
+    content: [
+      "Orders are typically processed within 1–3 business days, excluding weekends and holidays.",
+      "Processing time does not include shipping transit time.",
+      "Orders placed after business hours, on weekends, or holidays will begin processing on the next business day.",
+    ],
+  },
+  {
+    title: "Shipping Methods & Carriers",
+    content: [
+      "We ship using reputable third-party carriers, including but not limited to USPS, UPS, and FedEx.",
+      "Shipping method selection is made at checkout and cannot be changed once the order has been processed.",
+    ],
+  },
+  {
+    title: "Shipping Rates",
+    content: [
+      "Shipping rates are calculated at checkout based on order weight, destination, and selected shipping method.",
+      "Any applicable taxes, duties, or customs fees are the responsibility of the customer.",
+    ],
+  },
+  {
+    title: "Delivery Estimates",
+    content: [
+      "Delivery time estimates are provided by the carrier and are not guaranteed.",
+      "KnifeMasters is not responsible for delays caused by carriers, weather, customs, or other events beyond our control.",
+    ],
+  },
+  {
+    title: "Address Accuracy",
+    content: [
+      "Customers are responsible for providing accurate and complete shipping information.",
+      "Orders shipped to incorrectly entered addresses are not eligible for refund or replacement.",
+      "If an order is returned due to an incorrect address, reshipping fees will apply.",
+    ],
+  },
+  {
+    title: "Shipment Tracking",
+    content: [
+      "Tracking information will be provided once the order has shipped.",
+      "It is the customer’s responsibility to monitor shipment status.",
+    ],
+  },
+  {
+    title: "Lost, Stolen, or Missing Packages",
+    content: [
+      "KnifeMasters is not responsible for lost or stolen packages once delivery has been confirmed by the carrier.",
+      "If a package is marked as delivered but not received, customers must contact the carrier directly.",
+      "At our discretion, we may assist with filing a carrier claim but do not guarantee replacement or refund.",
+    ],
+  },
+  {
+    title: "Damaged Shipments",
+    content: [
+      "Any damage must be reported within 48 hours of delivery.",
+      "Customers must provide clear photos of the damaged item and packaging.",
+      "Failure to report within the required timeframe may result in denial of claims.",
+    ],
+  },
+  {
+    title: "Shipping Restrictions",
+    content: [
+      "We reserve the right to refuse or cancel orders shipped to locations where knives are restricted or prohibited by law.",
+      "Customers are responsible for ensuring the legality of knife ownership and shipment in their jurisdiction.",
+    ],
+  },
+  {
+    title: "Risk of Loss",
+    content: [
+      "Title and risk of loss pass to the customer upon delivery of the order to the shipping carrier, unless otherwise required by law.",
+    ],
+  },
+  {
+    title: "Policy Updates",
+    content: [
+      "KnifeMasters reserves the right to modify this Shipping Policy at any time without prior notice.",
+      "Changes will take effect immediately upon posting to the website.",
+    ],
+  },
+];
+
+
 export default function ShippingPolicy() {
   return (
     <React.Fragment>
@@ -87,6 +171,8 @@ export default function ShippingPolicy() {
             ))}
           </div>
 
+          
+
           {/* Detailed Sections */}
           <div className="space-y-16">
             {/* Shipping Rates Table */}
@@ -161,6 +247,28 @@ export default function ShippingPolicy() {
               </div>
             </div>
           </div>
+
+          {/* Shipping Policy Details */}
+<div className="mt-10 space-y-10 grid md:grid-cols-2 gap-8">
+  {shippingPolicySections.map((section, idx) => (
+    <div
+      key={idx}
+      className="bg-gray-900/30 border border-gray-800 rounded-3xl p-8"
+    >
+      <h3 className="text-xl font-bold text-white uppercase tracking-wide mb-4 flex items-center">
+        <span className="w-1.5 h-6 bg-primary rounded-full mr-3"></span>
+        {section.title}
+      </h3>
+
+      <ul className="space-y-3 text-gray-400 leading-relaxed list-disc list-inside">
+        {section.content.map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>
+
 
           {/* CTA */}
           <div className="mt-20 text-center">
