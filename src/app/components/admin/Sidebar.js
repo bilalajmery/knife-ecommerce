@@ -98,7 +98,14 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-gray-900">
+        <div className="p-4 border-t border-gray-900 space-y-2">
+          <Link
+            href="/"
+            className="flex items-center w-full px-4 py-3 text-sm font-medium text-primary hover:text-white hover:bg-primary/10 rounded-lg transition-colors border border-primary/20"
+          >
+            <GlobeAltIcon className="h-5 w-5 mr-3" />
+            Go To Website
+          </Link>
           <button
             onClick={handleLogout}
             className="flex items-center w-full px-4 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-900 rounded-lg transition-colors"
